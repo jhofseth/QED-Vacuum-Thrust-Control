@@ -31,7 +31,7 @@ except ImportError:
             raise ValueError("Mass must be positive")
         return T / m
 
-# Constants (example values from docs)
+# Constants (example values)
 CHI = 1e-10
 B = 50.0  # T
 A = 1.0  # m²

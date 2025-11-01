@@ -76,7 +76,7 @@ Holistic ranking of magnetic materials for propulsion circuits (as of October 20
 | 4 | Minnealloy (α″-Fe₁₆(C,N)₂) | 92/100 |
 | 5 | Pure Iron (ARMCO) | 90/100 |
 
-*See full table in [docs/materials_ranking.md](docs/materials_ranking.md)*
+*See full table in [docs/materials_ranking.pdf](docs/materials_ranking.pdf)*
 
 Prioritizes cobalt-free options for low-cost scalability.
 

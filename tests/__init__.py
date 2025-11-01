@@ -1,1 +1,3 @@
-Placeholder for the script content. This file will be updated with Python code or text soon.
+# This file makes the 'tests' directory a Python package.
+# It can be left empty or used for package-level imports/setup.
+

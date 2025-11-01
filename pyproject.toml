@@ -2,7 +2,7 @@
 name = "qed-vacuum-thrust-control"
 version = "0.1.0"
 description = "Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones."
-authors = ["Jesse D. Hofseth <your.email@example.com>"]  # Replace with actual email
+authors = ["Jesse D. Hofseth <auagpt@usa.com>"]
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/jhofseth/QED-Vacuum-Thrust-Control"

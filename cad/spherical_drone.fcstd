@@ -94,3 +94,5 @@
   </ObjectData>
   <Recompute Count="0"/>
 </Document>
+
+Note: This is the content of Document.xml inside the .fcstd file. To create the full .fcstd, zip this file along with an empty GuiDocument.xml (<?xml version="1.0" encoding="UTF-8"?><GuiDocument/>) and rename the zip to .fcstd. For scaling to B_opposing >20T, replace neodymium cylinders with high-field electromagnet models (e.g., larger coils with Hiperco-50 material properties in FreeCAD). Open in FreeCAD to add fusions, cuts for integration, and export to STL/STEP.

@@ -136,14 +136,8 @@ def simulate_navigation(model, start_pos, start_vel, target_pos, obstacles=None)
                     repulsion = (dist_vec / dist) * (10.0 / (dist + 0.1))**2
                     a += repulsion
         
-        # Update velocity and position with limits
+        # Update velocity and position
         vel += a * DT
-        
-        # Apply velocity limit
-        vel_mag = np.linalg.norm(vel)
-        if vel_mag > MAX_VELOCITY:
-            vel = vel * (MAX_VELOCITY / vel_mag)
-        
         pos += vel * DT
         
         trajectory.append(pos.copy())

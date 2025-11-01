@@ -1,2 +1,2 @@
-numpy scipy sympy torch matplotlib qutip networkx
+numpy scipy sympy torch matplotlib
 

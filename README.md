@@ -1,24 +1,24 @@
-# QED-Vacuum-Thrust-Control
-Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones.  Optimizes magnetic circuits with materials like Minnealloy &amp; Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare.  Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
+QED-Vacuum-Thrust-Control
 
+Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones. Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (up to Mach 26), stealthy ops in asymmetric warfare. Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
 Explore the docs »
 Report Bug · Request Feature
 Table of Contents
-	1	About The Project
+	•	About The Project
 	◦	Built With
-	2	Theory Overview
-	3	Key Features
-	4	Materials Ranking
-	5	Useful Equations
-	6	Getting Started
+	•	Theory Overview
+	•	Key Features
+	•	Materials Ranking
+	•	Useful Equations
+	•	Getting Started
 	◦	Prerequisites
 	◦	Installation
-	7	Usage
-	8	Roadmap
-	9	Contributing
-	10	License
-	11	Contact
-	12	Acknowledgments
+	•	Usage
+	•	Roadmap
+	•	Contributing
+	•	License
+	•	Contact
+	•	Acknowledgments
 About The Project
 This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization. Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for reactionless propulsion in spherical combat drones. Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
 Key applications include defense scenarios requiring non-ballistic trajectories, hover capabilities, and precision strikes while evading radar and thermal detection.
@@ -46,7 +46,8 @@ Holistic ranking of magnetic materials for propulsion circuits (as of October 20
 	2	Metglas Amorphous Iron (95/100)
 	3	Minnealloy (α′-Fe₈(NC)) (95/100) - BEST OVERALL
 	4	Minnealloy (α″-Fe₁₆(C,N)₂) (92/100)
-	5	Pure Iron (ARMCO) (90/100) … (See full table in docs/materials_ranking.md)
+	5	Pure Iron (ARMCO) (90/100)
+… (See full table in docs/materials_ranking.md)
 Prioritizes cobalt-free options for low-cost scalability.
 (back to top)
 Useful Equations
@@ -57,7 +58,7 @@ Useful Equations for Propulsion Calculations: Tactical Toolkit derived from Emer
 	•	Pulsed Enhancement (for bursts): $$ \Delta B = \mu_0 n I $$
 2. Disruption and Gradient
 	•	Lagrangian: $$ \mathcal{L}{\text{disrupt}} = -\frac{1}{2} \chi B^2 h{\mu\nu} h^{\mu\nu} $$
-	•	RG for χ (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2 emergent (old): \beta_\chi = (4 + \eta_\chi) \chi + c g \chi, or *data-derived; experiment needed*): $$ \beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda} $$ [RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]
+	•	RG for χ (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2: \beta_\chi = (4 + \eta_\chi) \chi + c g \chi, or data-derived; experiment needed): $$ \beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda} $$ [RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]
 	•	Source Term: $$ \delta T_{\mu\nu} \approx \chi B^2 h_{\mu\nu} $$
 3. Force/Thrust
 	•	Force Vector: $$ \mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho $$
@@ -74,7 +75,7 @@ Prerequisites
 	•	Python 3.12+
 	•	pip
 Installation
-	1	Clone the repo git clone https://github.com/your-username/QED-Vacuum-Thrust-Control.git
+	1	Clone the repo git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
 	2	
 	3	Install dependencies pip install -r requirements.txt
 	4	
@@ -99,10 +100,10 @@ License
 Distributed under the MIT License. See LICENSE for more information.
 (back to top)
 Contact
-Project Link: https://github.com/JesseHofseth/QED-Vacuum-Thrust-Control
+Project Link: https://github.com/jhofseth/QED-Vacuum-Thrust-Control
 (back to top)
 Acknowledgments
 	•	EGDPP Theory (Jesse D. Hofseth)
-	•	U.S. Patent #5,929,732 (Lockheed Martin)
+	•	U.S. Patent #5,929,732 (Boyd Bushman)
 	•	Best-README-Template
 (back to top)

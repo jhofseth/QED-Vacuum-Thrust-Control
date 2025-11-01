@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Document SchemaVersion="1">
+  <Objects Count="5">
+    <Object name="DroneBody" type="Part::Sphere" />
+    <Object name="MagneticCoil1" type="Part::Cylinder" />
+    <Object name="MagneticCoil2" type="Part::Cylinder" />
+    <Object name="NeodymiumMagnet1" type="Part::Cylinder" />
+    <Object name="NeodymiumMagnet2" type="Part::Cylinder" />
+  </Objects>
+  <ObjectData Count="5">
+    <Object name="DroneBody">
+      <Properties Count="5">
+        <Property name="Radius" type="App::PropertyLength">
+          <Float value="0.5"/> <!-- 0.5 m radius for spherical body -->
+        </Property>
+        <Property name="Angle1" type="App::PropertyAngle">
+          <Float value="-90"/>
+        </Property>
+        <Property name="Angle2" type="App::PropertyAngle">
+          <Float value="90"/>
+        </Property>
+        <Property name="Angle3" type="App::PropertyAngle">
+          <Float value="360"/>
+        </Property>
+        <Property name="Placement" type="App::PropertyPlacement">
+          <PropertyPlacement angle="0" axis="0 0 1" position="0 0 0"/>
+        </Property>
+      </Properties>
+    </Object>
+    <Object name="MagneticCoil1">
+      <Properties Count="5">
+        <Property name="Radius" type="App::PropertyLength">
+          <Float value="0.1"/> <!-- Coil radius -->
+        </Property>
+        <Property name="Height" type="App::PropertyLength">
+          <Float value="0.2"/> <!-- Coil height -->
+        </Property>
+        <Property name="Angle" type="App::PropertyAngle">
+          <Float value="360"/>
+        </Property>
+        <Property name="Placement" type="App::PropertyPlacement">
+          <PropertyPlacement angle="0" axis="1 0 0" position="0.3 0 0"/> <!-- Positioned inside sphere -->
+        </Property>
+      </Properties>
+    </Object>
+    <Object name="MagneticCoil2">
+      <Properties Count="5">
+        <Property name="Radius" type="App::PropertyLength">
+          <Float value="0.1"/>
+        </Property>
+        <Property name="Height" type="App::PropertyLength">
+          <Float value="0.2"/>
+        </Property>
+        <Property name="Angle" type="App::PropertyAngle">
+          <Float value="360"/>
+        </Property>
+        <Property name="Placement" type="App::PropertyPlacement">
+          <PropertyPlacement angle="0" axis="1 0 0" position="-0.3 0 0"/> <!-- Opposing coil -->
+        </Property>
+      </Properties>
+    </Object>
+    <Object name="NeodymiumMagnet1">
+      <Properties Count="5">
+        <Property name="Radius" type="App::PropertyLength">
+          <Float value="0.05"/> <!-- Magnet size for low-power B ~1.5T -->
+        </Property>
+        <Property name="Height" type="App::PropertyLength">
+          <Float value="0.1"/>
+        </Property>
+        <Property name="Angle" type="App::PropertyAngle">
+          <Float value="360"/>
+        </Property>
+        <Property name="Placement" type="App::PropertyPlacement">
+          <PropertyPlacement angle="0" axis="1 0 0" position="0.25 0 0"/> <!-- Integrated with coil -->
+        </Property>
+      </Properties>
+    </Object>
+    <Object name="NeodymiumMagnet2">
+      <Properties Count="5">
+        <Property name="Radius" type="App::PropertyLength">
+          <Float value="0.05"/>
+        </Property>
+        <Property name="Height" type="App::PropertyLength">
+          <Float value="0.1"/>
+        </Property>
+        <Property name="Angle" type="App::PropertyAngle">
+          <Float value="360"/>
+        </Property>
+        <Property name="Placement" type="App::PropertyPlacement">
+          <PropertyPlacement angle="0" axis="1 0 0" position="-0.25 0 0"/> <!-- Opposing magnet -->
+        </Property>
+      </Properties>
+    </Object>
+  </ObjectData>
+  <Recompute Count="0"/>
+</Document>

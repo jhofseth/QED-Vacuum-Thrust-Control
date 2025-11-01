@@ -1,5 +1,6 @@
 QED-Vacuum-Thrust-Control
 
+
 Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones. Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (up to Mach 26), stealthy ops in asymmetric warfare. Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
 Explore the docs »
 Report Bug · Request Feature
@@ -52,19 +53,19 @@ Prioritizes cobalt-free options for low-cost scalability.
 (back to top)
 Useful Equations
 Useful Equations for Propulsion Calculations: Tactical Toolkit derived from Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model (i.e., EGDPP Theory). Grouped for quick reference, with derivations and applications. These empower simulations – e.g., Python for threat modeling.
-1. Magnetic Fields
+Magnetic Fields
 	•	Surface Field (base for opposition): $$ B \approx \frac{B_r}{2} \left( \frac{L}{\sqrt{R^2 + L^2}} + \frac{L + d}{\sqrt{R^2 + (L + d)^2}} \right) $$
 	•	Opposing Field (core disruption input): $$ B_{\text{opposing}} = \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k $$
 	•	Pulsed Enhancement (for bursts): $$ \Delta B = \mu_0 n I $$
-2. Disruption and Gradient
+Disruption and Gradient
 	•	Lagrangian: $$ \mathcal{L}{\text{disrupt}} = -\frac{1}{2} \chi B^2 h{\mu\nu} h^{\mu\nu} $$
 	•	RG for χ (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2: \beta_\chi = (4 + \eta_\chi) \chi + c g \chi, or data-derived; experiment needed): $$ \beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda} $$ [RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]
 	•	Source Term: $$ \delta T_{\mu\nu} \approx \chi B^2 h_{\mu\nu} $$
-3. Force/Thrust
+Force/Thrust
 	•	Force Vector: $$ \mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho $$
 	•	Total Thrust: $$ T = N \cdot F \cdot \eta \cdot \cos\theta $$
 	•	Acceleration: $$ a = T / m $$
-4. Power/Efficiency
+Power/Efficiency
 	•	Consumption: $$ P = I^2 R + P_{\text{eddy}} $$
 	•	Efficiency: $$ \eta = \left( \frac{T \cdot v}{P} \right) \times 100% $$
 	•	Range: $$ R = v \cdot \left( \frac{E}{P} \right) $$

@@ -7,7 +7,7 @@
 
   (title_block
     (title "Basic Spherical Drone Prototype Schematic")
-    (company "xAI QED Project")
+    (company "QED Project")
     (rev "1.0")
     (date "2025-11-01")
     (source "basic_drone.sch")

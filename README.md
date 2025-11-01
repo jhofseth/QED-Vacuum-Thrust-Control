@@ -1,6 +1,6 @@
 # QED-Vacuum-Thrust-Control
 
-Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones. Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare. Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
+Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones.  Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare.  Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
 
 [Explore the docs »](docs/)
 
@@ -26,7 +26,7 @@ Open-source control system for QED vacuum polarization-based EMF propulsion in c
 
 ## About The Project
 
-This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization. Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for reactionless propulsion in spherical combat drones. Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
+This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization.  Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for reactionless propulsion in spherical combat drones.  Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
 
 Key applications include defense scenarios requiring non-ballistic trajectories, hover capabilities, and precision strikes while evading radar and thermal detection.
 
@@ -44,9 +44,9 @@ Key applications include defense scenarios requiring non-ballistic trajectories,
 
 ## Theory Overview
 
-The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >20 T) disrupt virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion. Based on Heisenberg-Euler-Schwinger effective action at 0.1-1 MHz frequencies, it achieves thrust via F ∝ χ B² ∇(h²) A ρ. 
+The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >20 T) disrupt virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion.  Based on Heisenberg-Euler-Schwinger effective action at 0.1-1 MHz frequencies, it achieves thrust via F ∝ χ B² ∇(h²) A ρ. 
 
-Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety. The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows. A public experiment is needed to confirm the RG modifier equation for χ, as simulations require it for proper EMF propulsion functionality. Options include the current spin-0 version or alternatives derived from data; the system is neutral and adaptable.
+Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety.  The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows.  A public experiment is needed to confirm the RG modifier equation for χ, as simulations require it for proper EMF propulsion functionality.  Options include the current spin-0 version or alternatives derived from data; the system is neutral and adaptable.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -80,7 +80,7 @@ Prioritizes cobalt-free options for low-cost scalability.
 
 ## Useful Equations
 
-Useful Equations for Propulsion Calculations: Tactical Toolkit derived from *Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model* (i.e., EGDPP Theory). Grouped for quick reference, with derivations and applications. These empower simulations – e.g., Python for threat modeling.
+Useful Equations for Propulsion Calculations: Tactical Toolkit derived from *Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model* (i.e., EGDPP Theory).  Grouped for quick reference, with derivations and applications.  These empower simulations – e.g., Python for threat modeling.
 
 ### Magnetic Fields
 
@@ -199,13 +199,13 @@ See `examples/` for more.
 
 ## Contributing
 
-Contributions welcome! Fork, create a branch, commit, push, and open a PR.
+Contributions welcome!  Fork, create a branch, commit, push, and open a PR.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.  See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

@@ -219,7 +219,7 @@ Project Link: [https://github.com/jhofseth/QED-Vacuum-Thrust-Control](https://gi
 
 ## Acknowledgments
 
-- EGDPP Theory (Jesse D. Hofseth)
+- EGDPP Theory (Jesse D. Hofseth) https://dx.doi.org/10.2139/ssrn.5381654
 - U.S. Patent #5,929,732 (Lockheed Martin Corporation) https://patents.google.com/patent/US5929732A/en
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 

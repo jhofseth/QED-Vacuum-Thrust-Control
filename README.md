@@ -102,7 +102,7 @@ $$\Delta B = \mu_0 n I$$
 
 $$\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$$
 
-**RG for χ** (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2: β_χ = (4 + η_χ) χ + c g χ, or data-derived; experiment needed):
+**RG for χ** (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2: β_χ = (4 + η_χ) χ + c g χ, *or data-derived; experiment needed*):
 
 $$\beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda}$$
 

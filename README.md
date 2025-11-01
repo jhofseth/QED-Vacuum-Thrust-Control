@@ -42,6 +42,8 @@ Key applications include defense scenarios requiring non-ballistic trajectories,
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+![Alt text](assets/IMG_0848.jpeg)
+
 ## Theory Overview
 
 The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >20 T) disrupt virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion.  Based on Heisenberg-Euler-Schwinger effective action at 0.1-1 MHz frequencies, it achieves thrust via F ∝ χ B² ∇(h²) A ρ. 

@@ -42,7 +42,6 @@ THETA = 0.0  # degrees
 MASS = 20000.0  # kg
 DT = 0.1  # time step (s)
 NUM_STEPS = 100  # simulation steps
-MAX_VELOCITY = 100.0  # m/s (safety limit)
 
 class MIMONetwork(nn.Module):
     """

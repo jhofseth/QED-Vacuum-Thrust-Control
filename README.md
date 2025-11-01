@@ -1,186 +1,361 @@
-QED-Vacuum-Thrust-Control
+# QED-Vacuum-Thrust-Control
+
 Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones. Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare. Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
 
-Explore the docs »
-Report Bug · Request Feature
-Table of Contents
-	•	About The Project
-	◦	Built With
-	•	Theory Overview
-	•	Key Features
-	•	Materials Ranking
-	•	Useful Equations
-	•	Quick-Start Guide
-	•	Getting Started
-	◦	Prerequisites
-	◦	Installation
-	•	Usage
-	•	API Documentation
-	•	Tutorials
-	•	Glossary
-	•	Roadmap
-	•	Contributing
-	•	License
-	•	Contact
-	•	Acknowledgments
-About The Project
-This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization. Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for reactionless propulsion in spherical combat drones. Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
-Key applications include defense scenarios requiring non-ballistic trajectories, hover capabilities, and precision strikes while evading radar and thermal detection.
-(back to top)
-Built With
-	•	
-	•	
-	•	
-	•	
-	•	
-(back to top)
+[Explore the docs »](docs/)
 
-Theory Overview
-The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >~20 T; depends upon mass, with some B_opposing >60-90+ T) create virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion. Based on Heisenberg-Euler-Schwinger (HES) effective action at 0.1-1 MHz frequencies (i.e., pulsed), it achieves thrust via F ∝ χ B² ∇(h²) A ρ. Pulsing (for spherical EMF propulsion drones): 50 Hz default (20 ms cycles) (balance), dynamically scaling to 100 Hz (agility) or 1 kHz (bursts) with variable duty (20-80%) – boosting efficiency 20-50%, evading detection, and extending range.
-Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety. The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows. A public experiment is needed to confirm the RG modifier equation for χ (i.e., or any modifier equation), as simulations require it for proper EMF propulsion functionality. Options include the current spin-0 emergent version, the old spin-2 emergent version, or an alternative modifier equation derived from experimental data; the system is neutral and adaptable. I really don’t care about my paper’s hypothesis (i.e., EDGPP), because EMF propulsion demonstrably occurs and it 100% requires some modifier equation. All I care about is truth, and QED vacuum polarization-based EMF propulsion is 100% truth that doesn’t depend upon EGDPP—only upon a modifier equation.
-(back to top)
-Key Features
-	•	AI Navigation: MIMO networks for 6DOF control and real-time flux mapping
-	•	MADA Pulsing: 50-100 Hz pulsing (up to 1 kHz bursts) for efficiency >95%
-	•	Thermal Management: PCM channels and optional Bi₂Te₃ TEG for 10-40 kW dissipation
-	•	Simulation Tools: Python scripts for RG flow, thrust calculations, and threat modeling
-	•	Material Optimization: Holistic ranking for scalability and cost
-(back to top)
-Materials Ranking
+[Report Bug](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues) · [Request Feature](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues)
+
+## Table of Contents
+
+- [About The Project](#about-the-project)
+  - [Built With](#built-with)
+- [Theory Overview](#theory-overview)
+- [Key Features](#key-features)
+- [Materials Ranking](#materials-ranking)
+- [Useful Equations](#useful-equations)
+- [Quick-Start Guide](#quick-start-guide)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [Tutorials](#tutorials)
+- [Glossary](#glossary)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+
+## About The Project
+
+This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization. Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for reactionless propulsion in spherical combat drones. Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
+
+Key applications include defense scenarios requiring non-ballistic trajectories, hover capabilities, and precision strikes while evading radar and thermal detection.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Built With
+
+- ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+- ![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white)
+- ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
+- ![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)
+- ![SciPy](https://img.shields.io/badge/SciPy-%230C55A5.svg?style=for-the-badge&logo=scipy&logoColor=%white)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Theory Overview
+
+The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >~20 T; depends upon mass, with some B_opposing >60-90+ T) create virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion. Based on Heisenberg-Euler-Schwinger (HES) effective action at 0.1-1 MHz frequencies (i.e., pulsed), it achieves thrust via F ∝ χ B² ∇(h²) A ρ. 
+
+**Pulsing Strategy (for spherical EMF propulsion drones):** 50 Hz default (20 ms cycles) for balance, dynamically scaling to 100 Hz (agility) or 1 kHz (bursts) with variable duty cycle (20-80%) – boosting efficiency 20-50%, evading detection, and extending range.
+
+Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety. The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows. 
+
+**Important Note on Modifier Equations:** A public experiment is needed to confirm the RG modifier equation for χ (or any modifier equation), as simulations require it for proper EMF propulsion functionality. Options include:
+- Current spin-0 emergent version
+- Old spin-2 emergent version: β_χ = (4 + η_χ) χ + c g χ
+- Alternative modifier equation derived from experimental data
+
+The system is neutral and adaptable. **EMF propulsion demonstrably occurs and 100% requires some modifier equation.** This is about truth: QED vacuum polarization-based EMF propulsion is established physics that doesn't depend upon EGDPP—only upon a modifier equation.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Key Features
+
+- **AI Navigation**: MIMO networks for 6DOF control and real-time flux mapping
+- **MADA Pulsing**: 50-100 Hz pulsing (up to 1 kHz bursts) for efficiency >95%
+- **Thermal Management**: PCM channels and optional Bi₂Te₃ TEG for 10-40 kW dissipation
+- **Simulation Tools**: Python scripts for RG flow, thrust calculations, and threat modeling
+- **Material Optimization**: Holistic ranking for scalability and cost
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Materials Ranking
+
 Holistic ranking of magnetic materials for propulsion circuits (as of October 20, 2025):
-Rank
-Material
-Score
-1
-Finemet Nanocrystalline Iron
-96/100
-2
-Metglas Amorphous Iron
-95/100
-3
-Minnealloy (α′-Fe₈(NC))
-95/100 - BEST OVERALL
-4
-Minnealloy (α″-Fe₁₆(C,N)₂)
-92/100
-5
-Pure Iron (ARMCO)
-90/100
-See full table in docs/materials_ranking.md
+
+| Rank | Material | Score |
+|------|----------|-------|
+| 1 | Finemet Nanocrystalline Iron | 96/100 |
+| 2 | Metglas Amorphous Iron | 95/100 |
+| 3 | **Minnealloy (α′-Fe₈(NC))** | **95/100** - **BEST OVERALL** |
+| 4 | Minnealloy (α″-Fe₁₆(C,N)₂) | 92/100 |
+| 5 | Pure Iron (ARMCO) | 90/100 |
+
+*See full table in [docs/materials_ranking.md](docs/materials_ranking.md)*
+
 Prioritizes cobalt-free options for low-cost scalability.
-(back to top)
-Useful Equations
-Useful Equations for Propulsion Calculations: Tactical Toolkit derived from Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model (i.e., EGDPP Theory). Grouped for quick reference, with derivations and applications. These empower simulations – e.g., Python for threat modeling.
-Magnetic Fields
-Surface Field (base for opposition):
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Useful Equations
+
+Useful Equations for Propulsion Calculations: Tactical Toolkit derived from *Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model* (i.e., EGDPP Theory). Grouped for quick reference, with derivations and applications. These empower simulations – e.g., Python for threat modeling.
+
+### Magnetic Fields
+
+**Surface Field (base for opposition):**
+
 $$B \approx \frac{B_r}{2} \left( \frac{L}{\sqrt{R^2 + L^2}} + \frac{L + d}{\sqrt{R^2 + (L + d)^2}} \right)$$
-Opposing Field (core disruption input):
+
+**Opposing Field (core disruption input):**
+
 $$B_{\text{opposing}} = \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
-Pulsed Enhancement (for bursts):
+
+**Pulsed Enhancement (for bursts):**
+
 $$\Delta B = \mu_0 n I$$
-Disruption and Gradient
-Lagrangian:
-$$\mathcal{L}{\text{disrupt}} = -\frac{1}{2} \chi B^2 h{\mu\nu} h^{\mu\nu}$$
-RG for χ (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2 emergent: β_χ = (4 + η_χ) χ + c g χ, or data-derived; experiment needed):
+
+### Disruption and Gradient
+
+**Lagrangian:**
+
+$$\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$$
+
+**RG for χ** (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2 emergent: β_χ = (4 + η_χ) χ + c g χ, or data-derived; experiment needed):
+
 $$\beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda}$$
-[RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]
-Source Term:
+
+*[RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]*
+
+**Source Term:**
+
 $$\delta T_{\mu\nu} \approx \chi B^2 h_{\mu\nu}$$
-Force/Thrust
-Force Vector:
+
+### Force/Thrust
+
+**Force Vector:**
+
 $$\mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho$$
-Total Thrust:
+
+**Total Thrust:**
+
 $$T = N \cdot F \cdot \eta \cdot \cos\theta$$
-Acceleration:
+
+**Acceleration:**
+
 $$a = T / m$$
-Power/Efficiency
-Consumption:
+
+### Power/Efficiency
+
+**Consumption:**
+
 $$P = I^2 R + P_{\text{eddy}}$$
-Efficiency:
-$$\eta = \left( \frac{T \cdot v}{P} \right) \times 100%$$
-Range:
+
+**Efficiency:**
+
+$$\eta = \left( \frac{T \cdot v}{P} \right) \times 100\%$$
+
+**Range:**
+
 $$R = v \cdot \left( \frac{E}{P} \right)$$
-Implementations in simulations/equations.py.
-(back to top)
-Quick-Start Guide
+
+*Implementations in `simulations/equations.py`.*
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Quick-Start Guide
+
 For non-experts new to the project:
-	1	Install Python: Download from python.org (version 3.12+ recommended).
-	2	Clone the Repository: Open a terminal and run git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git.
-	3	Install Dependencies: Navigate to the folder (cd QED-Vacuum-Thrust-Control) and run pip install -r requirements.txt.
-	4	Run a Basic Simulation: Execute python simulations/thrust_model.py --b_opposing 50 --frequency 100 to compute thrust metrics.
-	5	Explore Demos: Try the AI navigation demo with python ai/navigation.py.
-	6	Visualize: Use Jupyter notebooks in examples/ for interactive simulations (e.g., jupyter notebook examples/sensor_fusion.ipynb).
-If issues arise, check the troubleshooting guide or open an issue.
-(back to top)
-Getting Started
-Prerequisites
-	•	Python 3.12+
-	•	pip
-Installation
-	1	Clone the repo git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
-	2	
-	3	Navigate to the directory cd QED-Vacuum-Thrust-Control
-	4	
-	5	Install dependencies pip install -r requirements.txt
-	6	
-(back to top)
-Usage
-Run simulations:
+
+1. **Install Python**: Download from [python.org](https://www.python.org/downloads/) (version 3.12+ recommended)
+
+2. **Clone the Repository**: Open a terminal and run:
+   ```bash
+   git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
+   ```
+
+3. **Install Dependencies**: Navigate to the folder and install:
+   ```bash
+   cd QED-Vacuum-Thrust-Control
+   pip install -r requirements.txt
+   ```
+
+4. **Run a Basic Simulation**: Execute thrust model:
+   ```bash
+   python simulations/thrust_model.py --b_opposing 50 --frequency 100
+   ```
+
+5. **Explore Demos**: Try the AI navigation demo:
+   ```bash
+   python ai/navigation.py
+   ```
+
+6. **Visualize**: Use Jupyter notebooks in `examples/` for interactive simulations:
+   ```bash
+   jupyter notebook examples/sensor_fusion.ipynb
+   ```
+
+If issues arise, check the [troubleshooting guide](docs/troubleshooting.md) or [open an issue](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12+
+- pip (or Poetry for advanced users)
+
+### Installation
+
+1. Clone the repo
+   ```bash
+   git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
+   ```
+
+2. Navigate to the directory
+   ```bash
+   cd QED-Vacuum-Thrust-Control
+   ```
+
+3. Install dependencies
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+   Or using Poetry:
+   ```bash
+   poetry install
+   ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Usage
+
+**Run simulations:**
+
+```bash
 python simulations/thrust_model.py --b_opposing 50 --frequency 100
-For AI navigation demo:
+```
+
+**AI navigation demo:**
+
+```bash
 python ai/navigation.py
-See examples/ for more.
-(back to top)
-API Documentation
-Comprehensive API docs generated via Sphinx: View API Docs.
-Covers modules like simulations/equations.py, ai/navigation.py, and hardware/interfaces.py.
-(back to top)
-Tutorials
-	•	Hardware Setup Guide: Transitioning from simulations to prototypes.
-	•	Flight Control Tutorial: Real-time systems, PID/MPC, and safety.
-	•	Interactive Notebooks:
-	◦	Sensor Fusion Demo
-	◦	ML Optimization
-	◦	Swarm Simulation
-	•	Video Tutorials: Coming soon (check YouTube Playlist).
-(back to top)
-Glossary
-	•	Heisenberg-Euler-Schwinger Action: Effective field theory describing nonlinear QED effects in strong fields.
-	•	MADA: Magnetic Amplification and Direction Assembly – Patent-inspired setup for beam focusing.
-	•	QED Vacuum Polarization: Quantum effect where virtual particles modify electromagnetic fields.
-	•	RG Flow: Renormalization Group – Describes how physical parameters change with energy scale.
-	•	Spin-0 Emergent Gravity: Scalar field theory where gravity arises from QED disruptions.
-Full glossary in docs/glossary.md.
-(back to top)
-Roadmap
-	•	Add experiments/ directory for bench-top tests
-	•	Add cad/ for drone models and visualizations
-	•	Add testing/ for logging and protocols
-	•	Add full drone CAD models
-	•	Integrate ML for gradient optimization
-	•	Support for hardware interfacing (progress: interfaces.py and schematics added)
-	•	See open issues
-(back to top)
-Contributing
+```
+
+**Advanced options:**
+
+```bash
+# Custom parameters
+python simulations/thrust_model.py --b_opposing 75 --frequency 200 --mass 15000 --n_units 32
+
+# Verbose output
+python simulations/thrust_model.py --verbose
+```
+
+See `examples/` for more usage patterns and tutorials.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## API Documentation
+
+Comprehensive API documentation generated via Sphinx: [View API Docs](docs/api/)
+
+**Key Modules:**
+- `simulations/equations.py` - Core physics equations and calculations
+- `ai/navigation.py` - MIMO neural network for 6DOF control
+- `hardware/interfaces.py` - Hardware interfacing (coming soon)
+
+Generate docs locally:
+```bash
+cd docs/
+make html
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Tutorials
+
+- **[Hardware Setup Guide](docs/tutorials/hardware_setup.md)**: Transitioning from simulations to prototypes
+- **[Flight Control Tutorial](docs/tutorials/flight_control.md)**: Real-time systems, PID/MPC, and safety protocols
+- **Interactive Notebooks:**
+  - [Sensor Fusion Demo](examples/sensor_fusion.ipynb)
+  - [ML Optimization](examples/ml_optimization.ipynb)
+  - [Swarm Simulation](examples/swarm_simulation.ipynb)
+- **Video Tutorials**: Coming soon ([YouTube Playlist](https://youtube.com/playlist?list=PLACEHOLDER))
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Glossary
+
+- **Heisenberg-Euler-Schwinger (HES) Action**: Effective field theory describing nonlinear QED effects in strong electromagnetic fields
+- **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing
+- **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties
+- **RG Flow**: Renormalization Group – Describes how physical parameters change with energy scale
+- **Spin-0 Emergent Gravity**: Scalar field theory where gravitational effects arise from QED disruptions
+- **EGDPP**: Emergent Gravity from Disrupted Photon Pairs – Theoretical framework for QED-based propulsion
+
+Full glossary available in [docs/glossary.md](docs/glossary.md).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Roadmap
+
+- [ ] Add `experiments/` directory for bench-top test protocols
+- [ ] Add `cad/` for drone models and 3D visualizations
+- [ ] Add `testing/` for data logging and test protocols
+- [ ] Add full drone CAD models (STEP/STL formats)
+- [ ] Integrate ML for gradient optimization
+- [ ] Support for hardware interfacing (progress: `interfaces.py` and schematics added)
+- [ ] Develop firmware for embedded controllers
+- [ ] Create simulation-to-hardware pipeline
+
+See [open issues](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues) for detailed status and discussions.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contributing
+
 Contributions are welcome! Follow these steps:
-	1	Fork the repository.
-	2	Create a feature branch (git checkout -b feature/AmazingFeature).
-	3	Commit your changes (git commit -m 'Add some AmazingFeature').
-	4	Push to the branch (git push origin feature/AmazingFeature).
-	5	Open a Pull Request using the PR template.
-For bugs or features, use the issue templates:
-	•	Bug Report
-	•	Feature Request
-Please review our Code of Conduct before contributing.
-(back to top)
-License
-Distributed under the MIT License. See LICENSE for more information.
-(back to top)
-Contact
-Project Link: https://github.com/jhofseth/QED-Vacuum-Thrust-Control
-(back to top)
-Acknowledgments
-	•	EGDPP Theory (Jesse D. Hofseth) https://dx.doi.org/10.2139/ssrn.5381654
-	•	U.S. Patent #5,929,732 (Lockheed Martin Corporation) https://patents.google.com/patent/US5929732A/en
-	•	Best-README-Template
-(back to top)
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+4. **Push to the branch**
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. **Open a Pull Request** using the [PR template](.github/pull_request_template.md)
+
+**For bugs or features, use the issue templates:**
+- [Bug Report](.github/ISSUE_TEMPLATE/bug_report.md)
+- [Feature Request](.github/ISSUE_TEMPLATE/feature_request.md)
+
+Please review our [Code of Conduct](CODE_OF_CONDUCT.md) and [Contributing Guidelines](CONTRIBUTING.md) before contributing.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contact
+
+**Project Maintainer:** Jesse D. Hofseth
+
+**Email:** auagpt@usa.com
+
+**Project Link:** [https://github.com/jhofseth/QED-Vacuum-Thrust-Control](https://github.com/jhofseth/QED-Vacuum-Thrust-Control)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Acknowledgments
+
+- **EGDPP Theory** (Jesse D. Hofseth) - [DOI: 10.2139/ssrn.5381654](https://dx.doi.org/10.2139/ssrn.5381654)
+- **U.S. Patent #5,929,732** (Lockheed Martin Corporation) - [Patent Link](https://patents.google.com/patent/US5929732A/en)
+- [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+
+<p align="right">(<a href="#top">back to top</a>)</p>

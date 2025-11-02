@@ -1,0 +1,1078 @@
+
+
+
+    
+    
+    
+    
+
+
+    
+API Documentation
+    
+This is the comprehensive API documentation for the QED Vacuum Thrust Control repository. It covers key modules and scripts, including functions, classes, and their parameters. Generated via Sphinx from docstrings and code analysis.
+    
+    
+        
+            
+simulations/equations.py
+            
+simulations/thrust_model.py
+            
+ai/navigation.py
+            
+hardware/interfaces.py
+            
+experiments/refine_equations.py
+            
+testing/logging.py
+            
+cad/flux_visualizer.py
+        
+    
+    
+    
+        
+Module: simulations/equations.py
+        
+Core equations for propulsion calculations, including magnetic fields, RG flows, force/thrust, power/efficiency, and expansions like non-ballistic trajectories, Monte Carlo, battery models, stealth range, and thermal/TEG simulations.
+        
+        
+            
+Function: surface_field(B_r, L, R, d)
+            
+Calculate the surface magnetic field.
+            
+                
+Parameters:
+                
+B_r (float): Remanence field strength (T)
+                
+L (float): Length (m)
+                
+R (float): Radius (m)
+                
+d (float): Distance (m)
+                
+Returns: float: Surface field B (T)
+            
+            
+B ≈ (B_r / 2) * (L / √(R² + L²) + (L + d) / √(R² + (L + d)²))
+        
+        
+        
+            
+Function: opposing_field(m1, m2, d, k=1.0)
+            
+Calculate the opposing magnetic field.
+            
+                
+Parameters:
+                
+m1 (float): Magnetic moment 1 (A m²)
+                
+m2 (float): Magnetic moment 2 (A m²)
+                
+d (float): Distance (m)
+                
+k (float): Scaling factor (default 1.0)
+                
+Returns: float: Opposing field B_opposing (T)
+            
+        
+        
+        
+            
+Function: pulsed_enhancement(n, I)
+            
+Calculate the pulsed magnetic field enhancement.
+            
+                
+Parameters:
+                
+n (float): Number of turns per unit length (1/m)
+                
+I (float): Current (A)
+                
+Returns: float: Delta B (T)
+            
+        
+        
+        
+            
+Function: lagrangian_disrupt(chi, B, h_mu_nu, h_mu_nu_inv)
+            
+Calculate the disruption Lagrangian (numerical approximation).
+            
+                
+Parameters:
+                
+chi (float): Susceptibility
+                
+B (float): Magnetic field (T)
+                
+h_mu_nu (np.array): Metric perturbation (4x4)
+                
+h_mu_nu_inv (np.array): Inverse metric perturbation (4x4)
+                
+Returns: float: L_disrupt
+            
+        
+        
+        
+            
+Function: rg_beta_chi_spin0(chi, g, lambda_val)
+            
+Calculate the RG beta function for chi (spin-0 emergent).
+            
+                
+Parameters:
+                
+chi (float): Susceptibility
+                
+g (float): Coupling constant
+                
+lambda_val (float): Lambda parameter
+                
+Returns: float: beta_chi
+            
+        
+        
+        
+            
+Function: rg_beta_chi_spin2(chi, eta_chi, c, g)
+            
+Alternative RG beta function for chi (spin-2 emergent).
+            
+                
+Parameters:
+                
+chi (float): Susceptibility
+                
+eta_chi (float): Anomalous dimension
+                
+c (float): Constant
+                
+g (float): Coupling constant
+                
+Returns: float: beta_chi
+            
+        
+        
+        
+            
+Function: source_term(chi, B, h_mu_nu)
+            
+Calculate the source term delta T_mu_nu (approximation).
+            
+                
+Parameters:
+                
+chi (float): Susceptibility
+                
+B (float): Magnetic field (T)
+                
+h_mu_nu (np.array): Metric perturbation (4x4)
+                
+Returns: np.array: delta T_mu_nu (4x4)
+            
+        
+        
+        
+            
+Function: force_vector(chi, B, grad_h2, A, rho)
+            
+Calculate the force vector.
+            
+                
+Parameters:
+                
+chi (float): Susceptibility
+                
+B (float): Magnetic field (T)
+                
+grad_h2 (np.array): Gradient of h^2 (3D vector)
+                
+A (float): Area (m²)
+                
+rho (float): Density (kg/m³)
+                
+Returns: np.array: Force F (3D vector, N)
+            
+        
+        
+        
+            
+Function: total_thrust(N, F, eta, theta)
+            
+Calculate the total thrust.
+            
+                
+Parameters:
+                
+N (int): Number of units
+                
+F (float or np.array): Force magnitude (N) or force vector
+                
+eta (float): Efficiency (0-1)
+                
+theta (float): Angle (degrees)
+                
+Returns: float: Thrust T (N)
+            
+        
+        
+        
+            
+Function: acceleration(T, m)
+            
+Calculate acceleration.
+            
+                
+Parameters:
+                
+T (float): Thrust (N)
+                
+m (float): Mass (kg)
+                
+Returns: float: Acceleration a (m/s²)
+            
+        
+        
+        
+            
+Function: power_consumption(I, R, P_eddy)
+            
+Calculate power consumption.
+            
+                
+Parameters:
+                
+I (float): Current (A)
+                
+R (float): Resistance (Ohm)
+                
+P_eddy (float): Eddy current losses (W)
+                
+Returns: float: Power P (W)
+            
+        
+        
+        
+            
+Function: efficiency(T, v, P)
+            
+Calculate efficiency.
+            
+                
+Parameters:
+                
+T (float): Thrust (N)
+                
+v (float): Velocity (m/s)
+                
+P (float): Power (W)
+                
+Returns: float: Efficiency eta (%)
+            
+        
+        
+        
+            
+Function: range_calc(v, E, P)
+            
+Calculate range.
+            
+                
+Parameters:
+                
+v (float): Velocity (m/s)
+                
+E (float): Energy (J)
+                
+P (float): Power (W)
+                
+Returns: float: Range R (m)
+            
+        
+        
+        
+            
+Function: non_ballistic_trajectory(start_pos, target_pos, curvature=0.5, steps=100)
+            
+Generate a non-ballistic (curved) trajectory for radar evasion.
+            
+                
+Parameters:
+                
+start_pos (np.array): Starting position [x, y, z]
+                
+target_pos (np.array): Target position [x, y, z]
+                
+curvature (float): Curvature factor (0: straight, >0: curved)
+                
+steps (int): Number of points in trajectory
+                
+Returns: np.array: Trajectory points (steps x 3)
+            
+        
+        
+        
+            
+Function: radar_evasion_probability(traj, radar_pos, rcs=1.0)
+            
+Estimate radar evasion probability based on trajectory.
+            
+                
+Parameters:
+                
+traj (np.array): Trajectory points (N x 3)
+                
+radar_pos (np.array): Radar position [x, y, z]
+                
+rcs (float): Radar cross-section (m²)
+                
+Returns: float: Evasion probability (0-1; higher better)
+            
+        
+        
+        
+            
+Function: monte_carlo_thrust(params, uncertainties, n_sim=1000)
+            
+Monte Carlo simulation for thrust with uncertainties.
+            
+                
+Parameters:
+                
+params (dict): Nominal parameters {'B_opposing': , 'frequency': , ...}
+                
+uncertainties (dict): Std devs {'B_opposing': 1.0, 'frequency': 5.0, ...}
+                
+n_sim (int): Number of simulations
+                
+Returns: np.array: Array of simulated thrusts (N)
+            
+        
+        
+        
+            
+Function: lipo_discharge_capacity(C_nom, I, t, peukert_k=1.05)
+            
+LiPo battery discharge model using Peukert's law.
+            
+                
+Parameters:
+                
+C_nom (float): Nominal capacity (Ah)
+                
+I (float): Discharge current (A)
+                
+t (float): Time (h)
+                
+peukert_k (float): Peukert constant (default 1.05)
+                
+Returns: float: Remaining capacity (Ah)
+            
+        
+        
+        
+            
+Function: ssb_discharge_capacity(C_nom, I, t, peukert_k=1.02)
+            
+Solid-state battery discharge model.
+            
+                
+Parameters: Same as lipo_discharge_capacity
+                
+Returns: float: Remaining capacity (Ah)
+            
+        
+        
+        
+            
+Function: battery_voltage_curve(soc, V_nom, V_min=3.0, V_max=4.2)
+            
+Simple voltage curve model.
+            
+                
+Parameters:
+                
+soc (float): State of charge (0-1)
+                
+V_nom (float): Nominal voltage (V)
+                
+V_min (float): Min voltage
+                
+V_max (float): Max voltage
+                
+Returns: float: Voltage (V)
+            
+        
+        
+        
+            
+Function: stealth_range_calc(v_stealth, E, P_low, eta_stealth=0.8)
+            
+Range estimator for stealth operations.
+            
+                
+Parameters:
+                
+v_stealth (float): Stealth velocity (m/s)
+                
+E (float): Energy (J)
+                
+P_low (float): Low-power consumption (W)
+                
+eta_stealth (float): Stealth efficiency factor (default 0.8)
+                
+Returns: float: Stealth range (m)
+            
+        
+        
+        
+            
+Function: teg_power_recovery(Delta_T, area, thickness, load_res=1.0)
+            
+Calculate power recovered from Bi2Te3 TEG.
+            
+                
+Parameters:
+                
+Delta_T (float): Temperature difference (K)
+                
+area (float): TEG area (m²)
+                
+thickness (float): Thickness (m)
+                
+load_res (float): Load resistance (Ohm, default matched)
+                
+Returns: float: Recovered power (W)
+            
+        
+        
+        
+            
+Function: thermal_dissipation(P_in, eta_thermal=0.95, Delta_T_max=50)
+            
+Simulate thermal dissipation with TEG recovery.
+            
+                
+Parameters:
+                
+P_in (float): Input power (W)
+                
+eta_thermal (float): Thermal efficiency
+                
+Delta_T_max (float): Max allowable Delta T (K)
+                
+Returns: tuple: (heat_dissipated (W), recovered (W))
+            
+        
+        
+        
+            
+Function: symbolic_surface_field()
+            
+Return symbolic expression for surface field.
+            
+                
+Returns: sympy expression
+            
+        
+        
+        
+            
+Function: symbolic_opposing_field()
+            
+Return symbolic expression for opposing field.
+            
+                
+Returns: sympy expression
+            
+        
+        
+        
+            
+Function: symbolic_force_vector()
+            
+Return symbolic expression for force vector.
+            
+                
+Returns: sympy expression
+            
+        
+        
+        
+            
+Function: symbolic_rg_beta_chi_spin0()
+            
+Symbolic RG beta for spin-0.
+            
+                
+Returns: sympy expression
+            
+        
+    
+    
+    
+        
+Module: simulations/thrust_model.py
+        
+Main simulation script for thrust modeling, with integrations for PyBullet/Gazebo swarms, benchmarking, and real-time sensor inputs.
+        
+        
+            
+Function: calculate_thrust_params(args, B_opposing=None, frequency=None, verbose=False)
+            
+Core thrust calculation function, reusable across modes.
+            
+                
+Parameters:
+                
+args: Command-line args object
+                
+B_opposing (float): Optional overriding B
+                
+frequency (float): Optional frequency
+                
+verbose (bool): Print details
+                
+Returns: tuple: (T, a, P, eta_perc, R, B_total)
+            
+        
+        
+        
+            
+Function: simulate_swarm(num_drones=5, scenario='asymmetric', simulation_time=60, verbose=False)
+            
+Multi-drone swarm simulation using PyBullet for asymmetric warfare scenarios.
+            
+                
+Parameters:
+                
+num_drones (int): Number of drones
+                
+scenario (str): 'asymmetric' or other
+                
+simulation_time (float): Time in seconds
+                
+verbose (bool): Print details
+            
+        
+        
+        
+            
+Function: benchmark_with_telemetry(telemetry_file, args, verbose=False)
+            
+Benchmark simulation outputs against hardware telemetry data.
+            
+                
+Parameters:
+                
+telemetry_file (str): Path to CSV
+                
+args: Args object
+                
+verbose (bool): Print details
+            
+        
+        
+        
+            
+Function: real_time_mode(args, sensor_port='/dev/ttyUSB0', update_interval=0.1, verbose=False)
+            
+Real-time mode: Read sensor data and compute thrust dynamically.
+            
+                
+Parameters:
+                
+args: Args object
+                
+sensor_port (str): Serial port
+                
+update_interval (float): Update time (s)
+                
+verbose (bool): Print details
+            
+        
+        
+        
+            
+Function: main()
+            
+Main entry point for thrust_model.py, handling modes like single, swarm, benchmark, realtime.
+        
+    
+    
+    
+        
+Module: ai/navigation.py
+        
+AI navigation module with sensor fusion, control algorithms, and simulation.
+        
+        
+            
+Class: KalmanFilter
+            
+Simple Extended Kalman Filter for sensor fusion.
+            
+                
+Parameters:
+                
+dt (float): Time step
+                
+Methods:
+                
+predict(accel, gyro)
+                
+update(measurements)
+            
+        
+        
+        
+            
+Class: PIDController
+            
+PID Controller for 6DOF thrust vector management.
+            
+                
+Parameters:
+                
+kp, ki, kd (float): Gains
+                
+dt (float): Time step
+                
+Methods:
+                
+compute(setpoint, current)
+            
+        
+        
+        
+            
+Function: mpc_control(current_state, target_state, horizon=1)
+            
+Simple Model Predictive Control for 6DOF.
+            
+                
+Parameters:
+                
+current_state (np.array): Current state
+                
+target_state (np.array): Target state
+                
+horizon (int): Prediction horizon
+                
+Returns: np.array: Optimized control u
+            
+        
+        
+        
+            
+Class: MaintenanceNN (nn.Module)
+            
+ML model for predictive maintenance and adaptive pulsing.
+            
+                
+Parameters:
+                
+input_size=4, hidden_size=32, output_size=2
+                
+Methods:
+                
+forward(x)
+            
+        
+        
+        
+            
+Function: simulate_sensors(true_pos, true_vel, true_attitude)
+            
+Simulate sensor readings with noise.
+            
+                
+Parameters:
+                
+true_pos, true_vel, true_attitude (np.array)
+                
+Returns: tuple: (imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude)
+            
+        
+        
+        
+            
+Class: MIMONetwork (nn.Module)
+            
+MIMO Neural Network for 6DOF control.
+            
+                
+Parameters:
+                
+input_size=9, hidden_size=64, output_size=6
+                
+Methods:
+                
+forward(x)
+            
+        
+        
+        
+            
+Function: simulate_navigation(primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles=None)
+            
+Simulate drone navigation with MIMO network, sensor fusion, etc.
+            
+                
+Parameters:
+                
+primary_model, secondary_model (MIMONetwork)
+                
+start_pos, start_vel, target_pos (np.array)
+                
+obstacles (list): Optional obstacle positions
+                
+Returns: tuple: (trajectory, velocities, controls_history)
+            
+        
+        
+        
+            
+Function: train_demo_model(num_epochs=100, batch_size=32, lr=0.001)
+            
+Demo training for MIMONetwork.
+            
+                
+Parameters:
+                
+num_epochs, batch_size, lr
+                
+Returns: MIMONetwork: Trained model
+            
+        
+        
+        
+            
+Function: plot_trajectory(trajectory, velocities=None, obstacles=None, target_pos=None)
+            
+Plot the 3D trajectory.
+            
+                
+Parameters:
+                
+trajectory (list): Position arrays
+                
+velocities (list): Optional velocity arrays
+                
+obstacles (list): Optional obstacle positions
+                
+target_pos (np.array): Optional target
+            
+        
+        
+        
+            
+Function: save_model(model, filepath='navigation_model.pth')
+            
+Save model to disk.
+        
+        
+        
+            
+Function: load_model(filepath='navigation_model.pth')
+            
+Load model from disk.
+            
+                
+Returns: MIMONetwork
+            
+        
+    
+    
+    
+        
+Module: hardware/interfaces.py
+        
+Interfaces for hardware components, including flight controllers and microcontrollers.
+        
+        
+            
+Class: FlightControllerInterface
+            
+Interface for PX4 or ArduPilot using pymavlink.
+            
+                
+Parameters:
+                
+connection_string (str): MAVLink connection
+                
+baudrate (int): For serial
+                
+Methods:
+                
+send_rc_override(channels)
+                
+arm_vehicle()
+                
+disarm_vehicle()
+            
+        
+        
+        
+            
+Class: MicrocontrollerPWMInterface
+            
+Serial interface for PWM control on ESP32/Teensy.
+            
+                
+Parameters:
+                
+port (str): Serial port
+                
+baudrate (int)
+                
+Methods:
+                
+set_pwm(pin, frequency, duty_cycle)
+                
+pulse_mada(pin, frequency=50, duration=1.0, bursts=10)
+                
+close()
+            
+        
+        
+        
+            
+Class: RealTimeControlNode (Node)
+            
+ROS2 Node for low-latency control loops.
+            
+                
+Parameters:
+                
+loop_period (float): Timer period (s)
+                
+Methods:
+                
+control_loop_callback()  # Override for custom logic
+            
+        
+    
+    
+    
+        
+Module: experiments/refine_equations.py
+        
+Scripts to refine EGDPP equations based on empirical data.
+        
+        
+            
+Function: beta_spin0(chi, params)
+            
+RG beta function for spin-0.
+            
+                
+Parameters:
+                
+chi (float)
+                
+params (tuple): (g, λ)
+                
+Returns: float: β_χ
+            
+        
+        
+        
+            
+Function: beta_spin2(chi, params)
+            
+RG beta function for spin-2.
+            
+                
+Parameters:
+                
+chi (float)
+                
+params (tuple): (η_χ, c, g)
+                
+Returns: float: β_χ
+            
+        
+        
+        
+            
+Function: beta_general(chi, params)
+            
+General data-derived beta function.
+            
+                
+Parameters:
+                
+chi (float)
+                
+params (tuple): (a, b)
+                
+Returns: float: β_χ
+            
+        
+        
+        
+            
+Function: solve_rg_flow(beta_func, params, chi0, t)
+            
+Solve the RG flow ODE.
+            
+                
+Parameters:
+                
+beta_func (Callable)
+                
+params (tuple)
+                
+chi0 (float): Initial χ
+                
+t (np.ndarray): ln μ values
+                
+Returns: np.ndarray: χ(t)
+            
+        
+        
+        
+            
+Function: fit_rg_model(data_file, beta_func, initial_params, bounds=None)
+            
+Fit the RG model to empirical data.
+            
+                
+Parameters:
+                
+data_file (str): CSV path
+                
+beta_func (Callable)
+                
+initial_params (list)
+                
+bounds (tuple): Optional
+                
+Returns: tuple: (popt, pcov)
+            
+        
+        
+        
+            
+Function: plot_fit(t_data, chi_data, popt, beta_name)
+            
+Plot the fitted RG flow against data.
+        
+        
+        
+            
+Function: main()
+            
+Main entry for fitting models.
+        
+    
+    
+    
+        
+Module: testing/logging.py
+        
+Scripts for data logging, analysis, and visualization.
+        
+        
+            
+Class: FlightLogger
+            
+Class for logging flight data.
+            
+                
+Parameters:
+                
+log_dir (str): Directory for logs
+                
+Methods:
+                
+log(data_dict)
+                
+save(filename=None)
+                
+load_data(filepath) (static)
+                
+analyze_data(filepath, output_file=None) (static)
+                
+plot_accel_vs_power(filepath, save_fig=True, fig_name='accel_vs_power.png') (static)
+                
+plot_trajectory(filepath, save_fig=True, fig_name='trajectory.png') (static)
+                
+plot_temp_over_time(filepath, save_fig=True, fig_name='temp_over_time.png') (static)
+            
+        
+    
+    
+    
+        
+Module: cad/flux_visualizer.py
+        
+Rendering scripts for flux maps and thermal dissipation.
+        
+        
+            
+Function: generate_flux_map(grid_size=50, B_opposing=50.0, position=(0,0,0))
+            
+Generate 3D magnetic flux map.
+            
+                
+Returns: tuple: (X, Y, Z, U, V, W)
+            
+        
+        
+        
+            
+Function: generate_thermal_map(grid_size=50, heat_source=1000.0, position=(0,0,0))
+            
+Generate 3D thermal dissipation map.
+            
+                
+Returns: tuple: (X, Y, Z, Temp)
+            
+        
+        
+        
+            
+Function: plot_flux_map_static(X, Y, Z, U, V, W, slice_plane='xy', z_slice=0.0)
+            
+Static plot of flux map.
+        
+        
+        
+            
+Function: plot_thermal_map_static(X, Y, Z, Temp)
+            
+Static contour plot of thermal map.
+        
+        
+        
+            
+Function: plot_interactive_flux(X, Y, Z, U, V, W)
+            
+Interactive Plotly flux map.
+        
+        
+        
+            
+Function: plot_interactive_thermal(X, Y, Z, Temp)
+            
+Interactive Plotly thermal map.
+        
+        
+        
+            
+Function: main()
+            
+Main CLI for visualizations.
+        
+    
+    
+
+

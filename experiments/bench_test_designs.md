@@ -1,211 +1,587 @@
-import numpy as np
-from scipy.integrate import odeint
-from scipy.optimize import curve_fit
-import pandas as pd
-import matplotlib.pyplot as plt
-from typing import Callable, List, Tuple
-import os
-import sys
+# Bench-Top Experiment Designs for QED Vacuum Polarization Validation
 
-# Add parent directory to path for imports if needed
-try:
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-except NameError:
-    # If __file__ not defined (e.g., in REPL), skip or set manually
-    pass
+## Introduction
 
-# Constants and defaults
-DEFAULT_CHI0 = 1e-10  # Initial χ at UV scale
-DEFAULT_T_SPAN = np.linspace(0, -10, 100)  # ln μ from high (t=0) to low (negative t)
-DATA_FILE = 'empirical_data.csv'  # Expected columns: 'ln_mu', 'chi', optionally 'error'
+This document outlines designs for bench-top experiments to empirically validate key aspects of the Emergent Gravity from Disrupted Photon Pairs (EGDPP) theory, particularly the RG modifier equation for the vacuum susceptibility χ in QED vacuum polarization. These experiments focus on measuring diamagnetic repulsion induced by strong opposing magnetic fields (B_opposing > 20 T), which disrupt virtual electron-positron pairs and generate propulsion-like forces (F ∝ χ B² ∇(h²) A ρ).
 
-def beta_spin0(chi: float, params: Tuple[float, float]) -> float:
-    """
-    RG beta function for χ in spin-0 emergent gravity (EGDPP current version).
-    β_χ = -4 χ + (g / 2π) (χ / (1 - 2λ))
-    
-    :param chi: Current value of χ
-    :param params: (g, λ)
-    :return: β_χ
-    """
-    g, lam = params
-    return -4 * chi + (g / (2 * np.pi)) * (chi / (1 - 2 * lam))
+The goal is to collect data on χ under varying conditions (e.g., field strength, frequency) to refine equations like:
 
-def beta_spin2(chi: float, params: Tuple[float, float, float]) -> float:
-    """
-    RG beta function for χ in spin-2 emergent gravity (alternative/old version).
-    β_χ = (4 + η_χ) χ + c g χ
-    
-    :param chi: Current value of χ
-    :param params: (η_χ, c, g)
-    :return: β_χ
-    """
-    eta, c, g = params
-    return (4 + eta) * chi + c * g * chi
+$$\beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda}$$
 
-def beta_general(chi: float, params: Tuple[float, ...]) -> float:
-    """
-    General data-derived beta function, e.g., polynomial form β_χ = a χ + b χ² + ...
-    Here, quadratic for demo: params = (a, b)
-    
-    :param chi: Current value of χ
-    :param params: Coefficients (a, b) for β = a χ + b χ²
-    :return: β_χ
-    """
-    a, b = params
-    return a * chi + b * chi**2
+or alternatives (spin-2 or data-derived). 
 
-def solve_rg_flow(beta_func: Callable, params: Tuple[float, ...], chi0: float, t: np.ndarray) -> np.ndarray:
-    """
-    Solve the RG flow ODE dχ/dt = β(χ) from t[0] (UV) to lower scales.
-    
-    :param beta_func: The beta function to use
-    :param params: Parameters for beta_func
-    :param chi0: Initial χ at t=0 (high scale)
-    :param t: Array of ln μ values (decreasing for IR)
-    :return: χ(t)
-    """
-    def ode(chi, t):
-        return beta_func(chi, params)
-    
-    sol = odeint(ode, chi0, t)
-    return sol[:, 0]
+Experiments are designed for scalability from low-cost setups to high-precision tests, with integration for data acquisition using tools like Arduino (for simple, embedded control) or LabVIEW (for advanced DAQ and visualization).
 
-def model_func(t: np.ndarray, chi0: float, *param_args: float) -> np.ndarray:
-    """
-    Model for curve fitting: Solve RG flow with given beta and params.
-    This is a wrapper to pass to curve_fit.
-    
-    :param t: ln μ data
-    :param chi0: Initial χ (fit parameter)
-    :param param_args: Parameters for beta_func
-    :return: Predicted χ(t)
-    """
-    # Global beta_func must be set before calling
-    global CURRENT_BETA_FUNC
-    return solve_rg_flow(CURRENT_BETA_FUNC, param_args, chi0, t)
+**Safety Note:** High magnetic fields can be hazardous. Use appropriate shielding, eye protection, and current limits. Consult experts for high-power setups. All designs assume compliance with lab safety protocols.
 
-def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, initial_params: List[float], bounds: Tuple[List[float], List[float]] = None, sigma: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Fit the RG model to empirical data.
-    
-    :param t_data: ln μ values
-    :param chi_data: χ values
-    :param beta_func: The beta function to fit (sets global for model_func)
-    :param initial_params: Initial guess [chi0, param1, param2, ...]
-    :param bounds: Optional bounds for parameters
-    :param sigma: Optional errors for weighted fit
-    :return: Optimized parameters, covariance
-    """
-    global CURRENT_BETA_FUNC
-    CURRENT_BETA_FUNC = beta_func
-    
-    # Fit
-    popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds, sigma=sigma)
-    
-    return popt, pcov
+---
 
-def load_data(data_file: str) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
-    """
-    Load and prepare data from CSV.
-    
-    :param data_file: Path to CSV
-    :return: t_data, chi_data, sigma (None if no 'error' column)
-    """
-    if not os.path.exists(data_file):
-        raise FileNotFoundError(f"Data file {data_file} not found. Please provide empirical_data.csv with columns 'ln_mu', 'chi'.")
-    
-    df = pd.read_csv(data_file)
-    t_data = df['ln_mu'].values
-    chi_data = df['chi'].values
-    sigma = df['error'].values if 'error' in df.columns else None
-    
-    # Sort by t
-    sort_idx = np.argsort(t_data)
-    t_data = t_data[sort_idx]
-    chi_data = chi_data[sort_idx]
-    if sigma is not None:
-        sigma = sigma[sort_idx]
-    
-    return t_data, chi_data, sigma
+## Experiment 1: Basic Diamagnetic Repulsion Measurement with Electromagnets
 
-def plot_fit(t_data: np.ndarray, chi_data: np.ndarray, popt: np.ndarray, beta_name: str):
-    """
-    Plot the fitted RG flow against data.
-    
-    :param t_data: ln μ
-    :param chi_data: Measured χ
-    :param popt: Optimized parameters [chi0, ...]
-    :param beta_name: Name of the model (e.g., 'spin-0')
-    """
-    chi_pred = model_func(t_data, *popt)
-    
-    plt.figure(figsize=(8, 6))
-    plt.scatter(t_data, chi_data, label='Empirical Data', color='red')
-    plt.plot(t_data, chi_pred, label=f'Fitted {beta_name} Model', color='blue')
-    plt.xlabel('ln μ (Energy Scale)')
-    plt.ylabel('χ (Susceptibility)')
-    plt.title(f'RG Flow Fit for {beta_name}')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(f'rg_fit_{beta_name.lower().replace("-", "_")}.png')
-    plt.show()
+### Objective
 
-def main():
-    print("=" * 60)
-    print("EGDPP RG EQUATION REFINEMENT SCRIPT")
-    print("=" * 60)
-    
-    # Load data once
-    try:
-        t_data, chi_data, sigma = load_data(DATA_FILE)
-    except FileNotFoundError as e:
-        print(e)
-        # Generate dummy data for demo if file missing
-        print("Generating dummy data for demonstration...")
-        t_data = DEFAULT_T_SPAN
-        chi_data = np.exp(t_data / 2) * DEFAULT_CHI0 + np.random.normal(0, 1e-11, len(t_data))  # Dummy exponential decay
-        sigma = None
-    
-    # Example usage for spin-0
-    print("\nFitting Spin-0 Model...")
-    initial_params_spin0 = [DEFAULT_CHI0, 1.0, 0.1]  # [chi0, g, λ]
-    bounds_spin0 = ([1e-12, 0.1, 0.01], [1e-8, 10.0, 0.49])  # Avoid division by zero
-    try:
-        popt_spin0, pcov_spin0 = fit_rg_model(t_data, chi_data, beta_spin0, initial_params_spin0, bounds_spin0, sigma)
-        print("Optimized Parameters (chi0, g, λ):", popt_spin0)
-        print("Covariance:", pcov_spin0)
-        plot_fit(t_data, chi_data, popt_spin0, 'Spin-0')
-    except Exception as e:
-        print(f"Error fitting spin-0: {e}")
-    
-    # Example usage for spin-2
-    print("\nFitting Spin-2 Model...")
-    initial_params_spin2 = [DEFAULT_CHI0, 0.0, 1.0, 1.0]  # [chi0, η_χ, c, g]
-    bounds_spin2 = ([1e-12, -10, 0.1, 0.1], [1e-8, 10, 10, 10])
-    try:
-        popt_spin2, pcov_spin2 = fit_rg_model(t_data, chi_data, beta_spin2, initial_params_spin2, bounds_spin2, sigma)
-        print("Optimized Parameters (chi0, η_χ, c, g):", popt_spin2)
-        print("Covariance:", pcov_spin2)
-        plot_fit(t_data, chi_data, popt_spin2, 'Spin-2')
-    except Exception as e:
-        print(f"Error fitting spin-2: {e}")
-    
-    # Example for data-derived (general quadratic)
-    print("\nFitting General Data-Derived Model (Quadratic)...")
-    initial_params_general = [DEFAULT_CHI0, -4.0, 0.0]  # [chi0, a, b]
-    try:
-        popt_general, pcov_general = fit_rg_model(t_data, chi_data, beta_general, initial_params_general, sigma=sigma)
-        print("Optimized Parameters (chi0, a, b):", popt_general)
-        print("Covariance:", pcov_general)
-        plot_fit(t_data, chi_data, popt_general, 'General')
-    except Exception as e:
-        print(f"Error fitting general: {e}")
-    
-    print("\nRefinement complete. Plots saved as PNG files.")
-    print("To use refined parameters in simulations, update equations.py accordingly.")
-    print("For propulsion: Use fitted χ in force calculations, e.g., F ∝ χ B² ∇(h²) A ρ")
-    print("Experimental data should include inferred χ from measured thrusts/forces at different energy scales (e.g., varying B or frequency).")
+Measure the repulsive force between opposing high-field electromagnets to infer diamagnetic effects from vacuum polarization. Compare measured force to theoretical:
 
-if __name__ == "__main__":
-    main()
+$$\mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho$$
+
+### Materials
+
+- **Two high-field electromagnets**
+  - Custom-wound solenoids with Hiperco-50 cores for B > 20 T
+  - Alternatives: Neodymium permanent magnets for initial tests at ~1-2 T
+- **Force sensor**
+  - Load cell (e.g., HX711 module), 0-50 N range
+- **Power supply**
+  - DC or pulsed, 10-50 A, with frequency control up to 1 kHz
+- **Non-magnetic mounting frame**
+  - Aluminum or 3D-printed PLA
+- **Instrumentation**
+  - Oscilloscope or multimeter for field/current monitoring
+  - Hall effect sensor (e.g., SS49E) for B-field measurement
+  - Thermal sensor (e.g., DS18B20) for overheating detection
+- **Magnetic circuit materials**
+  - Minnealloy or Finemet sheets (per materials ranking)
+
+### Setup Diagram
+
+```
+[Power Supply] --> [Pulse Controller] --> [Electromagnet 1] <--gap--> [Electromagnet 2]
+                          |                      |                        |
+                          |                      v                        v
+                          |                [Hall Sensor]            [Force Sensor]
+                          |                      |                        |
+                          |                      v                        v
+                          +------------> [Data Acquisition System] <------+
+                                                 |
+                                                 v
+                                         [Thermal Sensor]
+```
+
+**Physical Setup:**
+- Mount electromagnets facing each other at distance d (initial: 0.05 m, adjustable)
+- Align cores for maximum opposition
+- Connect force sensor between magnets to measure repulsion
+- Position Hall sensor at gap center for field measurement
+
+### Procedure
+
+1. **Calibrate sensors**
+   - Zero force sensor with no magnetic field
+   - Verify Hall sensor with known reference fields
+   - Test thermal sensor response
+
+2. **Set B_opposing**
+   - Gradually ramp current to achieve >20 T
+   - Monitor field strength continuously with Hall sensor
+   - Ensure symmetric field from both electromagnets
+
+3. **Apply pulsing**
+   - Use 50-100 Hz baseline (up to 1 kHz bursts) via PWM
+   - Vary duty cycle: 20-80%
+   - Record waveform with oscilloscope
+
+4. **Measure force**
+   - Record force at varying:
+     - Distance d: 0.01m to 0.10m
+     - Field strength B: 20T to 60T
+     - Frequencies: 50Hz, 100Hz, 500Hz, 1kHz
+
+5. **Monitor thermal**
+   - Ensure temperature stays <100°C
+   - Log thermal profile during operation
+   - Implement emergency shutdown at threshold
+
+6. **Material comparison**
+   - Repeat tests with different core materials
+   - Compare: Minnealloy vs. pure iron vs. Finemet
+   - Evaluate efficiency and saturation
+
+### Data Collection Integration
+
+#### Arduino Option (Low-Cost: ~$50-100)
+
+**Hardware:**
+- Arduino Uno/Mega
+- HX711 load cell amplifier
+- SS49E Hall effect sensor
+- DS18B20 temperature sensor
+- SD card module (optional for standalone logging)
+
+**Code Example:**
+
+```cpp
+#include <HX711.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// Pin definitions
+#define DOUT  3           // HX711 data out
+#define CLK   2           // HX711 clock
+#define HALL_PIN A0       // Hall sensor analog input
+#define ONE_WIRE_BUS 4    // Temperature sensor
+
+// Initialize sensors
+HX711 scale;
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Initialize force sensor
+  scale.begin(DOUT, CLK);
+  scale.set_scale(2280.f);  // Calibration factor (adjust for your setup)
+  scale.tare();             // Zero the scale
+  
+  // Initialize temperature sensor
+  sensors.begin();
+  
+  Serial.println("Time(ms),Force(N),B_Field(T),Temperature(C)");
+}
+
+void loop() {
+  unsigned long timestamp = millis();
+  
+  // Read force (convert to Newtons based on calibration)
+  float force = scale.get_units() * 0.00981;  // grams to Newtons
+  
+  // Read Hall sensor (calibrate voltage to Tesla)
+  int hallRaw = analogRead(HALL_PIN);
+  float hallVoltage = hallRaw * (5.0 / 1023.0);
+  float bField = (hallVoltage - 2.5) * 10.0;  // Example: 100mV/T sensitivity
+  
+  // Read temperature
+  sensors.requestTemperatures();
+  float temp = sensors.getTempCByIndex(0);
+  
+  // Output CSV format
+  Serial.print(timestamp); Serial.print(",");
+  Serial.print(force, 4); Serial.print(",");
+  Serial.print(bField, 3); Serial.print(",");
+  Serial.println(temp, 2);
+  
+  // Safety check
+  if (temp > 95.0) {
+    Serial.println("WARNING: High temperature!");
+  }
+  
+  delay(100);  // 10 Hz sampling (adjust as needed)
+}
+```
+
+**Data Logging:**
+- Use Python script to capture serial data:
+
+```python
+import serial
+import csv
+from datetime import datetime
+
+ser = serial.Serial('/dev/ttyUSB0', 115200)
+filename = f'experiment_data_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+
+with open(filename, 'w', newline='') as f:
+    writer = csv.writer(f)
+    while True:
+        line = ser.readline().decode('utf-8').strip()
+        if line and not line.startswith('Time'):
+            writer.writerow(line.split(','))
+            print(line)
+```
+
+#### LabVIEW Option (Advanced: $1000-5000)
+
+**Hardware:**
+- NI DAQmx hardware (e.g., USB-6001, USB-6211)
+- Signal conditioning modules for Hall/thermocouples
+- Function generator with GPIB/USB control
+
+**LabVIEW VI Features:**
+- Real-time plots: Force vs. B-field, Temperature vs. Time
+- Waveform generation for precise pulsing control
+- Automated parameter sweeps (frequency, duty cycle)
+- Statistical analysis and curve fitting
+- Export to TDMS or CSV for Python analysis
+
+**Implementation:**
+1. Create front panel with graphs and controls
+2. Use DAQmx VIs for analog input acquisition
+3. Implement triggering for burst measurements
+4. Add data export functionality
+5. Integrate with `refine_equations.py` for analysis
+
+### Expected Outcomes
+
+1. **Force scaling**: F ∝ B² relationship confirmed
+2. **Threshold detection**: Observable onset at B > 20 T
+3. **χ determination**: Fit measured force to theoretical equation
+4. **Frequency dependence**: Validate RG flow predictions
+5. **Material comparison**: Efficiency ranking validation
+
+### Data Analysis
+
+Use the provided analysis script:
+
+```bash
+python analysis/refine_equations.py --data experiment_data.csv --output results/
+```
+
+### Variations
+
+**Spin-0 vs. Spin-2 Testing:**
+- Low frequency (50-100 Hz): Spin-0 approximation regime
+- High frequency (500-1000 Hz): Observe deviations
+- Compare β_χ predictions
+
+**Material Optimization:**
+- Test different core materials
+- Measure saturation curves
+- Validate materials ranking
+
+---
+
+## Experiment 2: Pulsed MADA Assembly Test for Thrust Efficiency
+
+### Objective
+
+Test Magnetic Amplification and Direction Assembly (MADA) pulsing for efficiency >95%, measuring thrust output and power consumption.
+
+### Materials
+
+- **MADA prototype**
+  - 24-unit coil array with Minnealloy cores
+  - Custom PCB for synchronized pulsing
+- **Thrust measurement**
+  - Precision thrust stand (pendulum or strain gauge based)
+  - 0-100 N force sensor
+- **Power analysis**
+  - Power analyzer (e.g., Yokogawa WT310, Keysight N6705C)
+  - Oscilloscope for waveform analysis
+- **Environment**
+  - Vacuum chamber (optional, reduces air drag)
+  - Non-magnetic mounting structure
+
+### Setup Diagram
+
+```
+[Function Generator] --> [Power Amplifier] --> [MADA Coil Array (24 units)]
+           |                                            |
+           v                                            v
+    [Oscilloscope]                              [Thrust Stand]
+           |                                            |
+           +---> [Power Analyzer] <--------------------+
+                        |
+                        v
+                [Data System]
+```
+
+**Configuration:**
+- Mount MADA assembly on calibrated thrust stand
+- Ensure non-magnetic enclosure to isolate measurements
+- Connect power analyzer between supply and MADA
+
+### Procedure
+
+1. **System calibration**
+   - Zero thrust stand without power
+   - Calibrate force sensor across full range
+   - Verify power analyzer accuracy
+
+2. **Baseline measurements**
+   - Measure DC thrust (no pulsing)
+   - Record steady-state power consumption
+   - Establish reference efficiency
+
+3. **Pulsing tests**
+   - **50 Hz mode** (balance): 20 ms cycles, 50% duty
+   - **100 Hz mode** (agility): 10 ms cycles, variable duty
+   - **1 kHz bursts**: 1 ms pulses, 20-80% duty
+
+4. **Efficiency sweep**
+   - Vary frequency: 10 Hz to 1 kHz
+   - Vary duty cycle: 10% to 90%
+   - Measure thrust and power at each point
+
+5. **Thermal monitoring**
+   - Track coil temperature throughout tests
+   - Measure cooling effectiveness
+   - Correlate efficiency with temperature
+
+### Data Collection Integration
+
+#### Arduino Option
+
+**Additional Hardware:**
+- INA219 current/power sensor modules
+- Multiple thermocouples for array monitoring
+
+**Enhanced Code:**
+
+```cpp
+#include <Wire.h>
+#include <Adafruit_INA219.h>
+
+Adafruit_INA219 ina219;
+
+void setup() {
+  Serial.begin(115200);
+  ina219.begin();
+  ina219.setCalibration_16V_400mA();
+}
+
+void loop() {
+  float shuntvoltage = ina219.getShuntVoltage_mV();
+  float busvoltage = ina219.getBusVoltage_V();
+  float current_mA = ina219.getCurrent_mA();
+  float power_mW = ina219.getPower_mW();
+  float loadvoltage = busvoltage + (shuntvoltage / 1000);
+  
+  // Read thrust from force sensor (same as Exp 1)
+  float thrust = scale.get_units() * 0.00981;
+  
+  // Calculate efficiency: η = (T * v / P) * 100%
+  // Assume v = 1 m/s for static test
+  float efficiency = (thrust * 1.0 / (power_mW / 1000.0)) * 100.0;
+  
+  Serial.print(millis()); Serial.print(",");
+  Serial.print(thrust, 4); Serial.print(",");
+  Serial.print(power_mW / 1000.0, 4); Serial.print(",");
+  Serial.println(efficiency, 2);
+  
+  delay(100);
+}
+```
+
+#### LabVIEW Option
+
+**Advanced Features:**
+- Real-time control of function generator via GPIB
+- Multi-channel synchronized acquisition
+  - Thrust (strain gauge)
+  - Voltage/current (power analyzer)
+  - Temperature (multiple thermocouples)
+- Automated parameter sweeps
+- Live efficiency calculation and display
+- Statistical analysis (mean, std dev, confidence intervals)
+
+### Expected Outcomes
+
+1. **High efficiency**: η = (T · v / P) × 100% > 95%
+2. **Optimal pulsing**:
+   - Peak efficiency at 50-100 Hz
+   - Burst mode (1 kHz) for transient performance
+3. **Thrust scaling**: Validate with simulation predictions
+4. **β_χ validation**: Compare experimental thrust curves with RG predictions
+
+### Analysis
+
+Compare with simulation:
+
+```bash
+python simulations/thrust_model.py --mode benchmark --telemetry_file mada_test_data.csv
+```
+
+---
+
+## Experiment 3: Thermal Management and TEG Integration
+
+### Objective
+
+Validate thermal dissipation capability (10-40 kW) using Phase Change Material (PCM) channels and Bi₂Te₃ thermoelectric generators (TEG).
+
+### Materials
+
+- **Heat source**: Resistor array simulating MADA thermal load (1-5 kW)
+- **PCM system**: Paraffin wax channels (melting point: 55-65°C)
+- **TEG modules**: Bi₂Te₃ (e.g., TEC1-12706) in series/parallel
+- **Instrumentation**:
+  - Multiple thermocouples (K-type)
+  - IR thermal camera (optional, e.g., FLIR)
+  - Multimeter for TEG voltage/current
+
+### Setup
+
+```
+[Power Resistors (Heat Source)] --> [PCM Channels] --> [Heat Sink]
+            |                             |                 |
+            v                             v                 v
+    [Thermocouples]                 [TEG Array]      [Cold Plate]
+            |                             |
+            +--------> [Data Logger] <----+
+```
+
+**Configuration:**
+- Embed TEG modules between MADA mockup and PCM channels
+- Distribute thermocouples: 
+  - Heat source surface
+  - PCM inlet/outlet
+  - TEG hot/cold sides
+  - Ambient
+
+### Procedure
+
+1. **Baseline thermal profile**
+   - Apply 1 kW load
+   - Measure steady-state temperatures
+   - Calculate thermal resistance
+
+2. **PCM effectiveness**
+   - Increase load to 3 kW
+   - Monitor PCM phase transition
+   - Measure latent heat absorption
+
+3. **TEG performance**
+   - Record open-circuit voltage
+   - Measure short-circuit current
+   - Calculate power recovery efficiency
+
+4. **Thermal cycling**
+   - Cycle load: 1 kW → 5 kW → 1 kW
+   - Assess PCM recharge time
+   - Evaluate TEG consistency
+
+5. **Peak load test**
+   - Briefly apply 10 kW load
+   - Verify safety margins
+   - Confirm no thermal runaway
+
+### Data Collection Integration
+
+#### Arduino Option
+
+**Multi-Channel Thermocouple Setup:**
+
+```cpp
+#include <max6675.h>
+
+// Multiple MAX6675 thermocouple interfaces
+int thermoDO = 4;
+int thermoCS[] = {5, 6, 7, 8};  // 4 thermocouples
+int thermoCLK = 3;
+
+MAX6675 tc[] = {
+  MAX6675(thermoCLK, thermoCS[0], thermoDO),
+  MAX6675(thermoCLK, thermoCS[1], thermoDO),
+  MAX6675(thermoCLK, thermoCS[2], thermoDO),
+  MAX6675(thermoCLK, thermoCS[3], thermoDO)
+};
+
+void setup() {
+  Serial.begin(115200);
+  delay(500);  // Allow MAX6675 to stabilize
+}
+
+void loop() {
+  Serial.print(millis()); Serial.print(",");
+  
+  for (int i = 0; i < 4; i++) {
+    Serial.print(tc[i].readCelsius(), 2);
+    if (i < 3) Serial.print(",");
+  }
+  
+  // Read TEG voltage
+  float tegVoltage = analogRead(A0) * (5.0 / 1023.0);
+  Serial.print(","); Serial.println(tegVoltage, 3);
+  
+  delay(1000);  // 1 Hz for thermal (slower dynamics)
+}
+```
+
+#### LabVIEW Option
+
+**Advanced Thermal Imaging:**
+- Integrate FLIR camera via SDK
+- Create 2D temperature maps
+- Overlay with CAD model
+- Animate thermal propagation
+- Export video for presentations
+
+### Expected Outcomes
+
+1. **Thermal capacity**: 10-40 kW dissipation confirmed
+2. **PCM effectiveness**: >30% heat absorption during transients
+3. **TEG recovery**: 5-10% power recovery efficiency
+4. **Safe operation**: All temperatures within limits (<100°C)
+
+---
+
+## General Guidelines
+
+### Data Analysis
+
+**Python Analysis Scripts:**
+
+Located in `analysis/refine_equations.py`:
+
+```bash
+# Fit experimental data to theoretical models
+python analysis/refine_equations.py \
+  --data experiments/exp1_data.csv \
+  --model spin0 \
+  --output results/fitted_chi.json
+
+# Compare spin-0 vs spin-2 predictions
+python analysis/compare_models.py \
+  --data experiments/exp1_data.csv \
+  --models spin0,spin2 \
+  --plot results/model_comparison.png
+```
+
+### Scaling Strategy
+
+1. **Phase 1**: Low-power validation (B < 5 T, P < 1 kW)
+2. **Phase 2**: Intermediate testing (B = 10-20 T, P = 5-10 kW)
+3. **Phase 3**: Full-scale prototype (B = 20-60 T, P = 20-40 kW)
+
+### Cost Estimates
+
+| Configuration | Components | Estimated Cost |
+|---------------|------------|----------------|
+| Basic Arduino | Arduino + sensors + low-field magnets | $200-500 |
+| Intermediate | Arduino + better sensors + mid-field setup | $1,000-2,000 |
+| LabVIEW Basic | NI USB-6001 + sensors + mid-field | $2,000-5,000 |
+| LabVIEW Advanced | NI cDAQ + high-field magnets + vacuum | $10,000-50,000 |
+| Full Prototype | High-field system + all instrumentation | $50,000-200,000 |
+
+### Safety Checklist
+
+- [ ] Magnetic field shielding in place
+- [ ] Emergency shutdown button accessible
+- [ ] Current limiters configured
+- [ ] Thermal monitoring active
+- [ ] Eye protection worn (laser safety glasses for IR)
+- [ ] Non-magnetic tools only
+- [ ] Cleared with lab safety officer
+- [ ] Fire extinguisher nearby
+- [ ] First aid kit available
+- [ ] Lab buddy system (never work alone)
+
+### Open Issues & Community Contributions
+
+We welcome contributions to expand these designs:
+
+- **Vacuum chamber integration**: Design for reduced air effects
+- **High-field solenoid schematics**: Custom coil winding patterns
+- **3D CAD models**: MADA assembly and mounting fixtures
+- **Alternative DAQ systems**: RP2040, ESP32, other platforms
+- **Analysis automation**: ML-based parameter optimization
+
+Submit designs via:
+- GitHub Pull Requests: [Repository](https://github.com/jhofseth/QED-Vacuum-Thrust-Control)
+- Issue tracker: [Report findings](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues)
+- Email: auagpt@usa.com
+
+---
+
+## References
+
+- EGDPP Theory: [DOI: 10.2139/ssrn.5381654](https://dx.doi.org/10.2139/ssrn.5381654)
+- U.S. Patent #5,929,732: [MADA Design](https://patents.google.com/patent/US5929732A/en)
+- Materials Ranking: See `docs/materials_ranking.md`
+- Safety Guidelines: IEEE/ANSI magnetic field exposure standards
+
+---
+
+**Document Version**: 1.0  
+**Last Updated**: 2025-11-01  
+**Maintainer**: Jesse D. Hofseth (auagpt@usa.com)

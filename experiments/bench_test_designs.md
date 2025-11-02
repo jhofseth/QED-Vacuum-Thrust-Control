@@ -1,138 +1,211 @@
-Bench-Top Experiment Designs for QED Vacuum Polarization Validation
-Introduction
-This document outlines designs for bench-top experiments to empirically validate key aspects of the Emergent Gravity from Disrupted Photon Pairs (EGDPP) theory, particularly the RG modifier equation for the vacuum susceptibility χ in QED vacuum polarization. These experiments focus on measuring diamagnetic repulsion induced by strong opposing magnetic fields (B_opposing > 20 T), which disrupt virtual electron-positron pairs and generate propulsion-like forces (F ∝ χ B² ∇(h²) A ρ).
-The goal is to collect data on χ under varying conditions (e.g., field strength, frequency) to refine equations like β_χ = -4χ + (g/2π) (χ/(1-2λ)) or alternatives (spin-2 or data-derived). Experiments are designed for scalability from low-cost setups to high-precision tests, with integration for data acquisition using tools like Arduino (for simple, embedded control) or LabVIEW (for advanced DAQ and visualization).
-Safety Note: High magnetic fields can be hazardous. Use appropriate shielding, eye protection, and current limits. Consult experts for high-power setups. All designs assume compliance with lab safety protocols.
-Experiment 1: Basic Diamagnetic Repulsion Measurement with Electromagnets
-Objective
-Measure the repulsive force between opposing high-field electromagnets to infer diamagnetic effects from vacuum polarization. Compare measured force to theoretical F_vec = χ B² ∇(h²) A ρ.
-Materials
-	•	Two high-field electromagnets (e.g., custom-wound solenoids with Hiperco-50 cores for B > 20 T; alternatives: neodymium permanent magnets for initial tests at ~1-2 T).
-	•	Force sensor (e.g., load cell like HX711 module, 0-50 N range).
-	•	Power supply (DC or pulsed, 10-50 A, with frequency control up to 1 kHz).
-	•	Non-magnetic mounting frame (aluminum or 3D-printed PLA).
-	•	Oscilloscope or multimeter for field/current monitoring.
-	•	Hall effect sensor (e.g., SS49E) for B-field measurement.
-	•	Thermal sensor (e.g., DS18B20) for overheating detection.
-	•	Materials for magnetic circuits: Minnealloy or Finemet sheets (per materials ranking).
-Setup Diagram
-[Power Supply] -- [Pulse Controller] -- [Electromagnet 1] <--> [Electromagnet 2] -- [Force Sensor] -- [Mounting Frame]
-                                      |                   |
-                                      v                   v
-                               [Hall Sensor]         [Thermal Sensor]
-                                      |
-                                      v
-                               [Data Acquisition System]
-	•	Mount electromagnets facing each other at distance d (initial: 0.05 m, adjustable).
-	•	Align cores for maximum opposition.
-	•	Connect force sensor between magnets to measure repulsion.
-Procedure
-	1	Calibrate sensors: Zero force sensor, verify Hall sensor with known fields.
-	2	Set B_opposing: Ramp current to achieve >20 T (monitor with Hall sensor).
-	3	Apply pulsing: Use 50-100 Hz (up to 1 kHz bursts) via PWM.
-	4	Measure force at varying d, B, and frequencies.
-	5	Record thermal data to ensure <100°C.
-	6	Repeat for different materials (e.g., Minnealloy vs. pure iron) to test optimization.
-Data Collection Integration
-	•	Arduino Option (Low-Cost):
-	◦	Use Arduino Uno/Mega with HX711 library for force, OneWire for temperature, analog read for Hall.
-	◦	Code snippet (upload to Arduino): #include 
-	◦	#include 
-	◦	#include 
-	◦	
-	◦	#define DOUT  3  // HX711 data out
-	◦	#define CLK   2  // HX711 clock
-	◦	#define HALL_PIN A0
-	◦	#define ONE_WIRE_BUS 4
-	◦	
-	◦	HX711 scale;
-	◦	OneWire oneWire(ONE_WIRE_BUS);
-	◦	DallasTemperature sensors(&oneWire);
-	◦	
-	◦	void setup() {
-	◦	  Serial.begin(9600);
-	◦	  scale.begin(DOUT, CLK);
-	◦	  scale.set_scale(2280.f);  // Calibrate as needed
-	◦	  scale.tare();
-	◦	  sensors.begin();
-	◦	}
-	◦	
-	◦	void loop() {
-	◦	  float force = scale.get_units();  // In grams or N (calibrate)
-	◦	  int hall = analogRead(HALL_PIN);  // Raw B-field
-	◦	  sensors.requestTemperatures();
-	◦	  float temp = sensors.getTempCByIndex(0);
-	◦	  
-	◦	  Serial.print("Force: "); Serial.print(force); Serial.print(" N, ");
-	◦	  Serial.print("B: "); Serial.print(hall * 0.0049); Serial.print(" T, ");  // Calibrate conversion
-	◦	  Serial.print("Temp: "); Serial.println(temp);
-	◦	  delay(100);  // Adjust for frequency
-	◦	}
-	◦	
-	◦	Log data via serial to PC (use Python script to save CSV).
-	•	LabVIEW Option (Advanced):
-	◦	Use NI DAQmx hardware (e.g., USB-6001) for analog inputs.
-	◦	Create VI with front panel for real-time plots (force vs. B, temp monitoring).
-	◦	Integrate waveform generation for pulsing control.
-	◦	Export data to TDMS/CSV for analysis in refine_equations.py.
-Expected Outcomes
-	•	Force increase with B², confirming diamagnetic repulsion.
-	•	Data for χ refinement: Fit measured F to equation, solve for χ.
-	•	Threshold detection: Observe onset at B >20 T.
-Variations
-	•	Spin-0 vs. Spin-2: Vary frequency to probe RG flows (low freq for spin-0 approximation).
-	•	Material Testing: Swap cores to rank efficiency (e.g., Minnealloy for high saturation).
-Experiment 2: Pulsed MADA Assembly Test for Thrust Efficiency
-Objective
-Test Magnetic Amplification and Direction Assembly (MADA) pulsing for efficiency >95%, measuring thrust and power.
-Materials
-	•	MADA prototype: Coil array (24 units) with Minnealloy cores.
-	•	Thrust stand (e.g., pendulum or strain gauge).
-	•	Power analyzer (e.g., Yokogawa WT310).
-	•	Oscilloscope for pulse waveform.
-	•	Vacuum chamber (optional, for reduced air effects).
-Setup Diagram
-[Function Generator] -- [Amplifier] -- [MADA Coils] -- [Thrust Stand] -- [Force Sensor]
-                           |                          |
-                           v                          v
-                    [Power Analyzer]           [Data System]
-	•	Mount MADA on thrust stand in non-magnetic enclosure.
-	•	Pulse at 50-100 Hz.
-Procedure
-	1	Calibrate thrust stand.
-	2	Apply bursts (1 kHz) and measure thrust vs. input power.
-	3	Vary duty cycle and frequency.
-	4	Monitor eddy losses via power analyzer.
-Data Collection Integration
-	•	Arduino Option:
-	◦	Use for PWM generation (e.g., analogWrite for pulsing).
-	◦	Read sensors and log to SD card.
-	◦	Example: Add INA219 for current/power measurement.
-	•	LabVIEW Option:
-	◦	Real-time control of function generator via GPIB.
-	◦	Multi-channel acquisition (thrust, power, waveform).
-	◦	Automated sweeps for frequency/thrust mapping.
-Expected Outcomes
-	•	Efficiency η = (T · v / P) × 100% >95%.
-	•	Data for RG β_χ validation via thrust scaling.
-Experiment 3: Thermal Management and TEG Integration
-Objective
-Validate thermal dissipation (10-40 kW) using PCM channels and Bi₂Te₃ TEG.
-Materials
-	•	Heat source (resistor array simulating MADA heat).
-	•	PCM (e.g., paraffin wax channels).
-	•	TEG modules (Bi₂Te₃).
-	•	Thermocouples/IR camera.
-Setup
-Embed TEG in MADA mockup with PCM.
-Procedure
-Heat and measure recovery efficiency.
-Data Collection
-	•	Arduino: Multi-thermocouple logging.
-	•	LabVIEW: Thermal imaging integration.
-General Guidelines
-	•	Data Analysis: Use refine_equations.py to fit RG equations.
-	•	Scaling: Start low-power; scale to full B.
-	•	Cost: < $500 for basic Arduino setup.
-	•	Open Issues: Contribute designs for vacuum chamber tests.
-For contributions, see repository guidelines.
+import numpy as np
+from scipy.integrate import odeint
+from scipy.optimize import curve_fit
+import pandas as pd
+import matplotlib.pyplot as plt
+from typing import Callable, List, Tuple
+import os
+import sys
+
+# Add parent directory to path for imports if needed
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+except NameError:
+    # If __file__ not defined (e.g., in REPL), skip or set manually
+    pass
+
+# Constants and defaults
+DEFAULT_CHI0 = 1e-10  # Initial χ at UV scale
+DEFAULT_T_SPAN = np.linspace(0, -10, 100)  # ln μ from high (t=0) to low (negative t)
+DATA_FILE = 'empirical_data.csv'  # Expected columns: 'ln_mu', 'chi', optionally 'error'
+
+def beta_spin0(chi: float, params: Tuple[float, float]) -> float:
+    """
+    RG beta function for χ in spin-0 emergent gravity (EGDPP current version).
+    β_χ = -4 χ + (g / 2π) (χ / (1 - 2λ))
+    
+    :param chi: Current value of χ
+    :param params: (g, λ)
+    :return: β_χ
+    """
+    g, lam = params
+    return -4 * chi + (g / (2 * np.pi)) * (chi / (1 - 2 * lam))
+
+def beta_spin2(chi: float, params: Tuple[float, float, float]) -> float:
+    """
+    RG beta function for χ in spin-2 emergent gravity (alternative/old version).
+    β_χ = (4 + η_χ) χ + c g χ
+    
+    :param chi: Current value of χ
+    :param params: (η_χ, c, g)
+    :return: β_χ
+    """
+    eta, c, g = params
+    return (4 + eta) * chi + c * g * chi
+
+def beta_general(chi: float, params: Tuple[float, ...]) -> float:
+    """
+    General data-derived beta function, e.g., polynomial form β_χ = a χ + b χ² + ...
+    Here, quadratic for demo: params = (a, b)
+    
+    :param chi: Current value of χ
+    :param params: Coefficients (a, b) for β = a χ + b χ²
+    :return: β_χ
+    """
+    a, b = params
+    return a * chi + b * chi**2
+
+def solve_rg_flow(beta_func: Callable, params: Tuple[float, ...], chi0: float, t: np.ndarray) -> np.ndarray:
+    """
+    Solve the RG flow ODE dχ/dt = β(χ) from t[0] (UV) to lower scales.
+    
+    :param beta_func: The beta function to use
+    :param params: Parameters for beta_func
+    :param chi0: Initial χ at t=0 (high scale)
+    :param t: Array of ln μ values (decreasing for IR)
+    :return: χ(t)
+    """
+    def ode(chi, t):
+        return beta_func(chi, params)
+    
+    sol = odeint(ode, chi0, t)
+    return sol[:, 0]
+
+def model_func(t: np.ndarray, chi0: float, *param_args: float) -> np.ndarray:
+    """
+    Model for curve fitting: Solve RG flow with given beta and params.
+    This is a wrapper to pass to curve_fit.
+    
+    :param t: ln μ data
+    :param chi0: Initial χ (fit parameter)
+    :param param_args: Parameters for beta_func
+    :return: Predicted χ(t)
+    """
+    # Global beta_func must be set before calling
+    global CURRENT_BETA_FUNC
+    return solve_rg_flow(CURRENT_BETA_FUNC, param_args, chi0, t)
+
+def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, initial_params: List[float], bounds: Tuple[List[float], List[float]] = None, sigma: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Fit the RG model to empirical data.
+    
+    :param t_data: ln μ values
+    :param chi_data: χ values
+    :param beta_func: The beta function to fit (sets global for model_func)
+    :param initial_params: Initial guess [chi0, param1, param2, ...]
+    :param bounds: Optional bounds for parameters
+    :param sigma: Optional errors for weighted fit
+    :return: Optimized parameters, covariance
+    """
+    global CURRENT_BETA_FUNC
+    CURRENT_BETA_FUNC = beta_func
+    
+    # Fit
+    popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds, sigma=sigma)
+    
+    return popt, pcov
+
+def load_data(data_file: str) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+    """
+    Load and prepare data from CSV.
+    
+    :param data_file: Path to CSV
+    :return: t_data, chi_data, sigma (None if no 'error' column)
+    """
+    if not os.path.exists(data_file):
+        raise FileNotFoundError(f"Data file {data_file} not found. Please provide empirical_data.csv with columns 'ln_mu', 'chi'.")
+    
+    df = pd.read_csv(data_file)
+    t_data = df['ln_mu'].values
+    chi_data = df['chi'].values
+    sigma = df['error'].values if 'error' in df.columns else None
+    
+    # Sort by t
+    sort_idx = np.argsort(t_data)
+    t_data = t_data[sort_idx]
+    chi_data = chi_data[sort_idx]
+    if sigma is not None:
+        sigma = sigma[sort_idx]
+    
+    return t_data, chi_data, sigma
+
+def plot_fit(t_data: np.ndarray, chi_data: np.ndarray, popt: np.ndarray, beta_name: str):
+    """
+    Plot the fitted RG flow against data.
+    
+    :param t_data: ln μ
+    :param chi_data: Measured χ
+    :param popt: Optimized parameters [chi0, ...]
+    :param beta_name: Name of the model (e.g., 'spin-0')
+    """
+    chi_pred = model_func(t_data, *popt)
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(t_data, chi_data, label='Empirical Data', color='red')
+    plt.plot(t_data, chi_pred, label=f'Fitted {beta_name} Model', color='blue')
+    plt.xlabel('ln μ (Energy Scale)')
+    plt.ylabel('χ (Susceptibility)')
+    plt.title(f'RG Flow Fit for {beta_name}')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f'rg_fit_{beta_name.lower().replace("-", "_")}.png')
+    plt.show()
+
+def main():
+    print("=" * 60)
+    print("EGDPP RG EQUATION REFINEMENT SCRIPT")
+    print("=" * 60)
+    
+    # Load data once
+    try:
+        t_data, chi_data, sigma = load_data(DATA_FILE)
+    except FileNotFoundError as e:
+        print(e)
+        # Generate dummy data for demo if file missing
+        print("Generating dummy data for demonstration...")
+        t_data = DEFAULT_T_SPAN
+        chi_data = np.exp(t_data / 2) * DEFAULT_CHI0 + np.random.normal(0, 1e-11, len(t_data))  # Dummy exponential decay
+        sigma = None
+    
+    # Example usage for spin-0
+    print("\nFitting Spin-0 Model...")
+    initial_params_spin0 = [DEFAULT_CHI0, 1.0, 0.1]  # [chi0, g, λ]
+    bounds_spin0 = ([1e-12, 0.1, 0.01], [1e-8, 10.0, 0.49])  # Avoid division by zero
+    try:
+        popt_spin0, pcov_spin0 = fit_rg_model(t_data, chi_data, beta_spin0, initial_params_spin0, bounds_spin0, sigma)
+        print("Optimized Parameters (chi0, g, λ):", popt_spin0)
+        print("Covariance:", pcov_spin0)
+        plot_fit(t_data, chi_data, popt_spin0, 'Spin-0')
+    except Exception as e:
+        print(f"Error fitting spin-0: {e}")
+    
+    # Example usage for spin-2
+    print("\nFitting Spin-2 Model...")
+    initial_params_spin2 = [DEFAULT_CHI0, 0.0, 1.0, 1.0]  # [chi0, η_χ, c, g]
+    bounds_spin2 = ([1e-12, -10, 0.1, 0.1], [1e-8, 10, 10, 10])
+    try:
+        popt_spin2, pcov_spin2 = fit_rg_model(t_data, chi_data, beta_spin2, initial_params_spin2, bounds_spin2, sigma)
+        print("Optimized Parameters (chi0, η_χ, c, g):", popt_spin2)
+        print("Covariance:", pcov_spin2)
+        plot_fit(t_data, chi_data, popt_spin2, 'Spin-2')
+    except Exception as e:
+        print(f"Error fitting spin-2: {e}")
+    
+    # Example for data-derived (general quadratic)
+    print("\nFitting General Data-Derived Model (Quadratic)...")
+    initial_params_general = [DEFAULT_CHI0, -4.0, 0.0]  # [chi0, a, b]
+    try:
+        popt_general, pcov_general = fit_rg_model(t_data, chi_data, beta_general, initial_params_general, sigma=sigma)
+        print("Optimized Parameters (chi0, a, b):", popt_general)
+        print("Covariance:", pcov_general)
+        plot_fit(t_data, chi_data, popt_general, 'General')
+    except Exception as e:
+        print(f"Error fitting general: {e}")
+    
+    print("\nRefinement complete. Plots saved as PNG files.")
+    print("To use refined parameters in simulations, update equations.py accordingly.")
+    print("For propulsion: Use fitted χ in force calculations, e.g., F ∝ χ B² ∇(h²) A ρ")
+    print("Experimental data should include inferred χ from measured thrusts/forces at different energy scales (e.g., varying B or frequency).")
+
+if __name__ == "__main__":
+    main()

@@ -176,19 +176,29 @@ $$R = v \cdot \left( \frac{E}{P} \right)$$
 
 ## Usage
 
-Run simulations:
+**Run simulations:**
 
 ```bash
 python simulations/thrust_model.py --b_opposing 50 --frequency 100
 ```
 
-For AI navigation demo:
+**AI navigation demo:**
 
 ```bash
 python ai/navigation.py
 ```
 
-See `examples/` for more.
+**Advanced options:**
+
+```bash
+# Custom parameters
+python simulations/thrust_model.py --b_opposing 75 --frequency 200 --mass 15000 --n_units 32
+
+# Verbose output
+python simulations/thrust_model.py --verbose
+```
+
+See `examples/` for more usage patterns and tutorials.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

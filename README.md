@@ -192,12 +192,60 @@ See `examples/` for more.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## API Documentation
+
+Comprehensive API documentation generated via Sphinx: [View API Docs](docs/api/)
+
+**Key Modules:**
+- `simulations/equations.py` - Core physics equations and calculations
+- `ai/navigation.py` - MIMO neural network for 6DOF control
+- `hardware/interfaces.py` - Hardware interfacing (coming soon)
+
+Generate docs locally:
+```bash
+cd docs/
+make html
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Tutorials
+
+- **[Hardware Setup Guide](docs/tutorials/hardware_setup.md)**: Transitioning from simulations to prototypes
+- **[Flight Control Tutorial](docs/tutorials/flight_control.md)**: Real-time systems, PID/MPC, and safety protocols
+- **Interactive Notebooks:**
+  - [Sensor Fusion Demo](examples/sensor_fusion.ipynb)
+  - [ML Optimization](examples/ml_optimization.ipynb)
+  - [Swarm Simulation](examples/swarm_simulation.ipynb)
+- **Video Tutorials**: Coming soon ([YouTube Playlist](https://youtube.com/playlist?list=PLACEHOLDER))
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Glossary
+
+- **Heisenberg-Euler-Schwinger (HES) Action**: Effective field theory describing nonlinear QED effects in strong electromagnetic fields
+- **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing
+- **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties
+- **RG Flow**: Renormalization Group – Describes how physical parameters change with energy scale
+- **Spin-0 Emergent Gravity**: Scalar field theory where gravitational effects arise from QED disruptions
+- **EGDPP**: Emergent Gravity from Disrupted Photon Pairs – Theoretical framework for QED-based propulsion
+
+Full glossary available in [docs/glossary.md](docs/glossary.md).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Roadmap
 
-- [ ] Add full drone CAD models
+- [ ] Add `experiments/` directory for bench-top test protocols
+- [ ] Add `cad/` for drone models and 3D visualizations
+- [ ] Add `testing/` for data logging and test protocols
+- [ ] Add full drone CAD models (STEP/STL formats)
 - [ ] Integrate ML for gradient optimization
-- [ ] Support for hardware interfacing
-- [ ] See [open issues](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues)
+- [ ] Support for hardware interfacing (progress: `interfaces.py` and schematics added)
+- [ ] Develop firmware for embedded controllers
+- [ ] Create simulation-to-hardware pipeline
+
+See [open issues](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues) for detailed status and discussions.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

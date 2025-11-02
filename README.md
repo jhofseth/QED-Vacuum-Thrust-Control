@@ -238,7 +238,7 @@ make html
 - **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties
 - **RG Flow**: Renormalization Group – Describes how physical parameters change with energy scale
 - **Spin-0 Emergent Gravity**: Scalar field theory where gravitational effects arise from QED disruptions
-- **Spin-2 Emergent Gravity**: The old version of EGDPP; the relevant modifier equation is provided for testing, but neither old nor new modifiers are necessary if an experimentally derived modifier is desired/provided
+- **Spin-2 Emergent Gravity**: The old version of EGDPP; the relevant modifier equation is also provided for testing, but neither old nor new modifiers are necessary if an experimentally derived modifier is desired/provided
 - **EGDPP**: Emergent Gravity from Disrupted Photon Pairs – Theoretical framework for gravity, but not necessary for QED vacuum polarization-based EMF propulsion (i.e., only a *modifier* equation is necessary)
 
 Full glossary available in [docs/glossary.md](docs/glossary.md).

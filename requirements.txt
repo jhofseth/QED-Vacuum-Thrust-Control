@@ -1,2 +1,1 @@
-numpy scipy sympy torch matplotlib
-
+numpy scipy sympy torch matplotlib pybullet filterpy pytest sphinx networkx docker

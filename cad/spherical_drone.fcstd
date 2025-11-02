@@ -11,88 +11,89 @@
     <Object name="DroneBody">
       <Properties Count="5">
         <Property name="Radius" type="App::PropertyLength">
-          <Float value="0.5"/> <!-- 0.5 m radius for spherical body -->
+          <Float value="500.0"/> <!-- 0.5 m = 500 mm in FreeCAD default units -->
         </Property>
         <Property name="Angle1" type="App::PropertyAngle">
-          <Float value="-90"/>
+          <Float value="-90.0"/>
         </Property>
         <Property name="Angle2" type="App::PropertyAngle">
-          <Float value="90"/>
+          <Float value="90.0"/>
         </Property>
         <Property name="Angle3" type="App::PropertyAngle">
-          <Float value="360"/>
+          <Float value="360.0"/>
         </Property>
         <Property name="Placement" type="App::PropertyPlacement">
-          <PropertyPlacement angle="0" axis="0 0 1" position="0 0 0"/>
+          <PropertyPlacement Px="0.0" Py="0.0" Pz="0.0" Q0="1.0" Q1="0.0" Q2="0.0" Q3="0.0"/>
         </Property>
       </Properties>
     </Object>
     <Object name="MagneticCoil1">
-      <Properties Count="5">
+      <Properties Count="4">
         <Property name="Radius" type="App::PropertyLength">
-          <Float value="0.1"/> <!-- Coil radius -->
+          <Float value="100.0"/> <!-- 0.1 m = 100 mm -->
         </Property>
         <Property name="Height" type="App::PropertyLength">
-          <Float value="0.2"/> <!-- Coil height -->
+          <Float value="200.0"/> <!-- 0.2 m = 200 mm -->
         </Property>
         <Property name="Angle" type="App::PropertyAngle">
-          <Float value="360"/>
+          <Float value="360.0"/>
         </Property>
         <Property name="Placement" type="App::PropertyPlacement">
-          <PropertyPlacement angle="0" axis="1 0 0" position="0.3 0 0"/> <!-- Positioned inside sphere -->
+          <!-- Rotated 90° around Y-axis, pointing TOWARD center (right to left) -->
+          <PropertyPlacement Px="300.0" Py="0.0" Pz="0.0" Q0="0.7071067811865476" Q1="0.0" Q2="-0.7071067811865476" Q3="0.0"/>
         </Property>
       </Properties>
     </Object>
     <Object name="MagneticCoil2">
-      <Properties Count="5">
+      <Properties Count="4">
         <Property name="Radius" type="App::PropertyLength">
-          <Float value="0.1"/>
+          <Float value="100.0"/>
         </Property>
         <Property name="Height" type="App::PropertyLength">
-          <Float value="0.2"/>
+          <Float value="200.0"/>
         </Property>
         <Property name="Angle" type="App::PropertyAngle">
-          <Float value="360"/>
+          <Float value="360.0"/>
         </Property>
         <Property name="Placement" type="App::PropertyPlacement">
-          <PropertyPlacement angle="0" axis="1 0 0" position="-0.3 0 0"/> <!-- Opposing coil -->
+          <!-- Rotated 90° around Y-axis, pointing TOWARD center (left to right) -->
+          <PropertyPlacement Px="-300.0" Py="0.0" Pz="0.0" Q0="0.7071067811865476" Q1="0.0" Q2="0.7071067811865476" Q3="0.0"/>
         </Property>
       </Properties>
     </Object>
     <Object name="NeodymiumMagnet1">
-      <Properties Count="5">
+      <Properties Count="4">
         <Property name="Radius" type="App::PropertyLength">
-          <Float value="0.05"/> <!-- Magnet size for low-power B ~1.5T -->
+          <Float value="50.0"/> <!-- 0.05 m = 50 mm for ~1.5T neodymium -->
         </Property>
         <Property name="Height" type="App::PropertyLength">
-          <Float value="0.1"/>
+          <Float value="100.0"/> <!-- 0.1 m = 100 mm -->
         </Property>
         <Property name="Angle" type="App::PropertyAngle">
-          <Float value="360"/>
+          <Float value="360.0"/>
         </Property>
         <Property name="Placement" type="App::PropertyPlacement">
-          <PropertyPlacement angle="0" axis="1 0 0" position="0.25 0 0"/> <!-- Integrated with coil -->
+          <!-- Centered inside MagneticCoil1, pointing toward center -->
+          <PropertyPlacement Px="300.0" Py="0.0" Pz="0.0" Q0="0.7071067811865476" Q1="0.0" Q2="-0.7071067811865476" Q3="0.0"/>
         </Property>
       </Properties>
     </Object>
     <Object name="NeodymiumMagnet2">
-      <Properties Count="5">
+      <Properties Count="4">
         <Property name="Radius" type="App::PropertyLength">
-          <Float value="0.05"/>
+          <Float value="50.0"/>
         </Property>
         <Property name="Height" type="App::PropertyLength">
-          <Float value="0.1"/>
+          <Float value="100.0"/>
         </Property>
         <Property name="Angle" type="App::PropertyAngle">
-          <Float value="360"/>
+          <Float value="360.0"/>
         </Property>
         <Property name="Placement" type="App::PropertyPlacement">
-          <PropertyPlacement angle="0" axis="1 0 0" position="-0.25 0 0"/> <!-- Opposing magnet -->
+          <!-- Centered inside MagneticCoil2, pointing toward center -->
+          <PropertyPlacement Px="-300.0" Py="0.0" Pz="0.0" Q0="0.7071067811865476" Q1="0.0" Q2="0.7071067811865476" Q3="0.0"/>
         </Property>
       </Properties>
     </Object>
   </ObjectData>
-  <Recompute Count="0"/>
 </Document>
-
-Note: This is the content of Document.xml inside the .fcstd file. To create the full .fcstd, zip this file along with an empty GuiDocument.xml (<?xml version="1.0" encoding="UTF-8"?><GuiDocument/>) and rename the zip to .fcstd. For scaling to B_opposing >20T, replace neodymium cylinders with high-field electromagnet models (e.g., larger coils with Hiperco-50 material properties in FreeCAD). Open in FreeCAD to add fusions, cuts for integration, and export to STL/STEP.

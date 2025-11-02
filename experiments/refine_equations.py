@@ -8,7 +8,11 @@ import os
 import sys
 
 # Add parent directory to path for imports if needed
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+except NameError:
+    # If __file__ not defined (e.g., in REPL), skip or set manually
+    pass
 
 # Constants and defaults
 DEFAULT_CHI0 = 1e-10  # Initial χ at UV scale
@@ -81,35 +85,49 @@ def model_func(t: np.ndarray, chi0: float, *param_args: float) -> np.ndarray:
     global CURRENT_BETA_FUNC
     return solve_rg_flow(CURRENT_BETA_FUNC, param_args, chi0, t)
 
-def fit_rg_model(data_file: str, beta_func: Callable, initial_params: List[float], bounds: Tuple[List[float], List[float]] = None) -> Tuple[np.ndarray, np.ndarray]:
+def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, initial_params: List[float], bounds: Tuple[List[float], List[float]] = None, sigma: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
     """
     Fit the RG model to empirical data.
     
-    :param data_file: Path to CSV with 'ln_mu' (t), 'chi'
+    :param t_data: ln μ values
+    :param chi_data: χ values
     :param beta_func: The beta function to fit (sets global for model_func)
     :param initial_params: Initial guess [chi0, param1, param2, ...]
     :param bounds: Optional bounds for parameters
+    :param sigma: Optional errors for weighted fit
     :return: Optimized parameters, covariance
     """
     global CURRENT_BETA_FUNC
     CURRENT_BETA_FUNC = beta_func
     
+    # Fit
+    popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds, sigma=sigma)
+    
+    return popt, pcov
+
+def load_data(data_file: str) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+    """
+    Load and prepare data from CSV.
+    
+    :param data_file: Path to CSV
+    :return: t_data, chi_data, sigma (None if no 'error' column)
+    """
     if not os.path.exists(data_file):
         raise FileNotFoundError(f"Data file {data_file} not found. Please provide empirical_data.csv with columns 'ln_mu', 'chi'.")
     
     df = pd.read_csv(data_file)
     t_data = df['ln_mu'].values
     chi_data = df['chi'].values
+    sigma = df['error'].values if 'error' in df.columns else None
     
-    # Sort by t if needed (assuming decreasing for IR)
+    # Sort by t
     sort_idx = np.argsort(t_data)
     t_data = t_data[sort_idx]
     chi_data = chi_data[sort_idx]
+    if sigma is not None:
+        sigma = sigma[sort_idx]
     
-    # Fit
-    popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds)
-    
-    return popt, pcov
+    return t_data, chi_data, sigma
 
 def plot_fit(t_data: np.ndarray, chi_data: np.ndarray, popt: np.ndarray, beta_name: str):
     """
@@ -138,23 +156,25 @@ def main():
     print("EGDPP RG EQUATION REFINEMENT SCRIPT")
     print("=" * 60)
     
+    # Load data once
+    try:
+        t_data, chi_data, sigma = load_data(DATA_FILE)
+    except FileNotFoundError as e:
+        print(e)
+        # Generate dummy data for demo if file missing
+        print("Generating dummy data for demonstration...")
+        t_data = DEFAULT_T_SPAN
+        chi_data = np.exp(t_data / 2) * DEFAULT_CHI0 + np.random.normal(0, 1e-11, len(t_data))  # Dummy exponential decay
+        sigma = None
+    
     # Example usage for spin-0
     print("\nFitting Spin-0 Model...")
     initial_params_spin0 = [DEFAULT_CHI0, 1.0, 0.1]  # [chi0, g, λ]
     bounds_spin0 = ([1e-12, 0.1, 0.01], [1e-8, 10.0, 0.49])  # Avoid division by zero
     try:
-        popt_spin0, pcov_spin0 = fit_rg_model(DATA_FILE, beta_spin0, initial_params_spin0, bounds_spin0)
+        popt_spin0, pcov_spin0 = fit_rg_model(t_data, chi_data, beta_spin0, initial_params_spin0, bounds_spin0, sigma)
         print("Optimized Parameters (chi0, g, λ):", popt_spin0)
         print("Covariance:", pcov_spin0)
-        
-        # Load data for plotting
-        df = pd.read_csv(DATA_FILE)
-        t_data = df['ln_mu'].values
-        chi_data = df['chi'].values
-        sort_idx = np.argsort(t_data)
-        t_data = t_data[sort_idx]
-        chi_data = chi_data[sort_idx]
-        
         plot_fit(t_data, chi_data, popt_spin0, 'Spin-0')
     except Exception as e:
         print(f"Error fitting spin-0: {e}")
@@ -164,7 +184,7 @@ def main():
     initial_params_spin2 = [DEFAULT_CHI0, 0.0, 1.0, 1.0]  # [chi0, η_χ, c, g]
     bounds_spin2 = ([1e-12, -10, 0.1, 0.1], [1e-8, 10, 10, 10])
     try:
-        popt_spin2, pcov_spin2 = fit_rg_model(DATA_FILE, beta_spin2, initial_params_spin2, bounds_spin2)
+        popt_spin2, pcov_spin2 = fit_rg_model(t_data, chi_data, beta_spin2, initial_params_spin2, bounds_spin2, sigma)
         print("Optimized Parameters (chi0, η_χ, c, g):", popt_spin2)
         print("Covariance:", pcov_spin2)
         plot_fit(t_data, chi_data, popt_spin2, 'Spin-2')
@@ -175,7 +195,7 @@ def main():
     print("\nFitting General Data-Derived Model (Quadratic)...")
     initial_params_general = [DEFAULT_CHI0, -4.0, 0.0]  # [chi0, a, b]
     try:
-        popt_general, pcov_general = fit_rg_model(DATA_FILE, beta_general, initial_params_general)
+        popt_general, pcov_general = fit_rg_model(t_data, chi_data, beta_general, initial_params_general, sigma=sigma)
         print("Optimized Parameters (chi0, a, b):", popt_general)
         print("Covariance:", pcov_general)
         plot_fit(t_data, chi_data, popt_general, 'General')

@@ -113,7 +113,7 @@ DEFAULT_E = 500000.0 * 3600  # 500 kWh in J
 
 # MADA Convergence Validation Constants
 MADA_MIN_FIELD = 0.1  # Minimum field strength in Tesla
-MADA_MAX_FIELD = 100000.0  # Maximum field strength in Tesla
+MADA_MAX_FIELD = 100.0  # Maximum field strength in Tesla
 MADA_MIN_ALIGNMENT = 0.9  # Minimum cosine similarity for field alignment
 MADA_MAX_ASYMMETRY = 0.15  # Maximum allowed asymmetry ratio
 MADA_MIN_GRADIENT = 0.01  # Minimum field gradient magnitude

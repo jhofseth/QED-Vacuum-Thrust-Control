@@ -1,0 +1,35 @@
+# Use official Python slim base image for smaller size and multi-platform support (amd64, arm64)
+FROM python:3.12-slim-bookworm
+
+# Set build arguments for multi-platform support
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies required for scientific libraries (e.g., torch, pybullet)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libopenblas-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Set non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+# Default command: Run bash for interactive use or testing
+CMD ["bash"]

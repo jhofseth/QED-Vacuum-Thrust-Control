@@ -125,6 +125,14 @@ jobs:
     - name: Run unit tests
       run: |
         poetry run pytest tests/unit_tests.py -v --tb=short
+    
+    - name: 🆕 Verify MADA convergence tests exist
+      run: |
+        poetry run pytest tests/unit_tests.py::TestMADAConvergence -v --tb=short
+    
+    - name: 🆕 Verify configuration error detection tests
+      run: |
+        poetry run pytest tests/unit_tests.py::TestMADAConfigurationErrors -v --tb=short
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -145,6 +153,83 @@ jobs:
     - name: Run integration tests
       run: |
         poetry run pytest tests/integration_tests.py -v --tb=short
+    
+    - name: 🆕 Test MADA convergence integration
+      run: |
+        poetry run pytest tests/integration_tests.py::TestFullSystemIntegration -v --tb=short
+
+  # 🆕 NEW JOB: MADA Convergence Validation
+  test-mada-convergence:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --with dev
+    
+    - name: Test convergence quality calculation
+      run: |
+        poetry run python -c "
+        from simulations.equations import calculate_convergence_quality, CONVERGENCE_OPTIMAL
+        import numpy as np
+        
+        # Test correct configuration (opposing)
+        B1 = np.array([-50.0, 0.0, 0.0])
+        B2 = np.array([50.0, 0.0, 0.0])
+        quality = calculate_convergence_quality(B1, B2)
+        assert quality > CONVERGENCE_OPTIMAL, f'Expected >0.95, got {quality}'
+        print(f'✓ Correct config quality: {quality:.3f}')
+        
+        # Test wrong configuration (diverging)
+        B1_wrong = np.array([50.0, 0.0, 0.0])
+        B2_wrong = np.array([-50.0, 0.0, 0.0])
+        quality_wrong = calculate_convergence_quality(B1_wrong, B2_wrong)
+        assert quality_wrong < -0.9, f'Expected <-0.9, got {quality_wrong}'
+        print(f'✓ Wrong config detected: {quality:.3f}')
+        "
+    
+    - name: Test convergence validation function
+      run: |
+        poetry run python -c "
+        from simulations.equations import validate_mada_convergence
+        import numpy as np
+        
+        # Test validation passes for correct config
+        B1 = np.array([-50.0, 0.0, 0.0])
+        B2 = np.array([50.0, 0.0, 0.0])
+        result = validate_mada_convergence(B1, B2)
+        assert result['is_valid'], f'Should pass: {result[\"message\"]}'
+        assert result['status'] in ['optimal', 'acceptable'], f'Bad status: {result[\"status\"]}'
+        print(f'✓ Validation passed: {result[\"status\"]}')
+        
+        # Test validation fails for wrong config
+        B1_wrong = np.array([50.0, 0.0, 0.0])
+        B2_wrong = np.array([-50.0, 0.0, 0.0])
+        result_wrong = validate_mada_convergence(B1_wrong, B2_wrong)
+        assert not result_wrong['is_valid'], 'Should fail for diverging fields'
+        assert result_wrong['status'] == 'diverging', f'Expected diverging, got {result_wrong[\"status\"]}'
+        print(f'✓ Validation correctly failed: {result_wrong[\"status\"]}')
+        "
+    
+    - name: Run all MADA convergence unit tests
+      run: |
+        poetry run pytest tests/unit_tests.py::TestMADAConvergence -v
+    
+    - name: Run MADA configuration error tests
+      run: |
+        poetry run pytest tests/unit_tests.py::TestMADAConfigurationErrors::test_fcstd_rotation_error -v
+    
+    - name: Verify FreeCAD bug detection test exists
+      run: |
+        poetry run pytest tests/unit_tests.py::TestMADAConfigurationErrors::test_fcstd_rotation_error --collect-only
 
   test-equations:
     runs-on: ubuntu-latest
@@ -169,6 +254,32 @@ jobs:
     - name: Verify symbolic math
       run: |
         poetry run python -c "from simulations.equations import symbolic_surface_field; print(symbolic_surface_field())"
+    
+    - name: 🆕 Test opposing_field warns about validation
+      run: |
+        poetry run python -c "
+        from simulations.equations import opposing_field
+        import inspect
+        
+        # Check that docstring mentions validation requirement
+        doc = inspect.getdoc(opposing_field)
+        assert 'NOT verify' in doc or 'validate_mada_convergence' in doc, 'Missing validation warning in docstring'
+        print('✓ opposing_field() has validation warning in docstring')
+        "
+    
+    - name: 🆕 Test opposing_field_with_validation exists
+      run: |
+        poetry run python -c "
+        from simulations.equations import opposing_field_with_validation
+        import numpy as np
+        
+        # Test safe function
+        B1 = np.array([-50.0, 0.0, 0.0])
+        B2 = np.array([50.0, 0.0, 0.0])
+        B_opp, info = opposing_field_with_validation(100, 100, 0.6, B1, B2)
+        assert info['is_valid'], 'Should validate correct config'
+        print(f'✓ opposing_field_with_validation() works: B={B_opp:.2f}T, quality={info[\"quality\"]:.3f}')
+        "
 
   test-thrust-model:
     runs-on: ubuntu-latest
@@ -218,9 +329,125 @@ jobs:
       run: |
         poetry run python -c "import torch; print(f'PyTorch {torch.__version__} installed')"
 
+  # 🆕 NEW JOB: Test Logging with Convergence
+  test-logging:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --with dev
+    
+    - name: Test FlightLogger with convergence tracking
+      run: |
+        poetry run python -c "
+        from testing.logging import FlightLogger
+        import numpy as np
+        
+        logger = FlightLogger()
+        
+        # Log data with MADA field vectors
+        logger.log({
+            'accel_x': 1.0, 'accel_y': 0.0, 'accel_z': 0.0,
+            'B1_x': -50.0, 'B1_y': 0.0, 'B1_z': 0.0,
+            'B2_x': 50.0, 'B2_y': 0.0, 'B2_z': 0.0,
+            'power': 1000, 'temp': 50
+        })
+        
+        # Verify convergence was calculated
+        assert 'mada_convergence_quality' in logger.data.columns, 'Missing convergence column'
+        quality = logger.data['mada_convergence_quality'].iloc[0]
+        assert quality > 0.95, f'Expected high quality, got {quality}'
+        print(f'✓ FlightLogger auto-calculated convergence: {quality:.3f}')
+        "
+    
+    - name: Test convergence analysis in logging
+      run: |
+        poetry run python -c "
+        from testing.logging import FlightLogger
+        import tempfile
+        import os
+        
+        # Create temp log with convergence data
+        logger = FlightLogger(log_dir=tempfile.mkdtemp())
+        for i in range(10):
+            logger.log({
+                'accel_x': float(i), 'B1_x': -50.0, 'B1_y': 0.0, 'B1_z': 0.0,
+                'B2_x': 50.0, 'B2_y': 0.0, 'B2_z': 0.0,
+                'power': 1000, 'temp': 50, 'thrust': 100
+            })
+        
+        filepath = logger.save('test_conv.csv')
+        
+        # Analyze should include convergence stats
+        stats = FlightLogger.analyze_data(filepath)
+        assert 'mean_convergence_quality' in stats, 'Missing convergence stats'
+        print(f'✓ Analysis includes convergence: mean={stats[\"mean_convergence_quality\"]:.3f}')
+        
+        # Cleanup
+        os.remove(filepath)
+        "
+
+  # 🆕 NEW JOB: Test Flux Visualizer
+  test-flux-visualizer:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --with dev
+    
+    - name: Test MADA flux map generation
+      run: |
+        poetry run python -c "
+        from cad.flux_visualizer import generate_dual_mada_flux_map
+        import numpy as np
+        
+        # Test correct configuration
+        X, Y, Z, U, V, W, B1, B2, quality = generate_dual_mada_flux_map(
+            grid_size=10, converging=True
+        )
+        assert quality > 0.95, f'Correct config should have quality >0.95, got {quality}'
+        print(f'✓ Converging flux map: quality={quality:.3f}')
+        
+        # Test wrong configuration
+        X, Y, Z, U, V, W, B1_w, B2_w, quality_w = generate_dual_mada_flux_map(
+            grid_size=10, converging=False
+        )
+        assert quality_w < -0.9, f'Wrong config should have quality <-0.9, got {quality_w}'
+        print(f'✓ Diverging flux map detected: quality={quality_w:.3f}')
+        "
+    
+    - name: Verify visualization functions exist
+      run: |
+        poetry run python -c "
+        from cad.flux_visualizer import (
+            generate_dual_mada_flux_map,
+            plot_mada_convergence_diagram,
+            plot_interactive_mada_comparison
+        )
+        print('✓ All MADA visualization functions available')
+        "
+
   build:
     runs-on: ubuntu-latest
-    needs: [lint, test, unit-tests, integration-tests]
+    needs: [lint, test, unit-tests, integration-tests, test-mada-convergence]
     steps:
     - uses: actions/checkout@v4
     
@@ -291,3 +518,102 @@ jobs:
         pip install bandit
         bandit -r simulations/ ai/ hardware/ experiments/ cad/ examples/ -f json || true
       continue-on-error: true
+
+  # 🆕 NEW JOB: Convergence Quality Gate
+  convergence-quality-gate:
+    runs-on: ubuntu-latest
+    needs: [test-mada-convergence, test-logging, test-flux-visualizer]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --with dev
+    
+    - name: Run comprehensive convergence test suite
+      run: |
+        poetry run pytest tests/ -k "convergence or mada or MADA" -v --tb=short
+    
+    - name: Verify all critical convergence functions exist
+      run: |
+        poetry run python -c "
+        # Check all critical functions are present
+        from simulations.equations import (
+            calculate_convergence_quality,
+            validate_mada_convergence,
+            calculate_field_at_point,
+            opposing_field_with_validation,
+            CONVERGENCE_OPTIMAL,
+            CONVERGENCE_WARNING,
+            CONVERGENCE_CRITICAL
+        )
+        
+        from testing.logging import FlightLogger
+        from cad.flux_visualizer import (
+            generate_dual_mada_flux_map,
+            plot_mada_convergence_diagram
+        )
+        
+        print('✓ All critical convergence functions available')
+        print(f'  CONVERGENCE_OPTIMAL = {CONVERGENCE_OPTIMAL}')
+        print(f'  CONVERGENCE_WARNING = {CONVERGENCE_WARNING}')
+        print(f'  CONVERGENCE_CRITICAL = {CONVERGENCE_CRITICAL}')
+        "
+    
+    - name: Generate convergence quality report
+      run: |
+        poetry run python -c "
+        from simulations.equations import calculate_convergence_quality
+        import numpy as np
+        
+        print('=' * 60)
+        print('CONVERGENCE QUALITY GATE REPORT')
+        print('=' * 60)
+        
+        test_cases = [
+            ('Perfect Opposition', np.array([-1, 0, 0]), np.array([1, 0, 0]), 1.0),
+            ('10° Misalignment', np.array([-1, 0, 0]), np.array([0.985, 0.174, 0]), 0.985),
+            ('45° Misalignment', np.array([-1, 0, 0]), np.array([0.707, 0.707, 0]), 0.707),
+            ('Perpendicular', np.array([1, 0, 0]), np.array([0, 1, 0]), 0.0),
+            ('Parallel (Wrong!)', np.array([1, 0, 0]), np.array([1, 0, 0]), -1.0),
+            ('Diverging (FreeCAD Bug!)', np.array([1, 0, 0]), np.array([-1, 0, 0]), -1.0)
+        ]
+        
+        all_passed = True
+        for name, B1, B2, expected in test_cases:
+            quality = calculate_convergence_quality(B1, B2)
+            passed = abs(quality - expected) < 0.02
+            status = '✓' if passed else '✗'
+            print(f'{status} {name:25s} Expected: {expected:6.3f}  Got: {quality:6.3f}')
+            if not passed:
+                all_passed = False
+        
+        print('=' * 60)
+        if all_passed:
+            print('✓ ALL CONVERGENCE TESTS PASSED')
+        else:
+            print('✗ SOME CONVERGENCE TESTS FAILED')
+            exit(1)
+        print('=' * 60)
+        "
+    
+    - name: Summary
+      if: always()
+      run: |
+        echo "🎯 Convergence Quality Gate Complete"
+        echo ""
+        echo "This gate ensures:"
+        echo "  ✓ MADA convergence calculation functions exist"
+        echo "  ✓ Field direction validation works correctly"
+        echo "  ✓ FreeCAD-type configuration errors are detectable"
+        echo "  ✓ Logging includes convergence quality tracking"
+        echo "  ✓ Visualization tools validate field opposition"
+        echo ""
+        echo "All pull requests must pass this gate to merge."

@@ -3,7 +3,7 @@ from scipy.integrate import odeint
 from scipy.optimize import curve_fit
 import pandas as pd
 import matplotlib.pyplot as plt
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Optional
 import os
 import sys
 
@@ -40,8 +40,8 @@ def beta_spin2(chi: float, params: Tuple[float, float, float]) -> float:
     :param params: (η_χ, c, g)
     :return: β_χ
     """
-    eta, c, g = params
-    return (4 + eta) * chi + c * g * chi
+    eta_chi, c, g = params
+    return (4 + eta_chi) * chi + c * g * chi
 
 def beta_general(chi: float, params: Tuple[float, ...]) -> float:
     """
@@ -85,7 +85,9 @@ def model_func(t: np.ndarray, chi0: float, *param_args: float) -> np.ndarray:
     global CURRENT_BETA_FUNC
     return solve_rg_flow(CURRENT_BETA_FUNC, param_args, chi0, t)
 
-def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, initial_params: List[float], bounds: Tuple[List[float], List[float]] = None, sigma: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
+def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, 
+                 initial_params: List[float], bounds: Optional[Tuple[List[float], List[float]]] = None, 
+                 sigma: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
     """
     Fit the RG model to empirical data.
     
@@ -101,7 +103,10 @@ def fit_rg_model(t_data: np.ndarray, chi_data: np.ndarray, beta_func: Callable, 
     CURRENT_BETA_FUNC = beta_func
     
     # Fit
-    popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds, sigma=sigma)
+    if bounds is not None:
+        popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, bounds=bounds, sigma=sigma)
+    else:
+        popt, pcov = curve_fit(model_func, t_data, chi_data, p0=initial_params, sigma=sigma)
     
     return popt, pcov
 

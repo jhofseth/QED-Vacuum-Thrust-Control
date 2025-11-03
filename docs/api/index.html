@@ -1,1078 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - QED Vacuum Thrust Control</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; }
+        h2 { color: #34495e; margin-top: 30px; border-bottom: 2px solid #95a5a6; }
+        h3 { color: #7f8c8d; margin-top: 20px; }
+        .function, .class { background: #ecf0f1; padding: 15px; margin: 10px 0; border-left: 4px solid #3498db; }
+        .new { background: #d4edda; border-left-color: #28a745; }
+        .critical { background: #fff3cd; border-left-color: #ffc107; }
+        .warning { color: #d63031; font-weight: bold; }
+        .params { margin-left: 20px; }
+        .note { background: #e3f2fd; padding: 10px; margin: 10px 0; border-left: 4px solid #2196f3; }
+        code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; }
+        .toc { background: #f8f9fa; padding: 15px; margin: 20px 0; border: 1px solid #dee2e6; }
+        .toc a { text-decoration: none; color: #3498db; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
 
+<h1>API Documentation</h1>
 
+<p>This is the comprehensive API documentation for the QED Vacuum Thrust Control repository. It covers key modules and scripts, including functions, classes, and their parameters. <strong>Updated November 02, 2025 to include MADA convergence validation functions.</strong></p>
 
-    
-    
-    
-    
+<div class="note">
+    <strong>CRITICAL UPDATE:</strong> All magnetic field calculations now include convergence validation requirements. Functions marked with ⚠️ require MADA field direction verification before use.
+</div>
 
+<div class="toc">
+    <h3>Table of Contents</h3>
+    <ul>
+        <li><a href="#equations">simulations/equations.py</a></li>
+        <li><a href="#thrust_model">simulations/thrust_model.py</a></li>
+        <li><a href="#navigation">ai/navigation.py</a></li>
+        <li><a href="#interfaces">hardware/interfaces.py</a></li>
+        <li><a href="#refine">experiments/refine_equations.py</a></li>
+        <li><a href="#logging">testing/logging.py</a></li>
+        <li><a href="#visualizer">cad/flux_visualizer.py</a></li>
+    </ul>
+</div>
 
-    
-API Documentation
-    
-This is the comprehensive API documentation for the QED Vacuum Thrust Control repository. It covers key modules and scripts, including functions, classes, and their parameters. Generated via Sphinx from docstrings and code analysis.
-    
-    
-        
-            
-simulations/equations.py
-            
-simulations/thrust_model.py
-            
-ai/navigation.py
-            
-hardware/interfaces.py
-            
-experiments/refine_equations.py
-            
-testing/logging.py
-            
-cad/flux_visualizer.py
-        
-    
-    
-    
-        
-Module: simulations/equations.py
-        
-Core equations for propulsion calculations, including magnetic fields, RG flows, force/thrust, power/efficiency, and expansions like non-ballistic trajectories, Monte Carlo, battery models, stealth range, and thermal/TEG simulations.
-        
-        
-            
-Function: surface_field(B_r, L, R, d)
-            
-Calculate the surface magnetic field.
-            
-                
-Parameters:
-                
-B_r (float): Remanence field strength (T)
-                
-L (float): Length (m)
-                
-R (float): Radius (m)
-                
-d (float): Distance (m)
-                
-Returns: float: Surface field B (T)
-            
-            
-B ≈ (B_r / 2) * (L / √(R² + L²) + (L + d) / √(R² + (L + d)²))
-        
-        
-        
-            
-Function: opposing_field(m1, m2, d, k=1.0)
-            
-Calculate the opposing magnetic field.
-            
-                
-Parameters:
-                
-m1 (float): Magnetic moment 1 (A m²)
-                
-m2 (float): Magnetic moment 2 (A m²)
-                
-d (float): Distance (m)
-                
-k (float): Scaling factor (default 1.0)
-                
-Returns: float: Opposing field B_opposing (T)
-            
-        
-        
-        
-            
-Function: pulsed_enhancement(n, I)
-            
-Calculate the pulsed magnetic field enhancement.
-            
-                
-Parameters:
-                
-n (float): Number of turns per unit length (1/m)
-                
-I (float): Current (A)
-                
-Returns: float: Delta B (T)
-            
-        
-        
-        
-            
-Function: lagrangian_disrupt(chi, B, h_mu_nu, h_mu_nu_inv)
-            
-Calculate the disruption Lagrangian (numerical approximation).
-            
-                
-Parameters:
-                
-chi (float): Susceptibility
-                
-B (float): Magnetic field (T)
-                
-h_mu_nu (np.array): Metric perturbation (4x4)
-                
-h_mu_nu_inv (np.array): Inverse metric perturbation (4x4)
-                
-Returns: float: L_disrupt
-            
-        
-        
-        
-            
-Function: rg_beta_chi_spin0(chi, g, lambda_val)
-            
-Calculate the RG beta function for chi (spin-0 emergent).
-            
-                
-Parameters:
-                
-chi (float): Susceptibility
-                
-g (float): Coupling constant
-                
-lambda_val (float): Lambda parameter
-                
-Returns: float: beta_chi
-            
-        
-        
-        
-            
-Function: rg_beta_chi_spin2(chi, eta_chi, c, g)
-            
-Alternative RG beta function for chi (spin-2 emergent).
-            
-                
-Parameters:
-                
-chi (float): Susceptibility
-                
-eta_chi (float): Anomalous dimension
-                
-c (float): Constant
-                
-g (float): Coupling constant
-                
-Returns: float: beta_chi
-            
-        
-        
-        
-            
-Function: source_term(chi, B, h_mu_nu)
-            
-Calculate the source term delta T_mu_nu (approximation).
-            
-                
-Parameters:
-                
-chi (float): Susceptibility
-                
-B (float): Magnetic field (T)
-                
-h_mu_nu (np.array): Metric perturbation (4x4)
-                
-Returns: np.array: delta T_mu_nu (4x4)
-            
-        
-        
-        
-            
-Function: force_vector(chi, B, grad_h2, A, rho)
-            
-Calculate the force vector.
-            
-                
-Parameters:
-                
-chi (float): Susceptibility
-                
-B (float): Magnetic field (T)
-                
-grad_h2 (np.array): Gradient of h^2 (3D vector)
-                
-A (float): Area (m²)
-                
-rho (float): Density (kg/m³)
-                
-Returns: np.array: Force F (3D vector, N)
-            
-        
-        
-        
-            
-Function: total_thrust(N, F, eta, theta)
-            
-Calculate the total thrust.
-            
-                
-Parameters:
-                
-N (int): Number of units
-                
-F (float or np.array): Force magnitude (N) or force vector
-                
-eta (float): Efficiency (0-1)
-                
-theta (float): Angle (degrees)
-                
-Returns: float: Thrust T (N)
-            
-        
-        
-        
-            
-Function: acceleration(T, m)
-            
-Calculate acceleration.
-            
-                
-Parameters:
-                
-T (float): Thrust (N)
-                
-m (float): Mass (kg)
-                
-Returns: float: Acceleration a (m/s²)
-            
-        
-        
-        
-            
-Function: power_consumption(I, R, P_eddy)
-            
-Calculate power consumption.
-            
-                
-Parameters:
-                
-I (float): Current (A)
-                
-R (float): Resistance (Ohm)
-                
-P_eddy (float): Eddy current losses (W)
-                
-Returns: float: Power P (W)
-            
-        
-        
-        
-            
-Function: efficiency(T, v, P)
-            
-Calculate efficiency.
-            
-                
-Parameters:
-                
-T (float): Thrust (N)
-                
-v (float): Velocity (m/s)
-                
-P (float): Power (W)
-                
-Returns: float: Efficiency eta (%)
-            
-        
-        
-        
-            
-Function: range_calc(v, E, P)
-            
-Calculate range.
-            
-                
-Parameters:
-                
-v (float): Velocity (m/s)
-                
-E (float): Energy (J)
-                
-P (float): Power (W)
-                
-Returns: float: Range R (m)
-            
-        
-        
-        
-            
-Function: non_ballistic_trajectory(start_pos, target_pos, curvature=0.5, steps=100)
-            
-Generate a non-ballistic (curved) trajectory for radar evasion.
-            
-                
-Parameters:
-                
-start_pos (np.array): Starting position [x, y, z]
-                
-target_pos (np.array): Target position [x, y, z]
-                
-curvature (float): Curvature factor (0: straight, >0: curved)
-                
-steps (int): Number of points in trajectory
-                
-Returns: np.array: Trajectory points (steps x 3)
-            
-        
-        
-        
-            
-Function: radar_evasion_probability(traj, radar_pos, rcs=1.0)
-            
-Estimate radar evasion probability based on trajectory.
-            
-                
-Parameters:
-                
-traj (np.array): Trajectory points (N x 3)
-                
-radar_pos (np.array): Radar position [x, y, z]
-                
-rcs (float): Radar cross-section (m²)
-                
-Returns: float: Evasion probability (0-1; higher better)
-            
-        
-        
-        
-            
-Function: monte_carlo_thrust(params, uncertainties, n_sim=1000)
-            
-Monte Carlo simulation for thrust with uncertainties.
-            
-                
-Parameters:
-                
-params (dict): Nominal parameters {'B_opposing': , 'frequency': , ...}
-                
-uncertainties (dict): Std devs {'B_opposing': 1.0, 'frequency': 5.0, ...}
-                
-n_sim (int): Number of simulations
-                
-Returns: np.array: Array of simulated thrusts (N)
-            
-        
-        
-        
-            
-Function: lipo_discharge_capacity(C_nom, I, t, peukert_k=1.05)
-            
-LiPo battery discharge model using Peukert's law.
-            
-                
-Parameters:
-                
-C_nom (float): Nominal capacity (Ah)
-                
-I (float): Discharge current (A)
-                
-t (float): Time (h)
-                
-peukert_k (float): Peukert constant (default 1.05)
-                
-Returns: float: Remaining capacity (Ah)
-            
-        
-        
-        
-            
-Function: ssb_discharge_capacity(C_nom, I, t, peukert_k=1.02)
-            
-Solid-state battery discharge model.
-            
-                
-Parameters: Same as lipo_discharge_capacity
-                
-Returns: float: Remaining capacity (Ah)
-            
-        
-        
-        
-            
-Function: battery_voltage_curve(soc, V_nom, V_min=3.0, V_max=4.2)
-            
-Simple voltage curve model.
-            
-                
-Parameters:
-                
-soc (float): State of charge (0-1)
-                
-V_nom (float): Nominal voltage (V)
-                
-V_min (float): Min voltage
-                
-V_max (float): Max voltage
-                
-Returns: float: Voltage (V)
-            
-        
-        
-        
-            
-Function: stealth_range_calc(v_stealth, E, P_low, eta_stealth=0.8)
-            
-Range estimator for stealth operations.
-            
-                
-Parameters:
-                
-v_stealth (float): Stealth velocity (m/s)
-                
-E (float): Energy (J)
-                
-P_low (float): Low-power consumption (W)
-                
-eta_stealth (float): Stealth efficiency factor (default 0.8)
-                
-Returns: float: Stealth range (m)
-            
-        
-        
-        
-            
-Function: teg_power_recovery(Delta_T, area, thickness, load_res=1.0)
-            
-Calculate power recovered from Bi2Te3 TEG.
-            
-                
-Parameters:
-                
-Delta_T (float): Temperature difference (K)
-                
-area (float): TEG area (m²)
-                
-thickness (float): Thickness (m)
-                
-load_res (float): Load resistance (Ohm, default matched)
-                
-Returns: float: Recovered power (W)
-            
-        
-        
-        
-            
-Function: thermal_dissipation(P_in, eta_thermal=0.95, Delta_T_max=50)
-            
-Simulate thermal dissipation with TEG recovery.
-            
-                
-Parameters:
-                
-P_in (float): Input power (W)
-                
-eta_thermal (float): Thermal efficiency
-                
-Delta_T_max (float): Max allowable Delta T (K)
-                
-Returns: tuple: (heat_dissipated (W), recovered (W))
-            
-        
-        
-        
-            
-Function: symbolic_surface_field()
-            
-Return symbolic expression for surface field.
-            
-                
-Returns: sympy expression
-            
-        
-        
-        
-            
-Function: symbolic_opposing_field()
-            
-Return symbolic expression for opposing field.
-            
-                
-Returns: sympy expression
-            
-        
-        
-        
-            
-Function: symbolic_force_vector()
-            
-Return symbolic expression for force vector.
-            
-                
-Returns: sympy expression
-            
-        
-        
-        
-            
-Function: symbolic_rg_beta_chi_spin0()
-            
-Symbolic RG beta for spin-0.
-            
-                
-Returns: sympy expression
-            
-        
-    
-    
-    
-        
-Module: simulations/thrust_model.py
-        
-Main simulation script for thrust modeling, with integrations for PyBullet/Gazebo swarms, benchmarking, and real-time sensor inputs.
-        
-        
-            
-Function: calculate_thrust_params(args, B_opposing=None, frequency=None, verbose=False)
-            
-Core thrust calculation function, reusable across modes.
-            
-                
-Parameters:
-                
-args: Command-line args object
-                
-B_opposing (float): Optional overriding B
-                
-frequency (float): Optional frequency
-                
-verbose (bool): Print details
-                
-Returns: tuple: (T, a, P, eta_perc, R, B_total)
-            
-        
-        
-        
-            
-Function: simulate_swarm(num_drones=5, scenario='asymmetric', simulation_time=60, verbose=False)
-            
-Multi-drone swarm simulation using PyBullet for asymmetric warfare scenarios.
-            
-                
-Parameters:
-                
-num_drones (int): Number of drones
-                
-scenario (str): 'asymmetric' or other
-                
-simulation_time (float): Time in seconds
-                
-verbose (bool): Print details
-            
-        
-        
-        
-            
-Function: benchmark_with_telemetry(telemetry_file, args, verbose=False)
-            
-Benchmark simulation outputs against hardware telemetry data.
-            
-                
-Parameters:
-                
-telemetry_file (str): Path to CSV
-                
-args: Args object
-                
-verbose (bool): Print details
-            
-        
-        
-        
-            
-Function: real_time_mode(args, sensor_port='/dev/ttyUSB0', update_interval=0.1, verbose=False)
-            
-Real-time mode: Read sensor data and compute thrust dynamically.
-            
-                
-Parameters:
-                
-args: Args object
-                
-sensor_port (str): Serial port
-                
-update_interval (float): Update time (s)
-                
-verbose (bool): Print details
-            
-        
-        
-        
-            
-Function: main()
-            
-Main entry point for thrust_model.py, handling modes like single, swarm, benchmark, realtime.
-        
-    
-    
-    
-        
-Module: ai/navigation.py
-        
-AI navigation module with sensor fusion, control algorithms, and simulation.
-        
-        
-            
-Class: KalmanFilter
-            
-Simple Extended Kalman Filter for sensor fusion.
-            
-                
-Parameters:
-                
-dt (float): Time step
-                
-Methods:
-                
-predict(accel, gyro)
-                
-update(measurements)
-            
-        
-        
-        
-            
-Class: PIDController
-            
-PID Controller for 6DOF thrust vector management.
-            
-                
-Parameters:
-                
-kp, ki, kd (float): Gains
-                
-dt (float): Time step
-                
-Methods:
-                
-compute(setpoint, current)
-            
-        
-        
-        
-            
-Function: mpc_control(current_state, target_state, horizon=1)
-            
-Simple Model Predictive Control for 6DOF.
-            
-                
-Parameters:
-                
-current_state (np.array): Current state
-                
-target_state (np.array): Target state
-                
-horizon (int): Prediction horizon
-                
-Returns: np.array: Optimized control u
-            
-        
-        
-        
-            
-Class: MaintenanceNN (nn.Module)
-            
-ML model for predictive maintenance and adaptive pulsing.
-            
-                
-Parameters:
-                
-input_size=4, hidden_size=32, output_size=2
-                
-Methods:
-                
-forward(x)
-            
-        
-        
-        
-            
-Function: simulate_sensors(true_pos, true_vel, true_attitude)
-            
-Simulate sensor readings with noise.
-            
-                
-Parameters:
-                
-true_pos, true_vel, true_attitude (np.array)
-                
-Returns: tuple: (imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude)
-            
-        
-        
-        
-            
-Class: MIMONetwork (nn.Module)
-            
-MIMO Neural Network for 6DOF control.
-            
-                
-Parameters:
-                
-input_size=9, hidden_size=64, output_size=6
-                
-Methods:
-                
-forward(x)
-            
-        
-        
-        
-            
-Function: simulate_navigation(primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles=None)
-            
-Simulate drone navigation with MIMO network, sensor fusion, etc.
-            
-                
-Parameters:
-                
-primary_model, secondary_model (MIMONetwork)
-                
-start_pos, start_vel, target_pos (np.array)
-                
-obstacles (list): Optional obstacle positions
-                
-Returns: tuple: (trajectory, velocities, controls_history)
-            
-        
-        
-        
-            
-Function: train_demo_model(num_epochs=100, batch_size=32, lr=0.001)
-            
-Demo training for MIMONetwork.
-            
-                
-Parameters:
-                
-num_epochs, batch_size, lr
-                
-Returns: MIMONetwork: Trained model
-            
-        
-        
-        
-            
-Function: plot_trajectory(trajectory, velocities=None, obstacles=None, target_pos=None)
-            
-Plot the 3D trajectory.
-            
-                
-Parameters:
-                
-trajectory (list): Position arrays
-                
-velocities (list): Optional velocity arrays
-                
-obstacles (list): Optional obstacle positions
-                
-target_pos (np.array): Optional target
-            
-        
-        
-        
-            
-Function: save_model(model, filepath='navigation_model.pth')
-            
-Save model to disk.
-        
-        
-        
-            
-Function: load_model(filepath='navigation_model.pth')
-            
-Load model from disk.
-            
-                
-Returns: MIMONetwork
-            
-        
-    
-    
-    
-        
-Module: hardware/interfaces.py
-        
-Interfaces for hardware components, including flight controllers and microcontrollers.
-        
-        
-            
-Class: FlightControllerInterface
-            
-Interface for PX4 or ArduPilot using pymavlink.
-            
-                
-Parameters:
-                
-connection_string (str): MAVLink connection
-                
-baudrate (int): For serial
-                
-Methods:
-                
-send_rc_override(channels)
-                
-arm_vehicle()
-                
-disarm_vehicle()
-            
-        
-        
-        
-            
-Class: MicrocontrollerPWMInterface
-            
-Serial interface for PWM control on ESP32/Teensy.
-            
-                
-Parameters:
-                
-port (str): Serial port
-                
-baudrate (int)
-                
-Methods:
-                
-set_pwm(pin, frequency, duty_cycle)
-                
-pulse_mada(pin, frequency=50, duration=1.0, bursts=10)
-                
-close()
-            
-        
-        
-        
-            
-Class: RealTimeControlNode (Node)
-            
-ROS2 Node for low-latency control loops.
-            
-                
-Parameters:
-                
-loop_period (float): Timer period (s)
-                
-Methods:
-                
-control_loop_callback()  # Override for custom logic
-            
-        
-    
-    
-    
-        
-Module: experiments/refine_equations.py
-        
-Scripts to refine EGDPP equations based on empirical data.
-        
-        
-            
-Function: beta_spin0(chi, params)
-            
-RG beta function for spin-0.
-            
-                
-Parameters:
-                
-chi (float)
-                
-params (tuple): (g, λ)
-                
-Returns: float: β_χ
-            
-        
-        
-        
-            
-Function: beta_spin2(chi, params)
-            
-RG beta function for spin-2.
-            
-                
-Parameters:
-                
-chi (float)
-                
-params (tuple): (η_χ, c, g)
-                
-Returns: float: β_χ
-            
-        
-        
-        
-            
-Function: beta_general(chi, params)
-            
-General data-derived beta function.
-            
-                
-Parameters:
-                
-chi (float)
-                
-params (tuple): (a, b)
-                
-Returns: float: β_χ
-            
-        
-        
-        
-            
-Function: solve_rg_flow(beta_func, params, chi0, t)
-            
-Solve the RG flow ODE.
-            
-                
-Parameters:
-                
-beta_func (Callable)
-                
-params (tuple)
-                
-chi0 (float): Initial χ
-                
-t (np.ndarray): ln μ values
-                
-Returns: np.ndarray: χ(t)
-            
-        
-        
-        
-            
-Function: fit_rg_model(data_file, beta_func, initial_params, bounds=None)
-            
-Fit the RG model to empirical data.
-            
-                
-Parameters:
-                
-data_file (str): CSV path
-                
-beta_func (Callable)
-                
-initial_params (list)
-                
-bounds (tuple): Optional
-                
-Returns: tuple: (popt, pcov)
-            
-        
-        
-        
-            
-Function: plot_fit(t_data, chi_data, popt, beta_name)
-            
-Plot the fitted RG flow against data.
-        
-        
-        
-            
-Function: main()
-            
-Main entry for fitting models.
-        
-    
-    
-    
-        
-Module: testing/logging.py
-        
-Scripts for data logging, analysis, and visualization.
-        
-        
-            
-Class: FlightLogger
-            
-Class for logging flight data.
-            
-                
-Parameters:
-                
-log_dir (str): Directory for logs
-                
-Methods:
-                
-log(data_dict)
-                
-save(filename=None)
-                
-load_data(filepath) (static)
-                
-analyze_data(filepath, output_file=None) (static)
-                
-plot_accel_vs_power(filepath, save_fig=True, fig_name='accel_vs_power.png') (static)
-                
-plot_trajectory(filepath, save_fig=True, fig_name='trajectory.png') (static)
-                
-plot_temp_over_time(filepath, save_fig=True, fig_name='temp_over_time.png') (static)
-            
-        
-    
-    
-    
-        
-Module: cad/flux_visualizer.py
-        
-Rendering scripts for flux maps and thermal dissipation.
-        
-        
-            
-Function: generate_flux_map(grid_size=50, B_opposing=50.0, position=(0,0,0))
-            
-Generate 3D magnetic flux map.
-            
-                
-Returns: tuple: (X, Y, Z, U, V, W)
-            
-        
-        
-        
-            
-Function: generate_thermal_map(grid_size=50, heat_source=1000.0, position=(0,0,0))
-            
-Generate 3D thermal dissipation map.
-            
-                
-Returns: tuple: (X, Y, Z, Temp)
-            
-        
-        
-        
-            
-Function: plot_flux_map_static(X, Y, Z, U, V, W, slice_plane='xy', z_slice=0.0)
-            
-Static plot of flux map.
-        
-        
-        
-            
-Function: plot_thermal_map_static(X, Y, Z, Temp)
-            
-Static contour plot of thermal map.
-        
-        
-        
-            
-Function: plot_interactive_flux(X, Y, Z, U, V, W)
-            
-Interactive Plotly flux map.
-        
-        
-        
-            
-Function: plot_interactive_thermal(X, Y, Z, Temp)
-            
-Interactive Plotly thermal map.
-        
-        
-        
-            
-Function: main()
-            
-Main CLI for visualizations.
-        
-    
-    
+<!-- ==================== EQUATIONS MODULE ==================== -->
 
+<h2 id="equations">Module: simulations/equations.py</h2>
 
+<p>Core equations for propulsion calculations, including magnetic fields, RG flows, force/thrust, power/efficiency, and <strong>MADA convergence validation</strong>. Expansions include non-ballistic trajectories, Monte Carlo, battery models, stealth range, and thermal/TEG simulations.</p>
+
+<div class="note">
+    <strong>Constants defined:</strong>
+    <code>CONVERGENCE_OPTIMAL = 0.95</code>,
+    <code>CONVERGENCE_WARNING = 0.85</code>,
+    <code>CONVERGENCE_CRITICAL = 0.80</code>
+</div>
+
+<!-- NEW CONVERGENCE FUNCTIONS -->
+
+<div class="function new">
+    <h3>🆕 Function: calculate_convergence_quality(B1, B2)</h3>
+    <p><strong>CRITICAL:</strong> Calculate how well MADA magnetic fields are opposing (converging at focal point).</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>B1</code> (np.array): Magnetic field vector from MADA unit 1 [Bx, By, Bz] (T)<br>
+        • <code>B2</code> (np.array): Magnetic field vector from MADA unit 2 [Bx, By, Bz] (T)<br>
+        <br>
+        <strong>Returns:</strong> float: Convergence quality [-1, 1]<br>
+        • 1.0 = Perfect opposition (fields pointing directly at each other) ✅<br>
+        • 0.0 = Perpendicular fields<br>
+        • -1.0 = Parallel fields (both pointing same direction) ❌<br>
+        <br>
+        <strong>Raises:</strong> ValueError if either field vector has zero magnitude
+    </div>
+    <div class="note">
+        <strong>Usage:</strong> This is the PRIMARY function for detecting magnetic field misconfiguration. Quality < 0.8 indicates critical failure (fields diverging instead of converging).
+    </div>
+</div>
+
+<div class="function new">
+    <h3>🆕 Function: validate_mada_convergence(B1, B2, threshold=0.85, raise_on_fail=False)</h3>
+    <p>Validate that MADA fields are properly converging with detailed status reporting.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>B1, B2</code> (np.array): Field vectors from MADA units [Bx, By, Bz] (T)<br>
+        • <code>threshold</code> (float): Minimum acceptable quality (default 0.85)<br>
+        • <code>raise_on_fail</code> (bool): If True, raise ValueError on poor convergence<br>
+        <br>
+        <strong>Returns:</strong> dict with keys:<br>
+        • <code>'quality'</code>: float convergence quality<br>
+        • <code>'status'</code>: str ('optimal', 'acceptable', 'warning', 'critical', 'diverging')<br>
+        • <code>'is_valid'</code>: bool whether convergence meets threshold<br>
+        • <code>'message'</code>: str diagnostic message<br>
+        <br>
+        <strong>Raises:</strong> ValueError if raise_on_fail=True and convergence below threshold
+    </div>
+</div>
+
+<div class="function new">
+    <h3>🆕 Function: calculate_field_at_point(m, position_source, position_target, direction)</h3>
+    <p>Calculate magnetic field vector at a target point from a magnetic dipole.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>m</code> (float): Magnetic moment magnitude (A m²)<br>
+        • <code>position_source</code> (np.array): Position of magnetic source [x, y, z] (m)<br>
+        • <code>position_target</code> (np.array): Position where field is calculated [x, y, z] (m)<br>
+        • <code>direction</code> (np.array): Direction unit vector of magnetic moment [x, y, z]<br>
+        <br>
+        <strong>Returns:</strong> np.array: Magnetic field vector at target [Bx, By, Bz] (T)<br>
+        <br>
+        <strong>Formula:</strong> B = (μ₀/4π) × (3(m·r̂)r̂ - m) / r³
+    </div>
+</div>
+
+<div class="function new">
+    <h3>🆕 Function: opposing_field_with_validation(m1, m2, d, B1_vec, B2_vec, k=1.0)</h3>
+    <p><strong>SAFE VERSION:</strong> Calculate opposing field WITH automatic convergence validation.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>m1, m2</code> (float): Magnetic moments (A m²)<br>
+        • <code>d</code> (float): Distance between MADA units (m)<br>
+        • <code>B1_vec, B2_vec</code> (np.array): Field vectors from both MADA units<br>
+        • <code>k</code> (float): Scaling factor (default 1.0)<br>
+        <br>
+        <strong>Returns:</strong> tuple: (B_opposing (float), convergence_info (dict))<br>
+        <br>
+        <strong>Raises:</strong> ValueError if convergence quality < CONVERGENCE_CRITICAL
+    </div>
+    <div class="note">
+        <strong>Recommended:</strong> Use this instead of <code>opposing_field()</code> for safety-critical calculations.
+    </div>
+</div>
+
+<!-- EXISTING FUNCTIONS - UPDATED -->
+
+<div class="function critical">
+    <h3>⚠️ Function: opposing_field(m1, m2, d, k=1.0)</h3>
+    <p>Calculate the opposing magnetic field <strong>MAGNITUDE</strong>.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>m1</code> (float): Magnetic moment 1 (A m²)<br>
+        • <code>m2</code> (float): Magnetic moment 2 (A m²)<br>
+        • <code>d</code> (float): Distance between MADA units (m)<br>
+        • <code>k</code> (float): Scaling factor (default 1.0)<br>
+        <br>
+        <strong>Returns:</strong> float: Opposing field magnitude B_opposing (T)
+    </div>
+    <div class="note">
+        <span class="warning">⚠️ WARNING:</span> This function does NOT verify field direction! Result is only valid if MADA units are properly configured with fields pointing toward each other (converging at focal point). Use <code>validate_mada_convergence()</code> to verify configuration before relying on this value, or use <code>opposing_field_with_validation()</code> instead.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: surface_field(B_r, L, R, d)</h3>
+    <p>Calculate the surface magnetic field.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>B_r</code> (float): Remanence field strength (T)<br>
+        • <code>L</code> (float): Length (m)<br>
+        • <code>R</code> (float): Radius (m)<br>
+        • <code>d</code> (float): Distance (m)<br>
+        <br>
+        <strong>Returns:</strong> float: Surface field B (T)<br>
+        <br>
+        <strong>Formula:</strong> B ≈ (B_r / 2) × (L / √(R² + L²) + (L + d) / √(R² + (L + d)²))
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: pulsed_enhancement(n, I)</h3>
+    <p>Calculate the pulsed magnetic field enhancement.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>n</code> (float): Number of turns per unit length (1/m)<br>
+        • <code>I</code> (float): Current (A)<br>
+        <br>
+        <strong>Returns:</strong> float: Delta B (T)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: lagrangian_disrupt(chi, B, h_mu_nu, h_mu_nu_inv)</h3>
+    <p>Calculate the disruption Lagrangian (numerical approximation).</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float): Susceptibility<br>
+        • <code>B</code> (float): Magnetic field (T)<br>
+        • <code>h_mu_nu</code> (np.array): Metric perturbation (4x4)<br>
+        • <code>h_mu_nu_inv</code> (np.array): Inverse metric perturbation (4x4)<br>
+        <br>
+        <strong>Returns:</strong> float: L_disrupt
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: rg_beta_chi_spin0(chi, g, lambda_val)</h3>
+    <p>Calculate the RG beta function for chi (spin-0 emergent).</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float): Susceptibility<br>
+        • <code>g</code> (float): Coupling constant<br>
+        • <code>lambda_val</code> (float): Lambda parameter<br>
+        <br>
+        <strong>Returns:</strong> float: beta_chi<br>
+        <br>
+        <strong>Note:</strong> Requires |2×lambda_val| < 1 to avoid singularity
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: rg_beta_chi_spin2(chi, eta_chi, c, g)</h3>
+    <p>Alternative RG beta function for chi (spin-2 emergent).</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float): Susceptibility<br>
+        • <code>eta_chi</code> (float): Anomalous dimension<br>
+        • <code>c</code> (float): Constant<br>
+        • <code>g</code> (float): Coupling constant<br>
+        <br>
+        <strong>Returns:</strong> float: beta_chi
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: source_term(chi, B, h_mu_nu)</h3>
+    <p>Calculate the source term delta T_mu_nu (approximation).</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float): Susceptibility<br>
+        • <code>B</code> (float): Magnetic field (T)<br>
+        • <code>h_mu_nu</code> (np.array): Metric perturbation (4x4)<br>
+        <br>
+        <strong>Returns:</strong> np.array: delta T_mu_nu (4x4)
+    </div>
+</div>
+
+<div class="function critical">
+    <h3>⚠️ Function: force_vector(chi, B, grad_h2, A, rho)</h3>
+    <p>Calculate the force vector.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float): Susceptibility<br>
+        • <code>B</code> (float): Magnetic field magnitude (T)<br>
+        • <code>grad_h2</code> (np.array): Gradient of h² (3D vector)<br>
+        • <code>A</code> (float): Area (m²)<br>
+        • <code>rho</code> (float): Density (kg/m³)<br>
+        <br>
+        <strong>Returns:</strong> np.array: Force F (3D vector, N)
+    </div>
+    <div class="note">
+        <span class="warning">⚠️ IMPORTANT:</span> This force is only valid when B is from properly OPPOSING magnetic fields (converging at focal point). Use <code>validate_mada_convergence()</code> to verify field configuration before relying on this calculation.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: total_thrust(N, F, eta, theta)</h3>
+    <p>Calculate the total thrust.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>N</code> (int): Number of MADA units<br>
+        • <code>F</code> (float or np.array): Force magnitude (N) or force vector<br>
+        • <code>eta</code> (float): Efficiency (0-1)<br>
+        • <code>theta</code> (float): Angle (degrees)<br>
+        <br>
+        <strong>Returns:</strong> float: Thrust T (N)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: acceleration(T, m)</h3>
+    <p>Calculate acceleration.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>T</code> (float): Thrust (N)<br>
+        • <code>m</code> (float): Mass (kg)<br>
+        <br>
+        <strong>Returns:</strong> float: Acceleration a (m/s²)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: power_consumption(I, R, P_eddy)</h3>
+    <p>Calculate power consumption.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>I</code> (float): Current (A)<br>
+        • <code>R</code> (float): Resistance (Ohm)<br>
+        • <code>P_eddy</code> (float): Eddy current losses (W)<br>
+        <br>
+        <strong>Returns:</strong> float: Power P (W)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: efficiency(T, v, P)</h3>
+    <p>Calculate efficiency.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>T</code> (float): Thrust (N)<br>
+        • <code>v</code> (float): Velocity (m/s)<br>
+        • <code>P</code> (float): Power (W)<br>
+        <br>
+        <strong>Returns:</strong> float: Efficiency eta (%)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: range_calc(v, E, P)</h3>
+    <p>Calculate range.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>v</code> (float): Velocity (m/s)<br>
+        • <code>E</code> (float): Energy (J)<br>
+        • <code>P</code> (float): Power (W)<br>
+        <br>
+        <strong>Returns:</strong> float: Range R (m)
+    </div>
+</div>
+
+<!-- Additional functions -->
+
+<div class="function">
+    <h3>Function: non_ballistic_trajectory(start_pos, target_pos, curvature=0.5, steps=100)</h3>
+    <p>Generate a non-ballistic (curved) trajectory for radar evasion.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>start_pos</code> (np.array): Starting position [x, y, z]<br>
+        • <code>target_pos</code> (np.array): Target position [x, y, z]<br>
+        • <code>curvature</code> (float): Curvature factor (0: straight, >0: curved)<br>
+        • <code>steps</code> (int): Number of points in trajectory<br>
+        <br>
+        <strong>Returns:</strong> np.array: Trajectory points (steps × 3)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: radar_evasion_probability(traj, radar_pos, rcs=1.0)</h3>
+    <p>Estimate radar evasion probability based on trajectory.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>traj</code> (np.array): Trajectory points (N × 3)<br>
+        • <code>radar_pos</code> (np.array): Radar position [x, y, z]<br>
+        • <code>rcs</code> (float): Radar cross-section (m²)<br>
+        <br>
+        <strong>Returns:</strong> float: Evasion probability (0-1; higher better)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: monte_carlo_thrust(params, uncertainties, n_sim=1000)</h3>
+    <p>Monte Carlo simulation for thrust with uncertainties.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>params</code> (dict): Nominal parameters {'B_opposing': , 'frequency': , ...}<br>
+        • <code>uncertainties</code> (dict): Std devs {'B_opposing': 1.0, ...}<br>
+        • <code>n_sim</code> (int): Number of simulations<br>
+        <br>
+        <strong>Returns:</strong> np.array: Array of simulated thrusts (N)
+    </div>
+</div>
+
+<!-- Battery and other utility functions -->
+
+<div class="function">
+    <h3>Function: lipo_discharge_capacity(C_nom, I, t, peukert_k=1.05)</h3>
+    <p>LiPo battery discharge model using Peukert's law.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>C_nom</code> (float): Nominal capacity (Ah)<br>
+        • <code>I</code> (float): Discharge current (A)<br>
+        • <code>t</code> (float): Time (h)<br>
+        • <code>peukert_k</code> (float): Peukert constant (default 1.05)<br>
+        <br>
+        <strong>Returns:</strong> float: Remaining capacity (Ah)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: ssb_discharge_capacity(C_nom, I, t, peukert_k=1.02)</h3>
+    <p>Solid-state battery discharge model.</p>
+    <div class="params">
+        <strong>Parameters:</strong> Same as lipo_discharge_capacity<br>
+        <strong>Returns:</strong> float: Remaining capacity (Ah)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: battery_voltage_curve(soc, V_nom, V_min=3.0, V_max=4.2)</h3>
+    <p>Simple voltage curve model.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>soc</code> (float): State of charge (0-1)<br>
+        • <code>V_nom</code> (float): Nominal voltage (V)<br>
+        • <code>V_min, V_max</code> (float): Min/max voltage<br>
+        <br>
+        <strong>Returns:</strong> float: Voltage (V)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: stealth_range_calc(v_stealth, E, P_low, eta_stealth=0.8)</h3>
+    <p>Range estimator for stealth operations.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>v_stealth</code> (float): Stealth velocity (m/s)<br>
+        • <code>E</code> (float): Energy (J)<br>
+        • <code>P_low</code> (float): Low-power consumption (W)<br>
+        • <code>eta_stealth</code> (float): Stealth efficiency factor (default 0.8)<br>
+        <br>
+        <strong>Returns:</strong> float: Stealth range (m)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: teg_power_recovery(Delta_T, area, thickness, load_res=1.0)</h3>
+    <p>Calculate power recovered from Bi₂Te₃ TEG.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>Delta_T</code> (float): Temperature difference (K)<br>
+        • <code>area</code> (float): TEG area (m²)<br>
+        • <code>thickness</code> (float): Thickness (m)<br>
+        • <code>load_res</code> (float): Load resistance (Ohm, default matched)<br>
+        <br>
+        <strong>Returns:</strong> float: Recovered power (W)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: thermal_dissipation(P_in, eta_thermal=0.95, Delta_T_max=50)</h3>
+    <p>Simulate thermal dissipation with TEG recovery.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>P_in</code> (float): Input power (W)<br>
+        • <code>eta_thermal</code> (float): Thermal efficiency<br>
+        • <code>Delta_T_max</code> (float): Max allowable Delta T (K)<br>
+        <br>
+        <strong>Returns:</strong> tuple: (heat_dissipated (W), recovered (W))
+    </div>
+</div>
+
+<!-- Symbolic functions -->
+
+<div class="function">
+    <h3>Function: symbolic_surface_field()</h3>
+    <p>Return symbolic expression for surface field.</p>
+    <div class="params">
+        <strong>Returns:</strong> sympy expression
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: symbolic_opposing_field()</h3>
+    <p>Return symbolic expression for opposing field.</p>
+    <div class="params">
+        <strong>Returns:</strong> sympy expression
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: symbolic_force_vector()</h3>
+    <p>Return symbolic expression for force vector.</p>
+    <div class="params">
+        <strong>Returns:</strong> sympy expression
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: symbolic_rg_beta_chi_spin0()</h3>
+    <p>Symbolic RG beta for spin-0.</p>
+    <div class="params">
+        <strong>Returns:</strong> sympy expression
+    </div>
+</div>
+
+<!-- ==================== LOGGING MODULE ==================== -->
+
+<h2 id="logging">Module: testing/logging.py</h2>
+
+<p>Scripts for data logging, analysis, and visualization <strong>with MADA convergence tracking</strong>.</p>
+
+<div class="class new">
+    <h3>🆕 Class: FlightLogger (Updated)</h3>
+    <p>Class for logging flight data <strong>including MADA convergence quality</strong>.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>log_dir</code> (str): Directory for logs<br>
+        <br>
+        <strong>Logged Columns (Updated):</strong><br>
+        Standard: timestamp, pos_x/y/z, vel_x/y/z, accel_x/y/z, power, temp, thrust, frequency<br>
+        <strong>NEW:</strong> B_field_mag, B_opposing, B1_x/y/z, B2_x/y/z, mada_convergence_quality<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>log(data_dict)</code> - Log data point with convergence auto-calculation<br>
+        • <code>save(filename=None)</code> - Save to CSV<br>
+        • <code>load_data(filepath)</code> - Load from CSV (static)<br>
+        • <code>analyze_data(filepath, output_file=None)</code> - Analysis with convergence stats (static)<br>
+        • <code>plot_accel_vs_power(filepath, ...)</code> - Standard plot (static)<br>
+        • <code>plot_trajectory(filepath, ...)</code> - 3D trajectory (static)<br>
+        • <code>plot_temp_over_time(filepath, ...)</code> - Temperature plot (static)<br>
+        • <code>plot_mada_convergence(filepath, ...)</code> - <strong>NEW</strong> Convergence quality plot (static)
+    </div>
+    <div class="note">
+        <strong>Auto-calculation:</strong> If B1_x/y/z and B2_x/y/z are provided in <code>log()</code>, convergence quality is automatically calculated and stored.
+    </div>
+</div>
+
+<!-- ==================== VISUALIZER MODULE ==================== -->
+
+<h2 id="visualizer">Module: cad/flux_visualizer.py</h2>
+
+<p>Rendering scripts for flux maps, thermal dissipation, and <strong>MADA convergence validation</strong>.</p>
+
+<div class="function new">
+    <h3>🆕 Function: generate_dual_mada_flux_map(grid_size=50, B_mag=50.0, mada1_pos=(-0.3,0,0), mada2_pos=(0.3,0,0), converging=True)</h3>
+    <p>Generate 3D magnetic flux map for dual MADA configuration.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>grid_size</code> (int): Grid resolution<br>
+        • <code>B_mag</code> (float): Field strength (T)<br>
+        • <code>mada1_pos, mada2_pos</code> (tuple): MADA positions [x, y, z]<br>
+        • <code>converging</code> (bool): If True, fields point toward center (CORRECT). If False, fields point away (WRONG - the FreeCAD bug!)<br>
+        <br>
+        <strong>Returns:</strong> tuple: (X, Y, Z, U, V, W, B1_center, B2_center, convergence_quality)
+    </div>
+</div>
+
+<div class="function new">
+    <h3>🆕 Function: plot_mada_convergence_diagram(B1_center, B2_center, mada1_pos, mada2_pos, convergence_quality=None)</h3>
+    <p>Plot MADA field convergence diagram with quality assessment.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>B1_center, B2_center</code> (np.array): Field vectors at focal point<br>
+        • <code>mada1_pos, mada2_pos</code> (tuple): MADA positions<br>
+        • <code>convergence_quality</code> (float): Optional quality metric<br>
+        <br>
+        Shows both MADA units with field vectors, colored by convergence quality.
+    </div>
+</div>
+
+<div class="function new">
+    <h3>🆕 Function: plot_interactive_mada_comparison(converging_data, diverging_data)</h3>
+    <p>Side-by-side interactive comparison of converging vs diverging fields.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>converging_data</code> (tuple): Output from generate_dual_mada_flux_map(converging=True)<br>
+        • <code>diverging_data</code> (tuple): Output from generate_dual_mada_flux_map(converging=False)<br>
+        <br>
+        Creates interactive Plotly visualization showing correct vs incorrect configurations.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: generate_flux_map(grid_size=50, B_opposing=50.0, position=(0,0,0))</h3>
+    <p>Generate 3D magnetic flux map (single source - DEPRECATED).</p>
+    <div class="params">
+        <strong>Returns:</strong> tuple: (X, Y, Z, U, V, W)
+    </div>
+    <div class="note">
+        <span class="warning">⚠️ DEPRECATED:</span> Use <code>generate_dual_mada_flux_map()</code> for proper MADA visualization.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: generate_thermal_map(grid_size=50, heat_source=1000.0, position=(0,0,0))</h3>
+    <p>Generate 3D thermal dissipation map.</p>
+    <div class="params">
+        <strong>Returns:</strong> tuple: (X, Y, Z, Temp)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: plot_flux_map_static(X, Y, Z, U, V, W, slice_plane='xy', z_slice=0.0)</h3>
+    <p>Static Matplotlib plot of flux map.</p>
+</div>
+
+<div class="function">
+    <h3>Function: plot_thermal_map_static(X, Y, Z, Temp)</h3>
+    <p>Static contour plot of thermal map.</p>
+</div>
+
+<div class="function">
+    <h3>Function: plot_interactive_flux(X, Y, Z, U, V, W)</h3>
+    <p>Interactive Plotly flux map.</p>
+</div>
+
+<div class="function">
+    <h3>Function: plot_interactive_thermal(X, Y, Z, Temp)</h3>
+    <p>Interactive Plotly thermal map.</p>
+</div>
+
+<div class="function">
+    <h3>Function: main()</h3>
+    <p>Main CLI for visualizations.</p>
+    <div class="params">
+        <strong>New Arguments:</strong><br>
+        • <code>--mode mada</code> - MADA convergence visualization<br>
+        • <code>--mode comparison</code> - Side-by-side correct vs incorrect<br>
+        • <code>--diverging</code> - Show diverging configuration (educational)
+    </div>
+</div>
+
+<!-- ==================== THRUST MODEL MODULE ==================== -->
+
+<h2 id="thrust_model">Module: simulations/thrust_model.py</h2>
+
+<p>Main simulation script for thrust modeling, with integrations for PyBullet/Gazebo swarms, benchmarking, and real-time sensor inputs <strong>including MADA convergence monitoring</strong>.</p>
+
+<div class="function">
+    <h3>Function: calculate_thrust_params(args, B_opposing=None, frequency=None, verbose=False)</h3>
+    <p>Core thrust calculation function, reusable across modes.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>args</code>: Command-line args object<br>
+        • <code>B_opposing</code> (float): Optional overriding B<br>
+        • <code>frequency</code> (float): Optional frequency<br>
+        • <code>verbose</code> (bool): Print details<br>
+        <br>
+        <strong>Returns:</strong> tuple: (T, a, P, eta_perc, R, B_total)
+    </div>
+    <div class="note">
+        <span class="warning">⚠️ NOTE:</span> For accurate results, verify MADA convergence quality before using calculated thrust values.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: simulate_swarm(num_drones=5, scenario='asymmetric', simulation_time=60, verbose=False)</h3>
+    <p>Multi-drone swarm simulation using PyBullet for asymmetric warfare scenarios.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>num_drones</code> (int): Number of drones<br>
+        • <code>scenario</code> (str): 'asymmetric' or other<br>
+        • <code>simulation_time</code> (float): Time in seconds<br>
+        • <code>verbose</code> (bool): Print details
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: benchmark_with_telemetry(telemetry_file, args, verbose=False)</h3>
+    <p>Benchmark simulation outputs against hardware telemetry data.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>telemetry_file</code> (str): Path to CSV<br>
+        • <code>args</code>: Args object<br>
+        • <code>verbose</code> (bool): Print details
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: real_time_mode(args, sensor_port='/dev/ttyUSB0', update_interval=0.1, verbose=False)</h3>
+    <p>Real-time mode: Read sensor data and compute thrust dynamically.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>args</code>: Args object<br>
+        • <code>sensor_port</code> (str): Serial port<br>
+        • <code>update_interval</code> (float): Update time (s)<br>
+        • <code>verbose</code> (bool): Print details
+    </div>
+    <div class="note">
+        <strong>Recommended:</strong> Include Hall sensor readings for real-time convergence monitoring.
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: main()</h3>
+    <p>Main entry point for thrust_model.py, handling modes like single, swarm, benchmark, realtime.</p>
+</div>
+
+<!-- ==================== NAVIGATION MODULE ==================== -->
+
+<h2 id="navigation">Module: ai/navigation.py</h2>
+
+<p>AI navigation module with sensor fusion, control algorithms, and simulation.</p>
+
+<div class="class">
+    <h3>Class: KalmanFilter</h3>
+    <p>Simple Extended Kalman Filter for sensor fusion.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>dt</code> (float): Time step<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>predict(accel, gyro)</code> - Prediction step<br>
+        • <code>update(measurements)</code> - Update step
+    </div>
+    <div class="note">
+        <strong>Suggested Enhancement:</strong> Add convergence quality to state vector for integrated monitoring.
+    </div>
+</div>
+
+<div class="class">
+    <h3>Class: PIDController</h3>
+    <p>PID Controller for 6DOF thrust vector management.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>kp, ki, kd</code> (float): Gains<br>
+        • <code>dt</code> (float): Time step<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>compute(setpoint, current)</code> - Compute control output
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: mpc_control(current_state, target_state, horizon=1)</h3>
+    <p>Simple Model Predictive Control for 6DOF.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>current_state</code> (np.array): Current state<br>
+        • <code>target_state</code> (np.array): Target state<br>
+        • <code>horizon</code> (int): Prediction horizon<br>
+        <br>
+        <strong>Returns:</strong> np.array: Optimized control u
+    </div>
+</div>
+
+<div class="class">
+    <h3>Class: MaintenanceNN (nn.Module)</h3>
+    <p>ML model for predictive maintenance and adaptive pulsing.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>input_size=4</code> - <strong>UPDATE TO 5</strong> (add convergence_quality)<br>
+        • <code>hidden_size=32</code><br>
+        • <code>output_size=2</code><br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>forward(x)</code> - Forward pass
+    </div>
+    <div class="note">
+        <strong>Recommended Input Features:</strong> [cycles, temp, B_field, threat_level, <strong>convergence_quality</strong>]
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: simulate_sensors(true_pos, true_vel, true_attitude)</h3>
+    <p>Simulate sensor readings with noise.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>true_pos, true_vel, true_attitude</code> (np.array)<br>
+        <br>
+        <strong>Returns:</strong> tuple: (imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude)
+    </div>
+    <div class="note">
+        <strong>Note:</strong> Does not include Hall sensor simulation. Use separate MADA sensor simulation for convergence data.
+    </div>
+</div>
+
+<div class="class">
+    <h3>Class: MIMONetwork (nn.Module)</h3>
+    <p>MIMO Neural Network for 6DOF control.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>input_size=9</code><br>
+        • <code>hidden_size=64</code><br>
+        • <code>output_size=6</code><br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>forward(x)</code> - Forward pass
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: simulate_navigation(primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles=None)</h3>
+    <p>Simulate drone navigation with MIMO network, sensor fusion, etc.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>primary_model, secondary_model</code> (MIMONetwork)<br>
+        • <code>start_pos, start_vel, target_pos</code> (np.array)<br>
+        • <code>obstacles</code> (list): Optional obstacle positions<br>
+        <br>
+        <strong>Returns:</strong> tuple: (trajectory, velocities, controls_history)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: train_demo_model(num_epochs=100, batch_size=32, lr=0.001)</h3>
+    <p>Demo training for MIMONetwork.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>num_epochs, batch_size, lr</code><br>
+        <br>
+        <strong>Returns:</strong> MIMONetwork: Trained model
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: plot_trajectory(trajectory, velocities=None, obstacles=None, target_pos=None)</h3>
+    <p>Plot the 3D trajectory.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>trajectory</code> (list): Position arrays<br>
+        • <code>velocities</code> (list): Optional velocity arrays<br>
+        • <code>obstacles</code> (list): Optional obstacle positions<br>
+        • <code>target_pos</code> (np.array): Optional target
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: save_model(model, filepath='navigation_model.pth')</h3>
+    <p>Save model to disk.</p>
+</div>
+
+<div class="function">
+    <h3>Function: load_model(filepath='navigation_model.pth')</h3>
+    <p>Load model from disk.</p>
+    <div class="params">
+        <strong>Returns:</strong> MIMONetwork
+    </div>
+</div>
+
+<!-- ==================== HARDWARE INTERFACES MODULE ==================== -->
+
+<h2 id="interfaces">Module: hardware/interfaces.py</h2>
+
+<p>Interfaces for hardware components, including flight controllers, microcontrollers, and <strong>Hall sensor arrays</strong>.</p>
+
+<div class="class">
+    <h3>Class: FlightControllerInterface</h3>
+    <p>Interface for PX4 or ArduPilot using pymavlink.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>connection_string</code> (str): MAVLink connection<br>
+        • <code>baudrate</code> (int): For serial<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>send_rc_override(channels)</code> - Override RC channels<br>
+        • <code>arm_vehicle()</code> - Arm motors<br>
+        • <code>disarm_vehicle()</code> - Disarm motors
+    </div>
+</div>
+
+<div class="class">
+    <h3>Class: MicrocontrollerPWMInterface</h3>
+    <p>Serial interface for PWM control on ESP32/Teensy.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>port</code> (str): Serial port<br>
+        • <code>baudrate</code> (int)<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>set_pwm(pin, frequency, duty_cycle)</code> - Set PWM output<br>
+        • <code>pulse_mada(pin, frequency=50, duration=1.0, bursts=10)</code> - Pulse MADA unit<br>
+        • <code>close()</code> - Close serial connection
+    </div>
+</div>
+
+<div class="class new">
+    <h3>🆕 Class: HallSensor3Axis (Recommended Implementation)</h3>
+    <p>Interface for 3-axis Hall sensor at MADA unit.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>i2c_address</code> (int): I2C address (e.g., 0x0C)<br>
+        • <code>calibration_offset</code> (np.array): Zero-field offset [Bx, By, Bz]<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>read_field()</code> - Returns np.array [Bx, By, Bz] in Tesla<br>
+        • <code>calibrate_zero_field(num_samples=100)</code> - Calibrate offset<br>
+        • <code>get_field_magnitude()</code> - Returns scalar field strength
+    </div>
+    <div class="note">
+        <strong>Note:</strong> Implementation depends on specific Hall sensor model (Allegro A1324, Melexis MLX90393, etc.). Refer to sensor datasheet for I2C protocol.
+    </div>
+</div>
+
+<div class="class">
+    <h3>Class: RealTimeControlNode (Node)</h3>
+    <p>ROS2 Node for low-latency control loops.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>loop_period</code> (float): Timer period (s)<br>
+        <br>
+        <strong>Methods:</strong><br>
+        • <code>control_loop_callback()</code> - Override for custom logic
+    </div>
+    <div class="note">
+        <strong>Suggested Enhancement:</strong> Add Hall sensor subscribers for real-time convergence monitoring.
+    </div>
+</div>
+
+<!-- ==================== REFINE EQUATIONS MODULE ==================== -->
+
+<h2 id="refine">Module: experiments/refine_equations.py</h2>
+
+<p>Scripts to refine EGDPP equations based on empirical data.</p>
+
+<div class="function">
+    <h3>Function: beta_spin0(chi, params)</h3>
+    <p>RG beta function for spin-0.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float)<br>
+        • <code>params</code> (tuple): (g, λ)<br>
+        <br>
+        <strong>Returns:</strong> float: β_χ
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: beta_spin2(chi, params)</h3>
+    <p>RG beta function for spin-2.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float)<br>
+        • <code>params</code> (tuple): (η_χ, c, g)<br>
+        <br>
+        <strong>Returns:</strong> float: β_χ
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: beta_general(chi, params)</h3>
+    <p>General data-derived beta function.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>chi</code> (float)<br>
+        • <code>params</code> (tuple): (a, b)<br>
+        <br>
+        <strong>Returns:</strong> float: β_χ
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: solve_rg_flow(beta_func, params, chi0, t)</h3>
+    <p>Solve the RG flow ODE.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>beta_func</code> (Callable)<br>
+        • <code>params</code> (tuple)<br>
+        • <code>chi0</code> (float): Initial χ<br>
+        • <code>t</code> (np.ndarray): ln μ values<br>
+        <br>
+        <strong>Returns:</strong> np.ndarray: χ(t)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: fit_rg_model(data_file, beta_func, initial_params, bounds=None)</h3>
+    <p>Fit the RG model to empirical data.</p>
+    <div class="params">
+        <strong>Parameters:</strong><br>
+        • <code>data_file</code> (str): CSV path<br>
+        • <code>beta_func</code> (Callable)<br>
+        • <code>initial_params</code> (list)<br>
+        • <code>bounds</code> (tuple): Optional<br>
+        <br>
+        <strong>Returns:</strong> tuple: (popt, pcov)
+    </div>
+</div>
+
+<div class="function">
+    <h3>Function: plot_fit(t_data, chi_data, popt, beta_name)</h3>
+    <p>Plot the fitted RG flow against data.</p>
+</div>
+
+<div class="function">
+    <h3>Function: main()</h3>
+    <p>Main entry for fitting models.</p>
+</div>
+
+<!-- ==================== USAGE EXAMPLES ==================== -->
+
+<h2>Usage Examples with MADA Convergence</h2>
+
+<div class="note">
+    <h3>Example 1: Basic Convergence Check</h3>
+    <pre><code>from simulations.equations import (
+    calculate_convergence_quality,
+    validate_mada_convergence
+)
+import numpy as np
+
+# Read from Hall sensors
+B1 = np.array([-50.0, 0.0, 0.0])  # MADA 1 field vector (T)
+B2 = np.array([50.0, 0.0, 0.0])   # MADA 2 field vector (T)
+
+# Quick quality check
+quality = calculate_convergence_quality(B1, B2)
+print(f"Convergence quality: {quality:.3f}")
+
+# Detailed validation
+result = validate_mada_convergence(B1, B2)
+print(f"Status: {result['status']}")
+print(f"Message: {result['message']}")
+
+if not result['is_valid']:
+    print("⚠️ WARNING: MADA fields not properly opposing!")
+</code></pre>
+</div>
+
+<div class="note">
+    <h3>Example 2: Safe Opposing Field Calculation</h3>
+    <pre><code>from simulations.equations import opposing_field_with_validation
+
+# Calculate with automatic validation
+try:
+    B_opp, conv_info = opposing_field_with_validation(
+        m1=100, m2=100, d=0.6,
+        B1_vec=B1, B2_vec=B2
+    )
+    print(f"B_opposing = {B_opp:.2f} T")
+    print(f"Convergence: {conv_info['status']}")
+except ValueError as e:
+    print(f"ERROR: {e}")
+    # Handle misconfiguration
+</code></pre>
+</div>
+
+<div class="note">
+    <h3>Example 3: Flight Loop with Convergence Monitoring</h3>
+    <pre><code>from testing.logging import FlightLogger
+from simulations.equations import calculate_convergence_quality
+
+logger = FlightLogger()
+
+while flying:
+    # Read sensors
+    B1 = hall_sensor_1.read_field()
+    B2 = hall_sensor_2.read_field()
+    accel = imu.read_acceleration()
+    # ... other sensors
+    
+    # Calculate convergence
+    quality = calculate_convergence_quality(B1, B2)
+    
+    # Log everything
+    logger.log({
+        'accel_x': accel[0], 'accel_y': accel[1], 'accel_z': accel[2],
+        'B1_x': B1[0], 'B1_y': B1[1], 'B1_z': B1[2],
+        'B2_x': B2[0], 'B2_y': B2[1], 'B2_z': B2[2],
+        'mada_convergence_quality': quality,
+        # ... other data
+    })
+    
+    # Safety check
+    if quality < 0.80:
+        emergency_landing()
+        break
+</code></pre>
+</div>
+
+<div class="note">
+    <h3>Example 4: Visualize MADA Configuration</h3>
+    <pre><code>from cad.flux_visualizer import (
+    generate_dual_mada_flux_map,
+    plot_mada_convergence_diagram
+)
+
+# Generate flux map
+X, Y, Z, U, V, W, B1, B2, quality = generate_dual_mada_flux_map(
+    grid_size=30,
+    B_mag=50.0,
+    converging=True  # Set False to see incorrect config
+)
+
+print(f"Convergence quality: {quality:.3f}")
+
+# Visualize
+plot_mada_convergence_diagram(B1, B2, convergence_quality=quality)
+</code></pre>
+</div>
+
+<!-- ==================== IMPORTANT REMINDERS ==================== -->
+
+<h2>⚠️ Critical Reminders for API Users</h2>
+
+<div class="note" style="background: #fff3cd; border-left-color: #ffc107;">
+    <h3>MADA Convergence Best Practices</h3>
+    <ol>
+        <li><strong>Always validate before flight:</strong> Run convergence checks during pre-flight calibration</li>
+        <li><strong>Monitor in real-time:</strong> Log convergence quality every control loop iteration</li>
+        <li><strong>Use safe functions:</strong> Prefer <code>opposing_field_with_validation()</code> over <code>opposing_field()</code></li>
+        <li><strong>Set thresholds:</strong> 
+            <ul>
+                <li>Quality ≥ 0.95: Optimal operation</li>
+                <li>Quality 0.85-0.95: Acceptable, monitor</li>
+                <li>Quality 0.80-0.85: Warning, reduce thrust</li>
+                <li>Quality < 0.80: Critical, emergency landing</li>
+            </ul>
+        </li>
+        <li><strong>Visualize during development:</strong> Use flux_visualizer.py to verify CAD configurations</li>
+        <li><strong>Test with both configurations:</strong> Verify code detects diverging fields (converging=False)</li>
+    </ol>
+</div>
+
+<div class="note" style="background: #f8d7da; border-left-color: #d63031;">
+    <h3>Common Mistakes to Avoid</h3>
+    <ul>
+        <li>❌ Using <code>opposing_field()</code> without validating field directions first</li>
+        <li>❌ Assuming positive thrust values mean correct configuration</li>
+        <li>❌ Not logging convergence quality during flights</li>
+        <li>❌ Ignoring convergence warnings during testing</li>
+        <li>❌ Using scalar Hall sensors instead of 3-axis sensors</li>
+        <li>❌ Not testing with intentionally wrong configurations</li>
+    </ul>
+</div>
+
+<hr>
+
+<p><em>Last updated: November 02, 2025</em></p>
+<p><em>For questions or contributions, see the main repository README.</em></p>
+
+</body>
+</html>

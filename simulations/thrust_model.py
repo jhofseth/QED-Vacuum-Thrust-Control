@@ -587,24 +587,8 @@ def calculate_thrust_params(
 
 
 # =============================================================================
-# Aerodynamic and Structural Functions
+# Structural Functions
 # =============================================================================
-
-def compute_lift_drag_ratio(alpha: float = 0.0, v: float = SimulationConfig.VELOCITY) -> float:
-    """
-    Compute lift-to-drag ratio (simplified model).
-    
-    Args:
-        alpha: Angle of attack (radians)
-        v: Velocity (m/s)
-    
-    Returns:
-        Lift-to-drag ratio
-    """
-    Cl = 2 * np.pi * alpha  # Thin airfoil approximation
-    Cd = 0.01 + (Cl**2) / (np.pi * 5)  # AR=5 assumption
-    return Cl / Cd if abs(Cd) > EPSILON else 0.0
-
 
 def fea_structural_check(accel: float, mass: float = SimulationConfig.MASS, 
                          safety_factor: float = 1.5) -> bool:

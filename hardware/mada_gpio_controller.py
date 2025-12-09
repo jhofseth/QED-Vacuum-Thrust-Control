@@ -1,7 +1,7 @@
 """
 hardware/mada_gpio_controller.py
 
-Raspberry Pi GPIO controller for MADA (Magnetic Array Diamagnetic Amplifier) units.
+Raspberry Pi GPIO controller for MADA (Magnetic Amplification and Direction Assembly) units.
 Provides independent control of azimuth and elevation stepper motors for each MADA.
 
 HARDWARE REQUIREMENTS:

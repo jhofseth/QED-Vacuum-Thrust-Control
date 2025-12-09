@@ -1,5 +1,5 @@
 """
-simulations/thrust_model.py (Version 4)
+simulations/thrust_model.py (Version 5 - with MADA GPIO Integration)
 
 Extended thrust model simulation with multiple modes and MADA validation:
 - Single calculation with comprehensive validation
@@ -8,6 +8,7 @@ Extended thrust model simulation with multiple modes and MADA validation:
 - Real-time sensor monitoring with MADA convergence tracking
 - Parametric sweeps and optimization
 - CFD integration capabilities
+- **NEW: Raspberry Pi GPIO control for physical MADA units**
 
 CRITICAL: Includes MADA convergence validation to prevent misconfigured magnetic fields
 """
@@ -136,6 +137,15 @@ except ImportError:
     class FlightControllerInterface:
         def __init__(self):
             raise ImportError("Hardware interface not available")
+
+# ==================== INSERTION POINT 1: MADA GPIO IMPORTS ====================
+try:
+    from hardware.mada_gpio_controller import MADAGPIOController, integrate_with_mada_validation
+    MADA_GPIO_AVAILABLE = True
+except ImportError:
+    MADA_GPIO_AVAILABLE = False
+    logging.warning("MADA GPIO controller not available")
+# ==============================================================================
 
 # Configure logging with proper namespace
 logger = logging.getLogger(__name__)
@@ -552,6 +562,356 @@ def calculate_thrust_params(
         F_mag_prelim = np.linalg.norm(F_vec_prelim)
         T_prelim = total_thrust(args.n_units, F_mag_prelim, SimulationConfig.ETA, SimulationConfig.THETA)
         
+        validation_result = validator.full_validation(
+            B_total, field_vectors, SimulationConfig.GRAD_H2, T_prelim
+        )
+        
+        for check_name, check_result in validation_result['checks'].items():
+            status = "✓" if check_result['valid'] else "✗"
+            logger.info(f"{status} {check_name.capitalize()}: {check_result['message']}")
+        
+        if not validation_result['valid']:
+            logger.error("\n✗ MADA VALIDATION FAILED")
+            for error in validation_result['errors']:
+                logger.error(f"  - {error}")
+            logger.error("\nCANNOT PROCEED - Fix MADA configuration!")
+            sys.exit(1)
+        else:
+            logger.info("\n✓ MADA VALIDATION PASSED")
+    
+    logger.info(f"\n{'─' * 60}")
+    logger.info("FORCE & THRUST CALCULATIONS")
+    logger.info(f"{'─' * 60}")
+    
+    try:
+        T, a, P, eta, R, B_total = calculate_thrust_params(
+            args, B_opposing=B, verbose=args.verbose,
+            validate_mada=False  # Already validated above if enabled
+        )
+    except MADAValidationError as e:
+        logger.error(f"MADA validation failed: {e}")
+        sys.exit(1)
+    
+    F_vec = force_vector(
+        args.chi, B_total, SimulationConfig.GRAD_H2,
+        SimulationConfig.AREA, SimulationConfig.RHO
+    )
+    F_mag = np.linalg.norm(F_vec)
+    logger.info(f"Force per Unit: {F_mag:.2f} N")
+    if args.verbose:
+        logger.info(f"  Force Vector: {F_vec}")
+    
+    logger.info(f"Total Thrust: {T:.2f} N ({T/1000:.2f} kN)")
+    
+    a_g = a / 9.81
+    logger.info(f"Acceleration: {a:.2f} m/s² ({a_g:.2f}g)")
+    
+    logger.info(f"\n{'─' * 60}")
+    logger.info("PERFORMANCE METRICS")
+    logger.info(f"{'─' * 60}")
+    
+    logger.info(f"Power Consumption: {P:.2f} W ({P/1000:.2f} kW)")
+    logger.info(f"System Efficiency: {eta:.2f}%")
+    logger.info(f"  (at v = {SimulationConfig.VELOCITY} m/s = Mach {SimulationConfig.VELOCITY/SPEED_OF_SOUND:.2f})")
+    
+    logger.info(f"Estimated Range: {R/1000:.2f} km ({R/1609.34:.2f} miles)")
+    logger.info(f"  (with {SimulationConfig.ENERGY/3600000:.0f} kWh energy)")
+    
+    logger.info(f"\n{'─' * 60}")
+    logger.info("PERFORMANCE PROJECTIONS")
+    logger.info(f"{'─' * 60}")
+    
+    mach_26_speed = 26 * SPEED_OF_SOUND
+    time_to_mach26 = mach_26_speed / a if a > EPSILON else float('inf')
+    logger.info(f"Time to Mach 26: {time_to_mach26:.2f} seconds ({time_to_mach26/60:.2f} minutes)")
+    logger.info(f"  (assuming constant acceleration)")
+    
+    weight = args.mass * 9.81
+    twr = T / weight if weight > EPSILON else 0
+    logger.info(f"Thrust-to-Weight Ratio: {twr:.2f}")
+    
+    # Aerodynamic checks
+    ldr = compute_lift_drag_ratio()
+    logger.info(f"Lift-to-Drag Ratio: {ldr:.2f}")
+    
+    structural_ok = fea_structural_check(a, args.mass)
+    logger.info(f"Structural Integrity under {a_g:.1f}g: {'PASS' if structural_ok else 'FAIL'}")
+    
+    # Stealth check
+    traj = non_ballistic_trajectory(np.array([0, 0, 0]), np.array([1000, 0, 0]))
+    evasion_prob = stealth_ops_check(traj, np.array([500, 0, 0]))
+    logger.info(f"Radar Evasion Probability: {evasion_prob:.2%}")
+    
+    logger.info(f"\n{'=' * 60}")
+    logger.info("SIMULATION COMPLETE")
+    logger.info(f"{'=' * 60}\n")
+
+
+# =============================================================================
+# Main Entry Point
+# =============================================================================
+
+def main() -> None:
+    """Main entry point for thrust model simulations."""
+    parser = argparse.ArgumentParser(
+        description="QED Vacuum Thrust Model - Multi-mode Simulation with MADA Validation & GPIO Control",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Simulation Modes:
+  single     - Single thrust calculation (default)
+  swarm      - Multi-drone swarm simulation with PyBullet
+  benchmark  - Compare simulation vs hardware telemetry
+  realtime   - Real-time sensor monitoring and calculation
+
+MADA Validation:
+  All modes support --validate_mada flag for convergence checking.
+  Real-time mode STRONGLY RECOMMENDS enabling MADA validation to prevent
+  misconfigured magnetic fields from causing thrust instabilities.
+
+MADA GPIO Control (NEW):
+  Real-time mode now supports Raspberry Pi GPIO control for physical MADA units.
+  Automatically enabled when mada_gpio_controller.py is available.
+  Physical stepper motors adjust MADA orientations based on Hall sensor readings.
+
+Examples:
+  python thrust_model.py --b_opposing 50 --frequency 100 --validate_mada
+  python thrust_model.py --mode swarm --num_drones 10 --scenario asymmetric --validate_mada --headless
+  python thrust_model.py --mode benchmark --telemetry_file data.csv --validate_mada
+  python thrust_model.py --mode realtime --sensor_port /dev/ttyUSB0 --validate_mada
+  python thrust_model.py --optimize --use_ml
+  python thrust_model.py --config myconfig.yaml
+        """
+    )
+    
+    # Basic parameters
+    parser.add_argument(
+        "--b_opposing", type=float, default=None,
+        help="Opposing magnetic field (T)"
+    )
+    parser.add_argument(
+        "--frequency", type=float, default=SimulationConfig.DEFAULT_FREQUENCY,
+        help=f"Pulsing frequency (Hz), default: {SimulationConfig.DEFAULT_FREQUENCY}"
+    )
+    parser.add_argument(
+        "--m1", type=float, default=SimulationConfig.M1,
+        help=f"Magnetic moment 1 (A m²), default: {SimulationConfig.M1}"
+    )
+    parser.add_argument(
+        "--m2", type=float, default=SimulationConfig.M2,
+        help=f"Magnetic moment 2 (A m²), default: {SimulationConfig.M2}"
+    )
+    parser.add_argument(
+        "--distance", type=float, default=SimulationConfig.DISTANCE,
+        help=f"Distance between magnets (m), default: {SimulationConfig.DISTANCE}"
+    )
+    parser.add_argument(
+        "--current", type=float, default=SimulationConfig.BASE_CURRENT,
+        help=f"Base current (A), default: {SimulationConfig.BASE_CURRENT}"
+    )
+    parser.add_argument(
+        "--mass", type=float, default=SimulationConfig.MASS,
+        help=f"Drone mass (kg), default: {SimulationConfig.MASS}"
+    )
+    parser.add_argument(
+        "--n_units", type=int, default=SimulationConfig.N_UNITS,
+        help=f"Number of MADA units, default: {SimulationConfig.N_UNITS}"
+    )
+    parser.add_argument(
+        "--chi", type=float, default=SimulationConfig.CHI,
+        help=f"Magnetic susceptibility, default: {SimulationConfig.CHI}"
+    )
+    parser.add_argument(
+        "--verbose", action="store_true",
+        help="Show detailed output"
+    )
+    parser.add_argument(
+        "--config", type=str, default=None,
+        help="YAML configuration file"
+    )
+    
+    # MADA validation
+    parser.add_argument(
+        "--validate_mada", action="store_true",
+        help="Enable MADA convergence validation (RECOMMENDED)"
+    )
+    parser.add_argument(
+        "--mada_tolerance", type=float, default=MADAValidationConfig.CONVERGENCE_THRESHOLD,
+        help=f"MADA convergence tolerance, default: {MADAValidationConfig.CONVERGENCE_THRESHOLD}"
+    )
+    
+    # Mode selection
+    parser.add_argument(
+        "--mode", type=str, default='single',
+        choices=['single', 'swarm', 'benchmark', 'realtime'],
+        help="Simulation mode (default: single)"
+    )
+    
+    # Swarm mode parameters
+    parser.add_argument(
+        "--num_drones", type=int, default=5,
+        help="Number of drones for swarm mode (default: 5)"
+    )
+    parser.add_argument(
+        "--scenario", type=str, default='asymmetric',
+        choices=['asymmetric', 'symmetric'],
+        help="Swarm scenario type (default: asymmetric)"
+    )
+    parser.add_argument(
+        "--simulation_time", type=float, default=60.0,
+        help="Simulation time (s) for swarm mode (default: 60)"
+    )
+    parser.add_argument(
+        "--headless", action="store_true",
+        help="Run swarm simulation in headless mode (no GUI)"
+    )
+    
+    # Benchmark mode parameters
+    parser.add_argument(
+        "--telemetry_file", type=str, default=None,
+        help="CSV file for benchmark mode"
+    )
+    
+    # Real-time mode parameters
+    parser.add_argument(
+        "--sensor_port", type=str, default='/dev/ttyUSB0',
+        help="Serial port for real-time sensor input (default: /dev/ttyUSB0)"
+    )
+    parser.add_argument(
+        "--update_interval", type=float, default=0.1,
+        help="Update interval (s) for real-time mode (default: 0.1)"
+    )
+    
+    # Optimization parameters
+    parser.add_argument(
+        "--optimize", action="store_true",
+        help="Run optimization routine"
+    )
+    parser.add_argument(
+        "--use_ml", action="store_true",
+        help="Use ML surrogate for optimization"
+    )
+    
+    # Parametric sweep
+    parser.add_argument(
+        "--sweep", type=str, default=None,
+        help="Parameter name for parametric sweep"
+    )
+    parser.add_argument(
+        "--sweep_values", type=str, default=None,
+        help="Comma-separated sweep values (e.g., '50,75,100')"
+    )
+    
+    args = parser.parse_args()
+    
+    # Load config file if provided
+    if args.config:
+        if not YAML_AVAILABLE:
+            logger.error("PyYAML not installed. Install with: pip install pyyaml")
+            sys.exit(1)
+        
+        try:
+            config_args = load_config_yaml(args.config)
+            for key, val in vars(config_args).items():
+                if hasattr(args, key) and getattr(args, key) == parser.get_default(key):
+                    setattr(args, key, val)
+        except Exception as e:
+            logger.error(f"Failed to load config file: {e}")
+            sys.exit(1)
+    
+    # Validate inputs
+    if args.mass <= 0:
+        parser.error("Mass must be positive")
+    if args.frequency <= 0:
+        parser.error("Frequency must be positive")
+    if args.n_units <= 0:
+        parser.error("Number of units must be positive")
+    if args.distance <= 0:
+        parser.error("Distance must be positive")
+    if args.chi < 0:
+        parser.error("Chi must be non-negative")
+    
+    try:
+        # Handle parametric sweep
+        if args.sweep and args.sweep_values:
+            if not PANDAS_AVAILABLE:
+                logger.error("pandas required for parametric sweep")
+                sys.exit(1)
+            
+            sweep_vals = [float(v.strip()) for v in args.sweep_values.split(',')]
+            logger.info(f"Running parametric sweep: {args.sweep} = {sweep_vals}")
+            
+            results_df = parallel_parametric_sweep(args.sweep, sweep_vals, args)
+            logger.info("\nParametric Sweep Results:")
+            logger.info(results_df.to_string(index=False))
+            
+            output_file = f'sweep_{args.sweep}.csv'
+            results_df.to_csv(output_file, index=False)
+            logger.info(f"\nResults saved to {output_file}")
+            return
+        
+        # Handle optimization
+        if args.optimize:
+            if not SCIPY_OPTIMIZE_AVAILABLE:
+                logger.error("scipy.optimize required for optimization")
+                sys.exit(1)
+            
+            logger.info("Running thrust optimization...")
+            bounds = {
+                'frequency': (50.0, 150.0),
+                'current': (10.0, 20.0)
+            }
+            
+            opt_params, max_thrust = optimize_thrust(bounds, args, args.use_ml)
+            
+            logger.info("\n" + "=" * 60)
+            logger.info("OPTIMIZATION RESULTS")
+            logger.info("=" * 60)
+            for param, val in opt_params.items():
+                logger.info(f"  {param}: {val:.2f}")
+            logger.info(f"  Maximum Thrust: {max_thrust:.2f} N")
+            logger.info("=" * 60 + "\n")
+            return
+        
+        # Route to appropriate mode
+        if args.mode == 'single':
+            single_calculation_mode(args)
+        
+        elif args.mode == 'swarm':
+            simulate_swarm(
+                args.num_drones,
+                args.scenario,
+                args.simulation_time,
+                args.verbose,
+                args.validate_mada,
+                args.headless
+            )
+        
+        elif args.mode == 'benchmark':
+            if not args.telemetry_file:
+                parser.error("--telemetry_file required for benchmark mode")
+            benchmark_with_telemetry(args.telemetry_file, args, args.verbose, args.validate_mada)
+        
+        elif args.mode == 'realtime':
+            real_time_mode(args, args.sensor_port, args.update_interval, args.verbose, args.validate_mada)
+    
+    except KeyboardInterrupt:
+        logger.info("\nSimulation interrupted by user")
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f"Simulation failed: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    # Multiprocessing guard for Windows compatibility
+    if MULTIPROCESSING_AVAILABLE:
+        mp.freeze_support()
+    main()linalg.norm(F_vec_prelim)
+        T_prelim = total_thrust(args.n_units, F_mag_prelim, SimulationConfig.ETA, SimulationConfig.THETA)
+        
         validation_result = val.full_validation(
             B_total, field_vectors, SimulationConfig.GRAD_H2, T_prelim
         )
@@ -584,6 +944,11 @@ def calculate_thrust_params(
         logger.info(f"Thrust: {T:.2f} N, Accel: {a:.2f} m/s², Power: {P:.2f} W")
     
     return T, a, P, eta_perc, R, B_total
+
+
+def compute_lift_drag_ratio() -> float:
+    """Compute lift-to-drag ratio (placeholder)."""
+    return 15.0  # Example value
 
 
 # =============================================================================
@@ -1189,6 +1554,7 @@ def real_time_mode(
     """
     Real-time mode: Read sensor data and compute thrust dynamically.
     CRITICAL: Includes MADA convergence validation to prevent misconfigured fields.
+    **NEW: Integrated with Raspberry Pi GPIO control for physical MADA units.**
     
     Args:
         args: Argument namespace with simulation parameters
@@ -1208,6 +1574,16 @@ def real_time_mode(
     # Initialize MADA validator
     validator = MADAConvergenceValidator() if validate_mada else None
     
+    # ==================== INSERTION POINT 2: INITIALIZE MADA GPIO CONTROLLER ====================
+    mada_controller = None
+    if MADA_GPIO_AVAILABLE:
+        try:
+            mada_controller = MADAGPIOController(num_madas=args.n_units)
+            logger.info("✓ MADA GPIO controller initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize MADA controller: {e}")
+    # ============================================================================================
+    
     # Initialize hardware interfaces
     mcu = None
     
@@ -1223,6 +1599,7 @@ def real_time_mode(
     
     logger.info(f"Update interval: {update_interval}s")
     logger.info(f"MADA validation: {'ENABLED' if validate_mada else 'DISABLED'}")
+    logger.info(f"MADA GPIO control: {'ENABLED' if mada_controller else 'DISABLED'}")
     logger.info(f"Number of MADA units: {args.n_units}")
     logger.info("Press Ctrl+C to stop\n")
     
@@ -1315,6 +1692,20 @@ def real_time_mode(
                     time.sleep(update_interval)
                     continue
             
+            # ==================== INSERTION POINT 3: MADA GPIO CONTROL ====================
+            # Apply MADA orientation control based on field vectors
+            if mada_controller and validate_mada and validation_passed:
+                target_direction = np.array([1.0, 0.0, 0.0])  # Thrust direction
+                try:
+                    orientations = integrate_with_mada_validation(
+                        mada_controller, field_vectors, target_direction
+                    )
+                    for mada_id, (az, el) in orientations.items():
+                        mada_controller.rotate_mada(mada_id, az, el, blocking=False)
+                except Exception as e:
+                    logger.warning(f"MADA GPIO control error: {e}")
+            # ===============================================================================
+            
             # Calculate thrust parameters
             try:
                 T, a, P, eta, R, B_total = calculate_thrust_params(
@@ -1378,6 +1769,13 @@ def real_time_mode(
             try:
                 mcu.close()
                 logger.info("Microcontroller connection closed")
+            except:
+                pass
+        
+        if mada_controller:
+            try:
+                mada_controller.cleanup()
+                logger.info("MADA GPIO controller cleaned up")
             except:
                 pass
 
@@ -1454,349 +1852,4 @@ def single_calculation_mode(args: argparse.Namespace) -> None:
             args.chi, B_total, SimulationConfig.GRAD_H2,
             SimulationConfig.AREA, SimulationConfig.RHO
         )
-        F_mag_prelim = np.linalg.norm(F_vec_prelim)
-        T_prelim = total_thrust(args.n_units, F_mag_prelim, SimulationConfig.ETA, SimulationConfig.THETA)
-        
-        validation_result = validator.full_validation(
-            B_total, field_vectors, SimulationConfig.GRAD_H2, T_prelim
-        )
-        
-        for check_name, check_result in validation_result['checks'].items():
-            status = "✓" if check_result['valid'] else "✗"
-            logger.info(f"{status} {check_name.capitalize()}: {check_result['message']}")
-        
-        if not validation_result['valid']:
-            logger.error("\n✗ MADA VALIDATION FAILED")
-            for error in validation_result['errors']:
-                logger.error(f"  - {error}")
-            logger.error("\nCANNOT PROCEED - Fix MADA configuration!")
-            sys.exit(1)
-        else:
-            logger.info("\n✓ MADA VALIDATION PASSED")
-    
-    logger.info(f"\n{'─' * 60}")
-    logger.info("FORCE & THRUST CALCULATIONS")
-    logger.info(f"{'─' * 60}")
-    
-    try:
-        T, a, P, eta, R, B_total = calculate_thrust_params(
-            args, B_opposing=B, verbose=args.verbose,
-            validate_mada=False  # Already validated above if enabled
-        )
-    except MADAValidationError as e:
-        logger.error(f"MADA validation failed: {e}")
-        sys.exit(1)
-    
-    F_vec = force_vector(
-        args.chi, B_total, SimulationConfig.GRAD_H2,
-        SimulationConfig.AREA, SimulationConfig.RHO
-    )
-    F_mag = np.linalg.norm(F_vec)
-    logger.info(f"Force per Unit: {F_mag:.2f} N")
-    if args.verbose:
-        logger.info(f"  Force Vector: {F_vec}")
-    
-    logger.info(f"Total Thrust: {T:.2f} N ({T/1000:.2f} kN)")
-    
-    a_g = a / 9.81
-    logger.info(f"Acceleration: {a:.2f} m/s² ({a_g:.2f}g)")
-    
-    logger.info(f"\n{'─' * 60}")
-    logger.info("PERFORMANCE METRICS")
-    logger.info(f"{'─' * 60}")
-    
-    logger.info(f"Power Consumption: {P:.2f} W ({P/1000:.2f} kW)")
-    logger.info(f"System Efficiency: {eta:.2f}%")
-    logger.info(f"  (at v = {SimulationConfig.VELOCITY} m/s = Mach {SimulationConfig.VELOCITY/SPEED_OF_SOUND:.2f})")
-    
-    logger.info(f"Estimated Range: {R/1000:.2f} km ({R/1609.34:.2f} miles)")
-    logger.info(f"  (with {SimulationConfig.ENERGY/3600000:.0f} kWh energy)")
-    
-    logger.info(f"\n{'─' * 60}")
-    logger.info("PERFORMANCE PROJECTIONS")
-    logger.info(f"{'─' * 60}")
-    
-    mach_26_speed = 26 * SPEED_OF_SOUND
-    time_to_mach26 = mach_26_speed / a if a > EPSILON else float('inf')
-    logger.info(f"Time to Mach 26: {time_to_mach26:.2f} seconds ({time_to_mach26/60:.2f} minutes)")
-    logger.info(f"  (assuming constant acceleration)")
-    
-    weight = args.mass * 9.81
-    twr = T / weight if weight > EPSILON else 0
-    logger.info(f"Thrust-to-Weight Ratio: {twr:.2f}")
-    
-    # Aerodynamic checks
-    ldr = compute_lift_drag_ratio()
-    logger.info(f"Lift-to-Drag Ratio: {ldr:.2f}")
-    
-    structural_ok = fea_structural_check(a, args.mass)
-    logger.info(f"Structural Integrity under {a_g:.1f}g: {'PASS' if structural_ok else 'FAIL'}")
-    
-    # Stealth check
-    traj = non_ballistic_trajectory(np.array([0, 0, 0]), np.array([1000, 0, 0]))
-    evasion_prob = stealth_ops_check(traj, np.array([500, 0, 0]))
-    logger.info(f"Radar Evasion Probability: {evasion_prob:.2%}")
-    
-    logger.info(f"\n{'=' * 60}")
-    logger.info("SIMULATION COMPLETE")
-    logger.info(f"{'=' * 60}\n")
-
-
-# =============================================================================
-# Main Entry Point
-# =============================================================================
-
-def main() -> None:
-    """Main entry point for thrust model simulations."""
-    parser = argparse.ArgumentParser(
-        description="QED Vacuum Thrust Model - Multi-mode Simulation with MADA Validation",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Simulation Modes:
-  single     - Single thrust calculation (default)
-  swarm      - Multi-drone swarm simulation with PyBullet
-  benchmark  - Compare simulation vs hardware telemetry
-  realtime   - Real-time sensor monitoring and calculation
-
-MADA Validation:
-  All modes support --validate_mada flag for convergence checking.
-  Real-time mode STRONGLY RECOMMENDS enabling MADA validation to prevent
-  misconfigured magnetic fields from causing thrust instabilities.
-
-Examples:
-  python thrust_model.py --b_opposing 50 --frequency 100 --validate_mada
-  python thrust_model.py --mode swarm --num_drones 10 --scenario asymmetric --validate_mada --headless
-  python thrust_model.py --mode benchmark --telemetry_file data.csv --validate_mada
-  python thrust_model.py --mode realtime --sensor_port /dev/ttyUSB0 --validate_mada
-  python thrust_model.py --optimize --use_ml
-  python thrust_model.py --config myconfig.yaml
-        """
-    )
-    
-    # Basic parameters
-    parser.add_argument(
-        "--b_opposing", type=float, default=None,
-        help="Opposing magnetic field (T)"
-    )
-    parser.add_argument(
-        "--frequency", type=float, default=SimulationConfig.DEFAULT_FREQUENCY,
-        help=f"Pulsing frequency (Hz), default: {SimulationConfig.DEFAULT_FREQUENCY}"
-    )
-    parser.add_argument(
-        "--m1", type=float, default=SimulationConfig.M1,
-        help=f"Magnetic moment 1 (A m²), default: {SimulationConfig.M1}"
-    )
-    parser.add_argument(
-        "--m2", type=float, default=SimulationConfig.M2,
-        help=f"Magnetic moment 2 (A m²), default: {SimulationConfig.M2}"
-    )
-    parser.add_argument(
-        "--distance", type=float, default=SimulationConfig.DISTANCE,
-        help=f"Distance between magnets (m), default: {SimulationConfig.DISTANCE}"
-    )
-    parser.add_argument(
-        "--current", type=float, default=SimulationConfig.BASE_CURRENT,
-        help=f"Base current (A), default: {SimulationConfig.BASE_CURRENT}"
-    )
-    parser.add_argument(
-        "--mass", type=float, default=SimulationConfig.MASS,
-        help=f"Drone mass (kg), default: {SimulationConfig.MASS}"
-    )
-    parser.add_argument(
-        "--n_units", type=int, default=SimulationConfig.N_UNITS,
-        help=f"Number of MADA units, default: {SimulationConfig.N_UNITS}"
-    )
-    parser.add_argument(
-        "--chi", type=float, default=SimulationConfig.CHI,
-        help=f"Magnetic susceptibility, default: {SimulationConfig.CHI}"
-    )
-    parser.add_argument(
-        "--verbose", action="store_true",
-        help="Show detailed output"
-    )
-    parser.add_argument(
-        "--config", type=str, default=None,
-        help="YAML configuration file"
-    )
-    
-    # MADA validation
-    parser.add_argument(
-        "--validate_mada", action="store_true",
-        help="Enable MADA convergence validation (RECOMMENDED)"
-    )
-    parser.add_argument(
-        "--mada_tolerance", type=float, default=MADAValidationConfig.CONVERGENCE_THRESHOLD,
-        help=f"MADA convergence tolerance, default: {MADAValidationConfig.CONVERGENCE_THRESHOLD}"
-    )
-    
-    # Mode selection
-    parser.add_argument(
-        "--mode", type=str, default='single',
-        choices=['single', 'swarm', 'benchmark', 'realtime'],
-        help="Simulation mode (default: single)"
-    )
-    
-    # Swarm mode parameters
-    parser.add_argument(
-        "--num_drones", type=int, default=5,
-        help="Number of drones for swarm mode (default: 5)"
-    )
-    parser.add_argument(
-        "--scenario", type=str, default='asymmetric',
-        choices=['asymmetric', 'symmetric'],
-        help="Swarm scenario type (default: asymmetric)"
-    )
-    parser.add_argument(
-        "--simulation_time", type=float, default=60.0,
-        help="Simulation time (s) for swarm mode (default: 60)"
-    )
-    parser.add_argument(
-        "--headless", action="store_true",
-        help="Run swarm simulation in headless mode (no GUI)"
-    )
-    
-    # Benchmark mode parameters
-    parser.add_argument(
-        "--telemetry_file", type=str, default=None,
-        help="CSV file for benchmark mode"
-    )
-    
-    # Real-time mode parameters
-    parser.add_argument(
-        "--sensor_port", type=str, default='/dev/ttyUSB0',
-        help="Serial port for real-time sensor input (default: /dev/ttyUSB0)"
-    )
-    parser.add_argument(
-        "--update_interval", type=float, default=0.1,
-        help="Update interval (s) for real-time mode (default: 0.1)"
-    )
-    
-    # Optimization parameters
-    parser.add_argument(
-        "--optimize", action="store_true",
-        help="Run optimization routine"
-    )
-    parser.add_argument(
-        "--use_ml", action="store_true",
-        help="Use ML surrogate for optimization"
-    )
-    
-    # Parametric sweep
-    parser.add_argument(
-        "--sweep", type=str, default=None,
-        help="Parameter name for parametric sweep"
-    )
-    parser.add_argument(
-        "--sweep_values", type=str, default=None,
-        help="Comma-separated sweep values (e.g., '50,75,100')"
-    )
-    
-    args = parser.parse_args()
-    
-    # Load config file if provided
-    if args.config:
-        if not YAML_AVAILABLE:
-            logger.error("PyYAML not installed. Install with: pip install pyyaml")
-            sys.exit(1)
-        
-        try:
-            config_args = load_config_yaml(args.config)
-            for key, val in vars(config_args).items():
-                if hasattr(args, key) and getattr(args, key) == parser.get_default(key):
-                    setattr(args, key, val)
-        except Exception as e:
-            logger.error(f"Failed to load config file: {e}")
-            sys.exit(1)
-    
-    # Validate inputs
-    if args.mass <= 0:
-        parser.error("Mass must be positive")
-    if args.frequency <= 0:
-        parser.error("Frequency must be positive")
-    if args.n_units <= 0:
-        parser.error("Number of units must be positive")
-    if args.distance <= 0:
-        parser.error("Distance must be positive")
-    if args.chi < 0:
-        parser.error("Chi must be non-negative")
-    
-    try:
-        # Handle parametric sweep
-        if args.sweep and args.sweep_values:
-            if not PANDAS_AVAILABLE:
-                logger.error("pandas required for parametric sweep")
-                sys.exit(1)
-            
-            sweep_vals = [float(v.strip()) for v in args.sweep_values.split(',')]
-            logger.info(f"Running parametric sweep: {args.sweep} = {sweep_vals}")
-            
-            results_df = parallel_parametric_sweep(args.sweep, sweep_vals, args)
-            logger.info("\nParametric Sweep Results:")
-            logger.info(results_df.to_string(index=False))
-            
-            output_file = f'sweep_{args.sweep}.csv'
-            results_df.to_csv(output_file, index=False)
-            logger.info(f"\nResults saved to {output_file}")
-            return
-        
-        # Handle optimization
-        if args.optimize:
-            if not SCIPY_OPTIMIZE_AVAILABLE:
-                logger.error("scipy.optimize required for optimization")
-                sys.exit(1)
-            
-            logger.info("Running thrust optimization...")
-            bounds = {
-                'frequency': (50.0, 150.0),
-                'current': (10.0, 20.0)
-            }
-            
-            opt_params, max_thrust = optimize_thrust(bounds, args, args.use_ml)
-            
-            logger.info("\n" + "=" * 60)
-            logger.info("OPTIMIZATION RESULTS")
-            logger.info("=" * 60)
-            for param, val in opt_params.items():
-                logger.info(f"  {param}: {val:.2f}")
-            logger.info(f"  Maximum Thrust: {max_thrust:.2f} N")
-            logger.info("=" * 60 + "\n")
-            return
-        
-        # Route to appropriate mode
-        if args.mode == 'single':
-            single_calculation_mode(args)
-        
-        elif args.mode == 'swarm':
-            simulate_swarm(
-                args.num_drones,
-                args.scenario,
-                args.simulation_time,
-                args.verbose,
-                args.validate_mada,
-                args.headless
-            )
-        
-        elif args.mode == 'benchmark':
-            if not args.telemetry_file:
-                parser.error("--telemetry_file required for benchmark mode")
-            benchmark_with_telemetry(args.telemetry_file, args, args.verbose, args.validate_mada)
-        
-        elif args.mode == 'realtime':
-            real_time_mode(args, args.sensor_port, args.update_interval, args.verbose, args.validate_mada)
-    
-    except KeyboardInterrupt:
-        logger.info("\nSimulation interrupted by user")
-        sys.exit(0)
-    except Exception as e:
-        logger.error(f"Simulation failed: {e}")
-        if args.verbose:
-            import traceback
-            traceback.print_exc()
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    # Multiprocessing guard for Windows compatibility
-    if MULTIPROCESSING_AVAILABLE:
-        mp.freeze_support()
-    main()
+        F_mag_prelim = np.

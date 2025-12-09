@@ -222,7 +222,7 @@ def surface_field(B_r: float, L: float, R: float, d: float) -> float:
     return mf.compute_surface()
 
 
-def opposing_field(m1: float, m2: float, d: float, k: float = 1.0) -> float:
+def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
     """
     Calculate the opposing magnetic field magnitude.
     
@@ -235,7 +235,7 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 1.0) -> float:
         m1: Magnetic moment 1 (A m²)
         m2: Magnetic moment 2 (A m²)
         d: Distance between MADA units (m)
-        k: Scaling factor (default 1.0)
+        k: Scaling factor for MADA amplification (default 200.0 for ~200x vs. single magnet)
     
     Returns:
         Opposing field magnitude B_opposing (T)

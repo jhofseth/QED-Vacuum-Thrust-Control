@@ -235,7 +235,7 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
         m1: Magnetic moment 1 (A m²)
         m2: Magnetic moment 2 (A m²)
         d: Distance between MADA units (m)
-        k: Scaling factor for MADA amplification (default 200.0 for ~200x vs. single magnet)
+        k: Scaling factor for MADA amplification (default 200.0 for ~200x vs. single magnet; may need to be set up to 529)
     
     Returns:
         Opposing field magnitude B_opposing (T)

@@ -3,8 +3,10 @@
 Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones.  Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare.  Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.
 
 
-![Alt text](assets/IMG_1846.jpeg)
-[Very Brief Sample QED Vacuum Thrust Control Video (image is .jpeg; this is .mp4)](https://drive.google.com/file/d/1_4zi3hHS7li0avwlS-Sk1KF_Y8pp4-vq/view?usp=drivesdk)
+![Experimental Setup](assets/IMG_1846.jpeg)
+*Note: The image above is static. For video sample, see link below.*
+
+**[Very Brief Sample Video: QED Vacuum Thrust Control System](https://drive.google.com/file/d/1_4zi3hHS7li0avwlS-Sk1KF_Y8pp4-vq/view?usp=drivesdk)**
 
 **[Please note: One of the most important tasks is properly shielding your QED vacuum polarization-based EMF propulsion AI control electronics.  I had two high-voltage laboratory power supplies that had to be thrown away.  They weren’t damaged due to the aforementioned AFAIK, but that will be many times your difficulty without proper shielding.  *See  [docs/shielding.pdf](docs/shielding.pdf)*]**
 

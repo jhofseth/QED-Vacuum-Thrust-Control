@@ -457,4 +457,4 @@ See [χ (Magnetic Susceptibility)](#χ-magnetic-susceptibility)
 
 This glossary is designed to evolve with the project; contributions via pull requests are encouraged (see `CONTRIBUTING.md`). For API-specific terms, consult Sphinx docs in `/docs/api`. 
 
-**Total entries**: 50+; exhaustive coverage ensures comprehensive reference for QED-EMF propulsion development.
+**Total entries**: 50+; a reference for QED-EMF propulsion development.

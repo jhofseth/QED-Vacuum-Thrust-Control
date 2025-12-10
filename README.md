@@ -4,6 +4,7 @@ Open-source control system for QED vacuum polarization-based EMF propulsion in c
 
 
 ![Alt text](assets/IMG_1846.jpeg)
+https://github.com/jhofseth/QED-Vacuum-Thrust-Control/blob/f9f68c2d8d7b32bd680ba94fd22c8680017b6e1f/assets/2025-10-20_23%3A18%3A24_video.mp4
 
 
 **[Please note: One of the most important tasks is properly shielding your QED vacuum polarization-based EMF propulsion AI control electronics.  I had two high-voltage laboratory power supplies that had to be thrown away.  They weren’t damaged due to the aforementioned AFAIK, but that will be many times your difficulty without proper shielding.  *See  [docs/shielding.pdf](docs/shielding.pdf)*]**

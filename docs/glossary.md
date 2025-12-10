@@ -1,13 +1,13 @@
 # Glossary
 
-This glossary provides an exhaustive, professional compilation of terms, acronyms, concepts, and technical vocabulary relevant to the QED-Vacuum-Thrust-Control project. It is derived from the project's theoretical foundations in quantum electrodynamics (QED), emergent gravity models, electromagnetic propulsion systems, materials science, control engineering, and simulation tools. Entries are organized alphabetically for ease of reference, with cross-references where applicable. Each entry includes:
+This glossary provides a compilation of terms, acronyms, concepts, and technical vocabulary relevant to the QED-Vacuum-Thrust-Control project. It is derived from the project's theoretical foundations in quantum electrodynamics (QED), emergent gravity models, electromagnetic propulsion systems, materials science, control engineering, and simulation tools. Entries are organized alphabetically for ease of reference, with cross-references where applicable. Each entry includes:
 
 - **Definition**: A precise, formal explanation.
 - **Project Context**: How the term applies to QED vacuum polarization-based EMF propulsion, MADA systems, AI control, and related simulations.
 - **Mathematical/Technical Details**: Relevant equations, parameters, or derivations (where applicable).
 - **References**: Key sources, including project files, patents, or literature.
 
-The glossary emphasizes empirical adaptability (e.g., modifier equations independent of specific hypotheses like EGDPP) and practical implementation for defense applications, such as high-thrust, stealthy combat drones. Terms are exhaustive, covering core physics, engineering, materials, and ancillary concepts to support researchers, engineers, and contributors.
+The glossary emphasizes empirical adaptability (e.g., modifier equations independent of specific hypotheses like EGDPP) and practical implementation for defense applications, such as high-thrust, stealthy combat drones. Terms cover core physics, engineering, materials, and ancillary concepts to support researchers, engineers, and contributors.
 
 ---
 

@@ -321,12 +321,12 @@ Full glossary available in [docs/glossary.md](docs/glossary.md).
 
 ## Roadmap
 
-- [ ] Add `experiments/` directory for bench-top test protocols
-- [ ] Add `cad/` for drone models and 3D visualizations
-- [ ] Add `testing/` for data logging and test protocols
+- [x] Add `experiments/` directory for bench-top test protocols
+- [x] Add `cad/` for drone models and 3D visualizations
+- [x] Add `testing/` for data logging and test protocols
 - [ ] Add full drone CAD models (STEP/STL formats)
 - [ ] Integrate ML for gradient optimization
-- [ ] Support for hardware interfacing (progress: `interfaces.py` and schematics added)
+- [x] Support for hardware interfacing (progress: `interfaces.py` and schematics added)
 - [ ] Develop firmware for embedded controllers
 - [ ] Create simulation-to-hardware pipeline
 

@@ -151,7 +151,7 @@ $$R = v \cdot \left( \frac{E}{P} \right)$$
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Magnetic Assembly and Direction Apparatus (MADA)
+## Magnetic Amplification and Direction Apparatus (MADA)
 
 Good news: Lockheed Martin's patented MADA makes EMF propulsion **~200-500x easier!**
 

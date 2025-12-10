@@ -95,7 +95,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: A dimensionless measure of a material's or vacuum's magnetization response to an applied magnetic field, $\chi = \frac{M}{H}$.
 - **Project Context**: Key parameter in thrust equations, modified by RG flows for QED vacuum effects; requires experimental calibration via modifier equation for simulation accuracy.
-- **Mathematical/Technical Details**: Appears in force $\mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho$ and Lagrangian $\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$.
+- **Mathematical/Technical Details**: Appears in force $\mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho$ and Lagrangian $\mathcal{L}\_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h\_{\mu\nu} h^{\mu\nu}$.
 - **References**: Useful Equations; EGDPP model.
 
 ### Combat Drones
@@ -213,7 +213,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Small deviation from Minkowski metric in linearized gravity, $g_{\mu\nu} = \eta_{\mu\nu} + h_{\mu\nu}$.
 - **Project Context**: Couples to QED disruptions in EGDPP, sourcing emergent gravitational effects in thrust gradients.
-- **Mathematical/Technical Details**: In Lagrangian $\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$; gauge-fixed via harmonic condition.
+- **Mathematical/Technical Details**: In Lagrangian $\mathcal{L}\_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h\_{\mu\nu} h^{\mu\nu}$; gauge-fixed via harmonic condition.
 - **References**: Useful Equations.
 
 ---
@@ -235,7 +235,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The disruption term in the effective action coupling electromagnetic fields to metric perturbations.
 - **Project Context**: Models photon pair disruptions leading to emergent forces in propulsion simulations.
-- **Mathematical/Technical Details**: $\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$.
+- **Mathematical/Technical Details**: $\mathcal{L}\_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h\_{\mu\nu} h^{\mu\nu}$.
 - **References**: Useful Equations.
 
 ---

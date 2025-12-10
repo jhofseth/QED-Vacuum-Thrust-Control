@@ -326,7 +326,7 @@ Full glossary available in [docs/glossary.md](docs/glossary.md).
 - [x] Add `testing/` for data logging and test protocols
 - [ ] Add full drone CAD models (STEP/STL formats)
 - [ ] Integrate ML for gradient optimization
-- [x] Support for hardware interfacing (progress: `interfaces.py` and schematics added)
+- [x] Support for hardware interfacing (progress: `interfaces.py` but schematics not yet added)
 - [ ] Develop firmware for embedded controllers
 - [ ] Create simulation-to-hardware pipeline
 

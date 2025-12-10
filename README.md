@@ -155,7 +155,7 @@ $$R = v \cdot \left( \frac{E}{P} \right)$$
 
 Good news: Lockheed Martin's patented MADA makes EMF propulsion **~200-500x easier!**
 
-Based on the physical laws governing magnetic fields and the specific text from Lockheed Martin Corporation's [U.S. Patent 5,929,732](https://patents.google.com/patent/US5929732A/en) regarding a "Apparatus and Method for Amplifying a Magnetic Beam", here is the breakdown of the amplification implied.
+Based on the physical laws governing magnetic fields and the specific text from Lockheed Martin Corporation's [U.S. Patent 5,929,732](https://patents.google.com/patent/US5929732A/en) regarding an "Apparatus and Method for Amplifying a Magnetic Beam", here is the breakdown of the amplification implied.
 
 To achieve the effect described—lifting an object at 6 inches that a standard magnet can only lift at 1 inch—the magnetic assembly would effectively require an amplification of the source **B value** (magnetic field strength) of approximately **216 to 529 times**, depending on the magnetic saturation of the object.
 

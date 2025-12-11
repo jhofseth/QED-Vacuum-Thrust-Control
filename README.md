@@ -229,7 +229,7 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
 
 ### Lockheed Martin Skunk Works’ Implementation of MADA in a Midsize CIA Air Branch Saucer-Shaped Mothership
 
-See [Observational Insights](insights.md).
+See [Observational Insights](docs/insights.md).
 
 ## Getting Started
 

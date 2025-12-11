@@ -78,4 +78,4 @@ I have created designs similar to this one, but I prefer alternatives.
 
 ## Related Documentation
 
-See the main [README](README.md) for additional technical details and implementation notes.
+See the main [README](../README.md) for additional technical details and implementation notes.

@@ -59,7 +59,7 @@ The system leverages QED vacuum polarization, where strong opposing magnetic fie
 Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety.  The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows.  A public experiment is needed to confirm the RG modifier equation for χ (i.e., or any modifier equation), as simulations require it for proper EMF propulsion functionality.  Options include the current spin-0 emergent version, the old spin-2 emergent version, or an alternative modifier equation derived from experimental data; the system is neutral and adaptable.  I really don't care about my paper's hypothesis (i.e., EDGPP), because EMF propulsion *demonstrably* occurs and it 100% *requires* some modifier equation.  All I care about is truth, and QED vacuum polarization-based EMF propulsion is 100% truth that doesn't depend upon EGDPP—only upon a modifier equation.
 
 **For more on environmental interactions:**
-- [Interaction Mechanisms](docs/theory/mechanism.md) - How the QED vacuum thrust system interacts with aerodynamic, hydrodynamic, and acoustic barriers
+- [Interaction Mechanisms](docs/mechanism.md) - How the QED vacuum thrust system interacts with aerodynamic, hydrodynamic, and acoustic barriers
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

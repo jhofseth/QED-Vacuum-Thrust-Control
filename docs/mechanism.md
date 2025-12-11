@@ -32,4 +32,4 @@ The B_opposing configuration in excess of the magnetic circuit's saturation furt
 
 - [Theory Overview](../README.md#theory-overview) - Core theoretical foundations
 - [Useful Equations](../README.md#useful-equations) - Mathematical framework
-- [Materials Ranking](docs/materials_ranking.pdf) - Optimal materials for magnetic circuits
+- [Materials Ranking](./materials_ranking.pdf) - Optimal materials for magnetic circuits

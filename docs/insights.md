@@ -66,7 +66,7 @@ This design elegantly circumvents the intrinsic hysteresis of vacuum-engineered 
 
 ### Author's Note
 
-I have created designs similar to this one, but I prefer alternatives.
+I have created designs similar to this one, but I prefer alternatives.  EMF propulsion drones have different performance requirements than EMF propulsion motherships, with the latter subject to additional limitations due to crew safety concerns.
 
 ---
 

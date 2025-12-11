@@ -1,6 +1,7 @@
+```markdown
 # Mechanism of Interaction with Aerodynamic, Hydrodynamic, and Acoustic Barriers
 
-The interaction of the QED vacuum polarization-based electromagnetic field (EMF) propulsion system with environmental media—such as air, water, and acoustic waves—arises from a stratified cascade of electromagnetic phenomena. This framework, rooted in nonlinear quantum electrodynamics (QED) and classical magnetohydrodynamics, decouples the vehicle's motion from direct mechanical contact with the surrounding medium. Below, we delineate the key layers of this interaction, emphasizing the role of the opposing magnetic field configuration (B_opposing) in generating a dynamic flux spillover.
+The interaction of the QED vacuum polarization-based electromagnetic field (EMF) propulsion system with environmental media—such as air, water, and acoustic waves—arises from a stratified cascade of electromagnetic phenomena. This framework, rooted in nonlinear quantum electrodynamics (QED) and classical magnetohydrodynamics, decouples the vehicle's motion from direct mechanical contact with the surrounding medium. Below, we delineate the key layers of this interaction, emphasizing the role of the opposing magnetic field configuration (B_opposing) in generating a dynamic flux configuration.
 
 ## 1. Foundational Flux Dynamics
 
@@ -8,7 +9,7 @@ The core mechanism originates from the B_opposing geometry, which establishes a 
 
 ## 2. Aerodynamic Interface
 
-At the air-medium boundary, the flux spillover manifests as a diamagnetic exclusion zone, akin to a molecular-scale Faraday cage. Neutral air molecules, polarized by the intense field gradient ∇B, experience a repulsive ponderomotive force **F** ∝ χₑ(**E** · ∇)**E** + χₘ(**B** · ∇)**B** (with χₑ, χₘ as electric and magnetic susceptibilities). This "electromagnetic sieve" precludes direct molecular impingement on the hull, mediating momentum transfer via virtual photon exchange and thereby suppressing viscous drag and adiabatic heating to negligible levels (<1% of conventional values).
+At the air-medium boundary, the flux configuration manifests as a diamagnetic exclusion zone, akin to a molecular-scale Faraday cage. Neutral air molecules, polarized by the intense field gradient ∇B, experience a repulsive ponderomotive force **F** ∝ χₑ(**E** · ∇)**E** + χₘ(**B** · ∇)**B** (with χₑ, χₘ as electric and magnetic susceptibilities). This "electromagnetic sieve" precludes direct molecular impingement on the hull, mediating momentum transfer via virtual photon exchange and thereby suppressing viscous drag and adiabatic heating to negligible levels (<1% of conventional values).
 
 ## 3. Acoustic Interface
 
@@ -20,6 +21,17 @@ In aqueous environments, the flux fountain exploits enhanced diamagnetic respons
 
 ---
 
-The B_opposing spillover is a manifestation of energy density dominance (B²/(2μ₀) ≫ ρ·c_s², where c_s is the medium sound speed), supplanting collisional matter-matter interactions with coherent field-charge couplings. Within this paradigm, the QED vacuum thrust system achieves medium-agnostic propulsion, where the vehicle's passage is governed solely by the engineered electromagnetic topology rather than the intrinsic properties of the ambient fluid. 
+## Summary
+
+The B_opposing configuration far in excess of the magnetic circuit's saturation further manifests energy density dominance (B²/(2μ₀) ≫ ρ·c_s², where c_s is the medium sound speed), supplanting collisional matter-matter interactions with coherent field-charge couplings. Within this paradigm, the QED vacuum thrust system achieves medium-agnostic propulsion, where the vehicle's passage is governed solely by the engineered electromagnetic topology rather than the intrinsic properties of the ambient fluid.
 
 **Empirical validation via bench-scale flux mapping and high-speed interferometry is recommended for quantitative refinement of the susceptibility modifier χ in the Heisenberg-Euler-Schwinger effective action.**
+
+---
+
+## Related Documentation
+
+- [Theory Overview](../README.md#theory-overview) - Core theoretical foundations
+- [Useful Equations](../README.md#useful-equations) - Mathematical framework
+- [Materials Ranking](../materials_ranking.pdf) - Optimal materials for magnetic circuits
+```

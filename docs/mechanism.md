@@ -22,7 +22,7 @@ In aqueous environments, the flux fountain exploits enhanced diamagnetic respons
 
 ## Summary
 
-The B_opposing configuration far in excess of the magnetic circuit's saturation further manifests energy density dominance (B²/(2μ₀) ≫ ρ·c_s², where c_s is the medium sound speed), supplanting collisional matter-matter interactions with coherent field-charge couplings. Within this paradigm, the QED vacuum thrust system achieves medium-agnostic propulsion, where the vehicle's passage is governed solely by the engineered electromagnetic topology rather than the intrinsic properties of the ambient fluid.
+The B_opposing configuration in excess of the magnetic circuit's saturation further manifests energy density dominance (B²/(2μ₀) ≫ ρ·c_s², where c_s is the medium sound speed), supplanting collisional matter-matter interactions with coherent field-charge couplings. Within this paradigm, the QED vacuum thrust system achieves medium-agnostic propulsion, where the vehicle's passage is governed solely by the engineered electromagnetic topology rather than the intrinsic properties of the ambient fluid.
 
 **Empirical validation via bench-scale flux mapping and high-speed interferometry is recommended for quantitative refinement of the susceptibility modifier χ in the Heisenberg-Euler-Schwinger effective action.**
 

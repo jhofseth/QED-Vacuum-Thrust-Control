@@ -229,7 +229,7 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
 
 ### Lockheed Martin Skunk Works’ Implementation of MADA in a Midsize CIA Air Branch Saucer-Shaped Mothership
 
-Nonlinear QED Propulsion Modulation in Lockheed Martin Skunk Works Designs: Insights from Observational Data, see [Observational Insights](insights.md).
+See [Observational Insights](insights.md).
 
 ## Getting Started
 

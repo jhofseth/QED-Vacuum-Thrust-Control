@@ -1,4 +1,3 @@
-```markdown
 # Mechanism of Interaction with Aerodynamic, Hydrodynamic, and Acoustic Barriers
 
 The interaction of the QED vacuum polarization-based electromagnetic field (EMF) propulsion system with environmental media—such as air, water, and acoustic waves—arises from a stratified cascade of electromagnetic phenomena. This framework, rooted in nonlinear quantum electrodynamics (QED) and classical magnetohydrodynamics, decouples the vehicle's motion from direct mechanical contact with the surrounding medium. Below, we delineate the key layers of this interaction, emphasizing the role of the opposing magnetic field configuration (B_opposing) in generating a dynamic flux configuration.
@@ -34,4 +33,3 @@ The B_opposing configuration far in excess of the magnetic circuit's saturation 
 - [Theory Overview](../README.md#theory-overview) - Core theoretical foundations
 - [Useful Equations](../README.md#useful-equations) - Mathematical framework
 - [Materials Ranking](../materials_ranking.pdf) - Optimal materials for magnetic circuits
-```

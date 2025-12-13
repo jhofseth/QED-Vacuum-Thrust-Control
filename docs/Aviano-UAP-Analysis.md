@@ -1,5 +1,7 @@
 # Unveiling the Aviano Enigma: QED Vacuum Propulsion, MADA Emitters, and Stealth Cooling in a Saucer Prototype from ~2002 or Earlier
 
+![Alt text](assets/IMG_0848.jpeg)
+
 ## Original Video Source
 
 **Aviano Enigma: Saucer Shadows Over NATO Skies – Unveiling QED Propulsion and Cloaked Emitters (2005 MUFON Reveal).MKV**

@@ -2,11 +2,9 @@
 
 ![Alt text](../assets/IMG_2380.png)
 
-## Original Video Source
+## Original Video
 
-**Aviano Enigma: Saucer Shadows Over NATO Skies – Unveiling QED Propulsion and Cloaked Emitters (2005 MUFON Reveal).MKV**
-
-[View Video](https://drive.google.com/file/d/10PTn_BEgk8gQH9wYbGXGgJfo4bdWiVvQ/view?usp=drivesdk)
+[Aviano Enigma: Saucer Shadows Over NATO Skies – Unveiling QED Propulsion and Cloaked Emitters (2005 MUFON Reveal)](https://drive.google.com/file/d/10PTn_BEgk8gQH9wYbGXGgJfo4bdWiVvQ/view?usp=drivesdk)
 
 ---
 

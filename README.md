@@ -62,7 +62,7 @@ Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which
 - [Interaction Mechanisms](docs/mechanism.md) - How the QED vacuum thrust system interacts with aerodynamic, hydrodynamic, and acoustic barriers
 
 **For a case study of MADA emitters and QED vacuum propulsion in action:**
-- [Aviano UAP Analysis](./Aviano-UAP-Analysis.md) documenting 2005 footage from near Aviano NATO Air Base in Italy
+- [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md) documenting 2005 footage from near Aviano NATO Air Base in Italy
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

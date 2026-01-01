@@ -92,13 +92,14 @@ Prioritizes cobalt-free options for low-cost scalability.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Comprehensive Tactical Toolkit: Propulsion Equations in Disformal QED-Emergent Gravity (DQED-EG)
+## Useful Equations
+### Comprehensive Tactical Toolkit: Propulsion Equations in the Unified Field Framework
 
-These equations constitute the updated practical toolkit derived from the refined **Disformal QED-Emergent Gravity: The Grand Unification of the 95 GeV Resonance, Vacuum Refractive Optics, and Metric Engineering** (i.e., DQED-EG Theory, white paper accessed December 31, 2025). The shift to a pure disformal scalar $\phi$ eliminates prior tensor ambiguities, grounding propulsion in vacuum refractive index gradients sourced by strong magnetic fields. All terms are tree-level geometric or strong-field catalyzed; effects speculative and gradient-dependent.
+These equations constitute the updated practical toolkit derived from **The Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation** (i.e., Unified Field Theory, accessed January 1, 2026). The framework centers on vacuum refractive index gradients modulated by the 95 GeV scalar resonance, with non-linear enhancements via the Axion-Scalar (AS) parameter. All terms are derived from Euler-Heisenberg action, disformal coupling, and resonant contributions; effects speculative and gradient-dependent.
 
 #### Magnetic Field Inputs
 
-High opposing gradients maximize $\mathcal{F}$ and $\nabla \phi$.
+High opposing gradients maximize vacuum stress and $\nabla n$.
 
 **Precise Axial Field (for solenoid/Halbach stacks):**
 
@@ -116,53 +117,58 @@ $$B_{\text{gap}} \approx \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
 
 $$\frac{dB}{dt} = \mu_0 n \frac{dI}{dt}, \quad \Delta B \approx \mu_0 n \Delta I$$
 
-These feed $\mathcal{F} \approx 2B^2$, the primary scalar source.
+These feed vacuum nonlinearity scaling with $B^2$.
 
-#### Disformal Scalar and Vacuum Optics
+#### Vacuum Polarization and Refractive Index
 
-The "modifier field" is the disformal scalar $\phi$.
+**Non-Linearity Coefficient (Total):**
 
-**Equation of Motion (Primary Simulation Driver):**
+$$\xi_{\text{total}} = \xi_{\text{QED}} + \xi_{\text{AS}}$$
 
-$$\Box \phi + m_\phi^2 \phi = \beta_{\text{coupling}} \mathcal{F}$$
+- $\xi_{\text{QED}}$: Standard Euler-Heisenberg term.
+- $\xi_{\text{AS}}$: Resonant Axion-Scalar contribution from 95 GeV dilaton.
 
-- $\mathcal{F} = F_{\mu\nu} F^{\mu\nu} = 2(B^2 - E^2)$
-- $\beta_{\text{coupling}}$: Euler-Heisenberg + catalysis coefficient
-- Quasi-static: $\phi \approx \beta \int \mathcal{F} \, dV \propto B^2$
+**Effective Susceptibility:**
 
-**Effective Refractive Index (Repository "refractive_index"):**
+$$\chi_{\text{eff}} \approx 24 A_{\text{total}} B^2$$
 
-$$n^2(x) = 1 + \chi \phi(x) \approx 1 + \chi \beta B^2(x)$$
+($A_{\text{total}}$ enhanced by AS resonance.)
 
-(Directly controls vacuum polarization gradients.)
+**Effective Refractive Index:**
 
-#### Thrust and Performance
+$$n^2(x) \approx 1 + \xi_{\text{total}} B^2(x)$$
 
-Force emerges from disformal vacuum response to field inhomogeneity.
+(Directly links to metric deformation.)
 
-**Local Force Density (Gordon-like):**
+#### Thrust and Levitation Performance
 
-$$\mathbf{f}(x) = \xi (B^2 - E^2) \nabla \phi \approx \xi B^2 \nabla \phi$$
+**Local Vacuum Force Density:**
 
-**Total Thrust (Integrated Over Volume):**
+$$\mathbf{f}(x) \approx -\frac{1}{2} \xi_{\text{total}} \nabla (B^2)$$
 
-$$\mathbf{F}_{\text{thrust}} = \int_V \xi (B^2 - E^2) \nabla \phi \, dV$$
+**Master Equation of Levitation (Equilibrium Condition):**
 
-With dominant magnetic sourcing: $\mathbf{F}_{\text{thrust}} \propto \int B^2 \nabla (B^2) \, dV = \nabla (B^4 \cdot V_{\text{eff}})$
+$$\xi_{\text{total}} \chi_{\text{eff}} \nabla (B^2) = \frac{2g}{c^2}$$
+
+(Target $\approx 2 \times 10^{-16}$ m$^{-1}$ for Earth-surface balance.)
+
+**Total Thrust (Integrated):**
+
+$$\mathbf{F}_{\text{thrust}} = \int_V -\frac{1}{2} \xi_{\text{total}} \nabla (B^2) \, dV$$
+
+(With high gradients $\sim 10^{10}$ T$^2$/m possible in Bushman geometries.)
 
 **Critical Requirement: Supra-Saturation Gap Fields**
 
-The opposing gap field ($B_{\text{opposing}}$) must substantially exceed the core material's saturation magnetization ($B_s \approx 2.4$ T for Hiperco-50; $\sim 2.8$–$2.9$ T experimental Minnealloy samples). Once saturated, the core's effective permeability drops toward $\mu_{\text{eff}} \approx 1$, eliminating internal amplification. High $B_{\text{opposing}}$ ($\gg B_s$) is then required to drive intense localized gradients $\nabla B^2$, essential for sourcing the disformal scalar $\nabla \phi$ and achieving thrust $\propto \nabla(B^4)$. Opposing-pole configurations naturally enable this by forcing flux through high-reluctance gaps, producing peak fields far above material limits.
+The opposing gap field ($B_{\text{opposing}}$) must substantially exceed core material saturation ($B_s \approx 2.4$ T commercial Hiperco-50; $\sim 2.8$–$2.9$ T experimental Minnealloy samples). Saturation reduces $\mu_{\text{eff}} \approx 1$, eliminating internal amplification—high $B_{\text{opposing}}$ ($\gg B_s$) then drives the intense gradients essential for macroscopic vacuum effects.
 
-**Non-Linear Scaling Insight:**
+**Non-Linear Insight (Material Enhancement):**
 
-Thrust $\propto B^4$ → Hiperco-50 (2.4 T saturation) vs. standard steel (1.5 T) yields $(2.4/1.5)^4 \approx 6.5\times$ gain.
+Vacuum response $\propto B^4$ in high-gradient limits → Minnealloy ($\sim$2.9 T) yields massive amplification over baseline.
 
-**Directional and Efficiency Factors:**
+**Directional Factors:**
 
 $$T_{\text{net}} = N \cdot |\mathbf{F}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
-
-($N$: cycles; asymmetric drive maximizes $\cos\theta \approx 1$)
 
 **Acceleration:**
 
@@ -182,15 +188,25 @@ $$\eta = \left( \frac{T_{\text{net}} \cdot v}{P} \right) \times 100\%$$
 
 $$R \approx v \cdot t_{\text{op}} = v \cdot \frac{E_{\text{stored}}}{P}$$
 
-| Category | Prior Formulation | DQED-EG Refined | Primary Advantage |
-|----------|-------------------|-----------------|-------------------|
-| Mediator | Tensor $h_{\mu\nu}$ | Scalar $\phi$ | Clean disformal geometry |
-| Source Term | $\chi B^2 h_{\mu\nu}$ | $\beta \mathcal{F} \phi$ | Explicit $\mathcal{F} = 2(B^2 - E^2)$ |
-| Refractive Index | Implicit | $n^2 = 1 + \chi \phi$ | Direct optical metric link |
-| Thrust Scaling | $\propto B^2 \nabla h^2$ | $\propto \nabla(B^4)$ | Stronger material/non-linear boost |
-| Screening | Limited | Chameleon/disformal | Local constraint evasion |
+| Category | Prior Formulation | Current Unified Field | Primary Advantage |
+|----------|-------------------|----------------------|-------------------|
+| Primary Equation | Thrust $\propto \nabla(B^4)$ | Master Eq. $\xi_{\text{total}} \chi_{\text{eff}} \nabla(B^2) = 2g/c^2$ | Direct levitation balance |
+| Enhancement | Catalysis coefficient | AS (Axion-Scalar) resonant term | Ties to 95 GeV resonance |
+| Refractive Index | $n^2 = 1 + \chi \phi$ | $n^2 \approx 1 + \xi_{\text{total}} B^2$ | Simplified resonant scaling |
+| Gradient Requirement | High opposing for $\nabla B^2$ | Bushman $\sim 10^{10}$ T$^2$/m target | Explicit feasibility claim |
+| Material Focus | Hiperco-50/Minnealloy gains | Minnealloy critical ($\sim$2.9 T) | Threshold emphasis |
 
-These equations enable direct Python/OpenSCAD/FEMM simulations of opposing high-gradient magnetic circuits for DQED-EG propulsion modeling. Effects remain theoretical; experimental validation pending.
+These equations enable direct Python/OpenSCAD/FEMM simulations of Bushman opposing arrays with Minnealloy cores for Unified Field propulsion modeling. Effects remain theoretical; experimental validation pending.
+
+**Key References** (Accessed January 1, 2026)
+- Master Equation derivation: Unified Field propulsion sections.
+- AS resonant enhancement: Manuscript Sections 3–4 (dilaton + EH).
+- Minnealloy saturation: AIP Advances/experimental reports (2025 samples $\sim$2.9 T).
+- Bushman gradients: U.S. Patent 5,929,732 (1999).
+
+*Implementations in `simulations/equations.py`.*
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 **Key References** (Accessed December 31, 2025)
 - Primary derivation: Disformal metric and thrust integrals in DQED-EG white paper.

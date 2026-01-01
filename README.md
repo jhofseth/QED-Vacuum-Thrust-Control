@@ -95,7 +95,7 @@ Prioritizes cobalt-free options for low-cost scalability.
 ## Useful Equations
 ### Comprehensive Tactical Toolkit: Propulsion Equations in Disformal QED-Emergent Gravity (DQED-EG)
 
-These equations constitute the updated practical toolkit derived from the refined **Disformal QED-Emergent Gravity: A Unified Scalar-Tensor Framework for the 95 GeV Resonance and Metric Engineering** (i.e., DQED-EG Theory, white paper accessed December 31, 2025). The shift to a pure disformal scalar $\phi$ eliminates prior tensor ambiguities, grounding propulsion in vacuum refractive index gradients sourced by strong magnetic fields. All terms are tree-level geometric or strong-field catalyzed; effects speculative and gradient-dependent.
+These equations constitute the updated practical toolkit derived from the refined **Disformal QED-Emergent Gravity: The Grand Unification of the 95 GeV Resonance, Vacuum Refractive Optics, and Metric Engineering** (i.e., DQED-EG Theory, white paper accessed December 31, 2025). The shift to a pure disformal scalar $\phi$ eliminates prior tensor ambiguities, grounding propulsion in vacuum refractive index gradients sourced by strong magnetic fields. All terms are tree-level geometric or strong-field catalyzed; effects speculative and gradient-dependent.
 
 #### Magnetic Field Inputs
 

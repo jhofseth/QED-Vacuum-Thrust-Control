@@ -92,7 +92,6 @@ Prioritizes cobalt-free options for low-cost scalability.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Useful Equations
 ### Comprehensive Tactical Toolkit: Propulsion Equations in Disformal QED-Emergent Gravity (DQED-EG)
 
 These equations constitute the updated practical toolkit derived from the refined **Disformal QED-Emergent Gravity: The Grand Unification of the 95 GeV Resonance, Vacuum Refractive Optics, and Metric Engineering** (i.e., DQED-EG Theory, white paper accessed December 31, 2025). The shift to a pure disformal scalar $\phi$ eliminates prior tensor ambiguities, grounding propulsion in vacuum refractive index gradients sourced by strong magnetic fields. All terms are tree-level geometric or strong-field catalyzed; effects speculative and gradient-dependent.
@@ -150,6 +149,10 @@ $$\mathbf{f}(x) = \xi (B^2 - E^2) \nabla \phi \approx \xi B^2 \nabla \phi$$
 $$\mathbf{F}_{\text{thrust}} = \int_V \xi (B^2 - E^2) \nabla \phi \, dV$$
 
 With dominant magnetic sourcing: $\mathbf{F}_{\text{thrust}} \propto \int B^2 \nabla (B^2) \, dV = \nabla (B^4 \cdot V_{\text{eff}})$
+
+**Critical Requirement: Supra-Saturation Gap Fields**
+
+The opposing gap field ($B_{\text{opposing}}$) must substantially exceed the core material's saturation magnetization ($B_s \approx 2.4$ T for Hiperco-50; $\sim 2.8$–$2.9$ T experimental Minnealloy samples). Once saturated, the core's effective permeability drops toward $\mu_{\text{eff}} \approx 1$, eliminating internal amplification. High $B_{\text{opposing}}$ ($\gg B_s$) is then required to drive intense localized gradients $\nabla B^2$, essential for sourcing the disformal scalar $\nabla \phi$ and achieving thrust $\propto \nabla(B^4)$. Opposing-pole configurations naturally enable this by forcing flux through high-reluctance gaps, producing peak fields far above material limits.
 
 **Non-Linear Scaling Insight:**
 

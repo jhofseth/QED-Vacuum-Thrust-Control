@@ -93,13 +93,16 @@ Prioritizes cobalt-free options for low-cost scalability.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Useful Equations
+
 ### Comprehensive Tactical Toolkit: Propulsion Equations in the Unified Field Framework
 
-These equations constitute the updated practical toolkit derived from **The Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation** (i.e., Unified Field Theory, accessed January 1, 2026). The framework centers on vacuum refractive index gradients modulated by the 95 GeV scalar resonance, with non-linear enhancements via the Axion-Scalar (AS) parameter. All terms are derived from Euler-Heisenberg action, disformal coupling, and resonant contributions; effects speculative and gradient-dependent.
+These equations constitute the practical toolkit derived from **The Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation** (Hofseth, accessed January 1, 2026). The framework centers on vacuum refractive index gradients modulated by the 95 GeV dilaton/radion resonance, with non-linear enhancements via the trace anomaly coupling. All terms are derived from the Euler-Heisenberg effective action, disformal gravity coupling, and the dilaton-mediated vacuum polarizability; effects remain theoretical and gradient-dependent.
+
+---
 
 #### Magnetic Field Inputs
 
-High opposing gradients maximize vacuum stress and $\nabla n$.
+High opposing gradients maximize vacuum stress and ∇K.
 
 **Precise Axial Field (for solenoid/Halbach stacks):**
 
@@ -111,7 +114,7 @@ $$B(z) = \frac{B_r}{2} \left[ \frac{L + z}{\sqrt{R^2 + (L + z)^2}} - \frac{z}{\s
 
 $$B_{\text{gap}} \approx \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
 
-($k$: geometry factor; boosted by high-$\mu_r$ cores like Hiperco-50.)
+($k$: geometry factor; boosted by high-$\mu_r$ cores.)
 
 **Pulsed Drive (asymmetric waveforms for net momentum):**
 
@@ -119,60 +122,60 @@ $$\frac{dB}{dt} = \mu_0 n \frac{dI}{dt}, \quad \Delta B \approx \mu_0 n \Delta I
 
 These feed vacuum nonlinearity scaling with $B^2$.
 
+---
+
 #### Vacuum Polarization and Refractive Index
 
-**Non-Linearity Coefficient (Total):**
+**Refractive Index Dependence:**
 
-$$\xi_{\text{total}} = \xi_{\text{QED}} + \xi_{\text{AS}}$$
+$$K(\mathbf{r}) = 1 + \chi_{\text{vac}}(B) \approx 1 + \Theta_{95} \frac{B^2}{B_{\text{crit}}^2}$$
 
-- $\xi_{\text{QED}}$: Standard Euler-Heisenberg term.
-- $\xi_{\text{AS}}$: Resonant Axion-Scalar contribution from 95 GeV dilaton.
+(Non-linear activation strengthens above intense local fields; no strict universal $B_{\text{crit}}$, but higher $B$ yields stronger response.)
 
-**Effective Susceptibility:**
+**Dilaton Enhancement Factor:**
 
-$$\chi_{\text{eff}} \approx 24 A_{\text{total}} B^2$$
+$\Theta_{\text{dilaton}}(B)$ represents the non-linear vacuum response—weak at low $B$, growing strongly with intensity due to 95 GeV resonance pumping.
 
-($A_{\text{total}}$ enhanced by AS resonance.)
+**Gradient of Refractive Index:**
 
-**Effective Refractive Index:**
+$$\nabla K \propto \Theta_{\text{dilaton}}(B) \nabla (B^2)$$
 
-$$n^2(x) \approx 1 + \xi_{\text{total}} B^2(x)$$
-
-(Directly links to metric deformation.)
+---
 
 #### Thrust and Levitation Performance
 
-**Local Vacuum Force Density:**
+**Local Vacuum Force Density (magnetic-dominant, vacuum region):**
 
-$$\mathbf{f}(x) \approx -\frac{1}{2} \xi_{\text{total}} \nabla (B^2)$$
+$$\mathbf{f}_{\text{vac}} \approx -\frac{B^2}{2\mu_0} \nabla K$$
 
-**Master Equation of Levitation (Equilibrium Condition):**
+**Master Equation of Levitation (Integrated Thrust):**
 
-$$\xi_{\text{total}} \chi_{\text{eff}} \nabla (B^2) = \frac{2g}{c^2}$$
+$$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla (\mathbf{B} \cdot \mathbf{B}) \right) dV$$
 
-(Target $\approx 2 \times 10^{-16}$ m$^{-1}$ for Earth-surface balance.)
+**Key Components:**
 
-**Total Thrust (Integrated):**
+- $\nabla (\mathbf{B} \cdot \mathbf{B}) = \nabla B^2$: Gradient of magnetic energy density drives the force geometry (maximized in Bushman opposing-pole arrays).
+- $\Theta_{\text{dilaton}}(B)$: Non-linear enhancement; scales with local $B$ intensity.
+- Force scales ∝ T²/m; high localized $B$ essential.
+- **Directional Thrust:** Negative gradient in $K$ (increasing with $B^2$) repels the system from regions of highest magnetic energy density. In opposing-stream configurations, thrust is directed opposite the convergence/opposition point on the magnetic circuit wall or gap.
 
-$$\mathbf{F}_{\text{thrust}} = \int_V -\frac{1}{2} \xi_{\text{total}} \nabla (B^2) \, dV$$
+**Universal Critical Requirement: Supra-Saturation Gap Fields**
 
-(With high gradients $\sim 10^{10}$ T$^2$/m possible in Bushman geometries.)
+Effects manifest in **any ferromagnetic circuit material** (iron, silicon steel, Hiperco-50, etc.) via internal permeability amplification and bulk polarization. However, the opposing/convergence gap field ($B_{\text{opposing}}$) must **substantially exceed the material's saturation $B_s$** (≫ $B_s$, driving $\mu_{\text{eff}} \approx 1$ in the high-stress zone) to achieve the intense localized $B$ and steep $\nabla B^2$ required for macroscopic vacuum effects. Higher-saturation materials (e.g., experimental Minnealloy ~2.8–2.9 T) allow equivalent peak $B$ with lower required overdrive/input power; lower-$B_s$ materials (e.g., iron ~2.1 T) simply need proportionally higher opposing drive/geometry compression.
 
-**Critical Requirement: Supra-Saturation Gap Fields**
+**Non-Linear Insight:**
 
-The opposing gap field ($B_{\text{opposing}}$) must substantially exceed core material saturation ($B_s \approx 2.4$ T commercial Hiperco-50; $\sim 2.8$–$2.9$ T experimental Minnealloy samples). Saturation reduces $\mu_{\text{eff}} \approx 1$, eliminating internal amplification—high $B_{\text{opposing}}$ ($\gg B_s$) then drives the intense gradients essential for macroscopic vacuum effects.
+Vacuum response scales quadratically with local $B$ (force ∝ $B^2 \nabla B^2$ in base regime); supra-saturation engineering enables massive amplification regardless of base material.
 
-**Non-Linear Insight (Material Enhancement):**
+**Total Thrust (practical):**
 
-Vacuum response $\propto B^4$ in high-gradient limits → Minnealloy ($\sim$2.9 T) yields massive amplification over baseline.
-
-**Directional Factors:**
-
-$$T_{\text{net}} = N \cdot |\mathbf{F}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
+$$\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
 
 **Acceleration:**
 
-$$a = \mathbf{F}_{\text{thrust}} / m_{\text{system}}$$
+$$a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$$
+
+---
 
 #### Power and Operational Metrics
 
@@ -182,29 +185,40 @@ $$P = I^2 R_{\text{coil}} + P_{\text{eddy}} + P_{\text{switching}}$$
 
 **Overall Efficiency:**
 
-$$\eta = \left( \frac{T_{\text{net}} \cdot v}{P} \right) \times 100\%$$
+$$\eta = \left( \frac{|\mathbf{F}_{\text{lift}}| \cdot v}{P} \right) \times 100\%$$
 
 **Endurance Range:**
 
 $$R \approx v \cdot t_{\text{op}} = v \cdot \frac{E_{\text{stored}}}{P}$$
 
-| Category | Prior Formulation | Current Unified Field | Primary Advantage |
-|----------|-------------------|----------------------|-------------------|
-| Primary Equation | Thrust $\propto \nabla(B^4)$ | Master Eq. $\xi_{\text{total}} \chi_{\text{eff}} \nabla(B^2) = 2g/c^2$ | Direct levitation balance |
-| Enhancement | Catalysis coefficient | AS (Axion-Scalar) resonant term | Ties to 95 GeV resonance |
-| Refractive Index | $n^2 = 1 + \chi \phi$ | $n^2 \approx 1 + \xi_{\text{total}} B^2$ | Simplified resonant scaling |
-| Gradient Requirement | High opposing for $\nabla B^2$ | Bushman $\sim 10^{10}$ T$^2$/m target | Explicit feasibility claim |
-| Material Focus | Hiperco-50/Minnealloy gains | Minnealloy critical ($\sim$2.9 T) | Threshold emphasis |
+---
 
-These equations enable direct Python/OpenSCAD/FEMM simulations of Bushman opposing arrays with Minnealloy cores for Unified Field propulsion modeling. Effects remain theoretical; experimental validation pending.
+#### Comparison Table
 
-**Key References** (Accessed January 1, 2026)
-- Master Equation derivation: Unified Field propulsion sections.
-- AS resonant enhancement: Manuscript Sections 3–4 (dilaton + EH).
-- Minnealloy saturation: AIP Advances/experimental reports (2025 samples $\sim$2.9 T).
-- Bushman gradients: U.S. Patent 5,929,732 (1999).
+| Category | Standard QED / Linear Regime | Unified Field (Dilaton-Enhanced) | Primary Advantage |
+|:---------|:-----------------------------|:---------------------------------|:------------------|
+| Refractive Index Change | $\Delta K \sim 10^{-22}$ at 1 T | Macroscopic $\Delta K$ via high local $B$ | Engineering feasibility |
+| Primary Scaling | Negligible force | $\mathbf{F} \propto \Theta_{\text{dilaton}}(B) \nabla B^2$ | Resonant amplification via 95 GeV scalar |
+| Enhancement Mechanism | Euler-Heisenberg only | Dilaton trace anomaly coupling | Ties directly to LHC resonance |
+| Gradient Target | Not achievable | Bushman geometry ~10¹⁰ T²/m via supra-saturation | Universal across materials |
+| Material Strategy | Irrelevant | Any ferromagnet + high $B_{\text{opposing}}$ overdrive (Minnealloy optimizes) | Practical flexibility |
 
-*Implementations in `simulations/equations.py`.*
+---
+
+These equations enable direct Python/OpenSCAD/FEMM simulations of Bushman opposing arrays with various cores for Unified Field propulsion modeling. Effects remain theoretical; experimental validation pending high-gradient supra-saturation testing.
+
+---
+
+### Key References
+
+*(Accessed January 1, 2026)*
+
+- **Master Equation & derivation:** Manuscript Sections 4 (Force Density → Master Equation).
+- **Directional thrust & opposing geometry:** Section 6 (Bushman array analysis) + Conclusion (supra-saturation note).
+- **Dilaton enhancement:** Sections 2–3 (95 GeV resonance + trace anomaly).
+- **Disformal/QED foundation:** Section 3 (Gordon metric, disformal coupling).
+
+*Implementations available in `simulations/equations.py`.*
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

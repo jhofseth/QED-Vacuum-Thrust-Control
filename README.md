@@ -92,67 +92,105 @@ Prioritizes cobalt-free options for low-cost scalability.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Useful Equations
+### Comprehensive Tactical Toolkit: Propulsion Equations in Disformal QED-Emergent Gravity (DQED-EG)
 
-Useful Equations for Propulsion Calculations: Tactical Toolkit derived from *Emergent Gravity from Disrupted Photon Pairs: An Asymptotically Safe Quantum Model of Gravitation, Electromagnetism, and the Standard Model* (i.e., EGDPP Theory).  Grouped for quick reference, with derivations and applications.  These empower simulations – e.g., Python for threat modeling.
+These equations constitute the updated practical toolkit derived from the refined **Disformal QED-Emergent Gravity: A Unified Scalar-Tensor Framework for the 95 GeV Resonance and Metric Engineering** (i.e., DQED-EG Theory, white paper accessed December 31, 2025). The shift to a pure disformal scalar $\phi$ eliminates prior tensor ambiguities, grounding propulsion in vacuum refractive index gradients sourced by strong magnetic fields. All terms are tree-level geometric or strong-field catalyzed; effects speculative and gradient-dependent.
 
-### Magnetic Fields
+#### Magnetic Field Inputs
 
-**Surface Field (base for opposition):**
+High opposing gradients maximize $\mathcal{F}$ and $\nabla \phi$.
 
-$$B \approx \frac{B_r}{2} \left( \frac{L}{\sqrt{R^2 + L^2}} + \frac{L + d}{\sqrt{R^2 + (L + d)^2}} \right)$$
+**Precise Axial Field (for solenoid/Halbach stacks):**
 
-**Opposing Field (core disruption input):**
+$$B(z) = \frac{B_r}{2} \left[ \frac{L + z}{\sqrt{R^2 + (L + z)^2}} - \frac{z}{\sqrt{R^2 + z^2}} \right]$$
 
-$$B_{\text{opposing}} = \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
+(Extend to multi-layer via summation.)
 
-**Pulsed Enhancement (for bursts):**
+**Opposing Configuration (flux concentration in gap):**
 
-$$\Delta B = \mu_0 n I$$
+$$B_{\text{gap}} \approx \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
 
-### Disruption and Gradient
+($k$: geometry factor; boosted by high-$\mu_r$ cores like Hiperco-50.)
 
-**Lagrangian:**
+**Pulsed Drive (asymmetric waveforms for net momentum):**
 
-$$\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$$
+$$\frac{dB}{dt} = \mu_0 n \frac{dI}{dt}, \quad \Delta B \approx \mu_0 n \Delta I$$
 
-**RG for χ** (EGDPP spin-0 emergent, present version; note: alternatives exist, e.g., spin-2 emergent: β_χ = (4 + η_χ) χ + c g χ, *or data-derived; experiment needed*):
+These feed $\mathcal{F} \approx 2B^2$, the primary scalar source.
 
-$$\beta_\chi = -4\chi + \frac{g}{2\pi} \frac{\chi}{1 - 2\lambda}$$
+#### Disformal Scalar and Vacuum Optics
 
-*[RG for χ updated to reflect EGDPP switch to spin-0 in QED (updated/expanded article forthcoming).]*
+The "modifier field" is the disformal scalar $\phi$.
 
-**Source Term:**
+**Equation of Motion (Primary Simulation Driver):**
 
-$$\delta T_{\mu\nu} \approx \chi B^2 h_{\mu\nu}$$
+$$\Box \phi + m_\phi^2 \phi = \beta_{\text{coupling}} \mathcal{F}$$
 
-### Force/Thrust
+- $\mathcal{F} = F_{\mu\nu} F^{\mu\nu} = 2(B^2 - E^2)$
+- $\beta_{\text{coupling}}$: Euler-Heisenberg + catalysis coefficient
+- Quasi-static: $\phi \approx \beta \int \mathcal{F} \, dV \propto B^2$
 
-**Force Vector:**
+**Effective Refractive Index (Repository "refractive_index"):**
 
-$$\mathbf{F} = \chi B^2 \nabla (h^2) \cdot A \cdot \rho$$
+$$n^2(x) = 1 + \chi \phi(x) \approx 1 + \chi \beta B^2(x)$$
 
-**Total Thrust:**
+(Directly controls vacuum polarization gradients.)
 
-$$T = N \cdot F \cdot \eta \cdot \cos\theta$$
+#### Thrust and Performance
+
+Force emerges from disformal vacuum response to field inhomogeneity.
+
+**Local Force Density (Gordon-like):**
+
+$$\mathbf{f}(x) = \xi (B^2 - E^2) \nabla \phi \approx \xi B^2 \nabla \phi$$
+
+**Total Thrust (Integrated Over Volume):**
+
+$$\mathbf{F}_{\text{thrust}} = \int_V \xi (B^2 - E^2) \nabla \phi \, dV$$
+
+With dominant magnetic sourcing: $\mathbf{F}_{\text{thrust}} \propto \int B^2 \nabla (B^2) \, dV = \nabla (B^4 \cdot V_{\text{eff}})$
+
+**Non-Linear Scaling Insight:**
+
+Thrust $\propto B^4$ → Hiperco-50 (2.4 T saturation) vs. standard steel (1.5 T) yields $(2.4/1.5)^4 \approx 6.5\times$ gain.
+
+**Directional and Efficiency Factors:**
+
+$$T_{\text{net}} = N \cdot |\mathbf{F}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
+
+($N$: cycles; asymmetric drive maximizes $\cos\theta \approx 1$)
 
 **Acceleration:**
 
-$$a = T / m$$
+$$a = \mathbf{F}_{\text{thrust}} / m_{\text{system}}$$
 
-### Power/Efficiency
+#### Power and Operational Metrics
 
-**Consumption:**
+**Electrical Power Draw:**
 
-$$P = I^2 R + P_{\text{eddy}}$$
+$$P = I^2 R_{\text{coil}} + P_{\text{eddy}} + P_{\text{switching}}$$
 
-**Efficiency:**
+**Overall Efficiency:**
 
-$$\eta = \left( \frac{T \cdot v}{P} \right) \times 100\%$$
+$$\eta = \left( \frac{T_{\text{net}} \cdot v}{P} \right) \times 100\%$$
 
-**Range:**
+**Endurance Range:**
 
-$$R = v \cdot \left( \frac{E}{P} \right)$$
+$$R \approx v \cdot t_{\text{op}} = v \cdot \frac{E_{\text{stored}}}{P}$$
+
+| Category | Prior Formulation | DQED-EG Refined | Primary Advantage |
+|----------|-------------------|-----------------|-------------------|
+| Mediator | Tensor $h_{\mu\nu}$ | Scalar $\phi$ | Clean disformal geometry |
+| Source Term | $\chi B^2 h_{\mu\nu}$ | $\beta \mathcal{F} \phi$ | Explicit $\mathcal{F} = 2(B^2 - E^2)$ |
+| Refractive Index | Implicit | $n^2 = 1 + \chi \phi$ | Direct optical metric link |
+| Thrust Scaling | $\propto B^2 \nabla h^2$ | $\propto \nabla(B^4)$ | Stronger material/non-linear boost |
+| Screening | Limited | Chameleon/disformal | Local constraint evasion |
+
+These equations enable direct Python/OpenSCAD/FEMM simulations of opposing high-gradient magnetic circuits for DQED-EG propulsion modeling. Effects remain theoretical; experimental validation pending.
+
+**Key References** (Accessed December 31, 2025)
+- Primary derivation: Disformal metric and thrust integrals in DQED-EG white paper.
+- Magnetic catalysis sourcing: arXiv:0901.3413v2 [hep-th].
 
 *Implementations in `simulations/equations.py`.*
 

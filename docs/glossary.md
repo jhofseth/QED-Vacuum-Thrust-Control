@@ -17,9 +17,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: A scalar boson (spin-0) observed at the Large Hadron Collider with 3.1σ combined significance (CMS + ATLAS) in the di-photon channel, identified within the RVG framework as a dilaton/radion that couples to the trace anomaly of the energy-momentum tensor.
 - **Project Context**: The fundamental mediator governing the vacuum's refractive index; its excitation via strong magnetic fields enables macroscopic metric engineering for propulsion. Acts as a "softening agent" lowering the energy threshold for vacuum modification from Planck scales to Tesla scales.
-- **Mathematical/Technical Details**: Mass m_φ = 95.4 GeV; couples to electromagnetic invariant via interaction Lagrangian:
-  $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
-  Signal strength ~0.33 in CMS di-photon data.
+- **Mathematical/Technical Details**: Mass m_φ = 95.4 GeV; couples to electromagnetic invariant via interaction Lagrangian: `ℒ_int ∝ (φ/f_φ)(B² − E²)`. Signal strength ~0.33 in CMS di-photon data.
 - **References**: RVG Unified Field paper (Hofseth, 2025); CMS/ATLAS collaboration data; Table 1 in manuscript.
 
 ### 6DOF (Six Degrees of Freedom)
@@ -37,9 +35,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The rate of change of velocity of an object with respect to time, typically measured in meters per second squared (m/s²) or gravitational units (g, where 1 g ≈ 9.81 m/s²).
 - **Project Context**: Critical for propulsion performance in spherical combat drones, enabling maneuvers exceeding 500 g for non-ballistic trajectories and evasion in asymmetric warfare. Simulations model acceleration under pulsed magnetic fields to predict drone agility and stability.
-- **Mathematical/Technical Details**: Derived from Master Equation as:
-  $$a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$$
-  where F_lift is the integrated vacuum gradient force.
+- **Mathematical/Technical Details**: Derived from Master Equation as: `a = F_lift / m_system`, where F_lift is the integrated vacuum gradient force.
 - **References**: `simulations/thrust_model.py`; RVG Unified Field paper Section 4.
 
 ### AI Navigation
@@ -149,27 +145,21 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: A scalar particle arising from the spontaneous breaking of conformal (scale) symmetry, coupling universally to the trace of the energy-momentum tensor.
 - **Project Context**: The 95 GeV resonance identified as a dilaton mediates vacuum refractive index changes; its excitation via magnetic fields enables metric engineering.
-- **Mathematical/Technical Details**: Interaction Lagrangian:
-  $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
-  Couples to trace anomaly T^μ_μ (trace of stress-energy tensor).
+- **Mathematical/Technical Details**: Interaction Lagrangian: `ℒ_int ∝ (φ/f_φ)(B² − E²)`. Couples to trace anomaly T^μ_μ (trace of stress-energy tensor).
 - **References**: RVG paper Sections 2–3; see also [95 GeV Resonance](#95-gev-resonance-dilatonradion).
 
 ### Dilaton Enhancement Factor (Θ_dilaton)
 
 - **Definition**: The non-linear vacuum response function characterizing how strongly the vacuum's refractive index responds to magnetic field intensity, mediated by the 95 GeV dilaton resonance.
 - **Project Context**: Central parameter in the Master Equation; weak at low B, grows strongly with field intensity as the dilaton is "pumped" by electromagnetic energy density. Replaces earlier χ-based formulations.
-- **Mathematical/Technical Details**: Appears in Master Equation:
-  $$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla B^2 \right) dV$$
-  Functional form to be determined experimentally.
+- **Mathematical/Technical Details**: Appears in Master Equation: `F_lift = ∫ (1/2μ₀) Θ_dilaton(B) · ∇B² dV`. Functional form to be determined experimentally.
 - **References**: RVG paper Sections 4, 7; Useful Equations in README.md; `simulations/equations.py`.
 
 ### Disformal Gravity
 
 - **Definition**: A generalization of scalar-tensor gravity where the physical metric couples to both the scalar field value and its gradient, enabling directional (not just conformal) metric distortions.
 - **Project Context**: Mechanism translating scalar field gradients (from ∇B²) into directional thrust vectors; the "Magnetic Beam" is essentially a "Disformal Beam" projecting modified metric along the gradient axis.
-- **Mathematical/Technical Details**: Physical metric:
-  $$\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_\mu \phi \partial_\nu \phi$$
-  Conformal term C(φ) rescales volumes; disformal term D(φ) distorts along gradient.
+- **Mathematical/Technical Details**: Physical metric: `g̃_μν = C(φ)g_μν + D(φ)∂_μφ ∂_νφ`. Conformal term C(φ) rescales volumes; disformal term D(φ) distorts along gradient.
 - **References**: RVG paper Section 3.3; Beltrán Jiménez et al. (2018).
 
 ### Disformal QED
@@ -194,9 +184,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The ratio of useful output power to input power, often as a percentage.
 - **Project Context**: Target >95% for propulsion systems; balances thrust, power consumption, and range in drone operations.
-- **Mathematical/Technical Details**: 
-  $$\eta = \left( \frac{|\mathbf{F}_{\text{lift}}| \cdot v}{P} \right) \times 100\%$$
-  where P = I²R_coil + P_eddy + P_switching.
+- **Mathematical/Technical Details**: `η = (|F_lift| · v / P) × 100%`, where P = I²R_coil + P_eddy + P_switching.
 - **References**: Useful Equations; Key Features.
 
 ### EGDPP (Emergent Gravity from Disrupted Photon Pairs)
@@ -210,8 +198,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Thrust generation via manipulation of electromagnetic fields to modify vacuum properties, bypassing traditional reaction mass.
 - **Project Context**: Core technology using QED vacuum polarization enhanced by dilaton coupling for propellantless, high-thrust (Mach 26) drone propulsion.
-- **Mathematical/Technical Details**: Thrust from Master Equation:
-  $$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla B^2 \right) dV$$
+- **Mathematical/Technical Details**: Thrust from Master Equation: `F_lift = ∫ (1/2μ₀) Θ_dilaton(B) · ∇B² dV`.
 - **References**: Project title and description; RVG paper.
 
 ### Emergent Gravity
@@ -225,8 +212,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The one-loop effective Lagrangian in QED describing nonlinear photon-photon interactions in strong electromagnetic fields, arising from virtual electron-positron pair creation.
 - **Project Context**: Basis for vacuum polarization effects; predicts refractive index changes in strong fields, enhanced by dilaton coupling in the RVG framework from Δn ~ 10⁻²² (standard QED) to macroscopic values.
-- **Mathematical/Technical Details**: 
-  $$\mathcal{L}_{\text{EH}} = -\frac{1}{4}F_{\mu\nu}F^{\mu\nu} + \frac{\alpha^2}{90m_e^4} \left[ (F_{\mu\nu}F^{\mu\nu})^2 + \frac{7}{4}(F_{\mu\nu}\tilde{F}^{\mu\nu})^2 \right]$$
+- **Mathematical/Technical Details**: `ℒ_EH = −(1/4)F_μνF^μν + (α²/90m_e⁴)[(F_μνF^μν)² + (7/4)(F_μνF̃^μν)²]`.
 - **References**: RVG paper Section 3.1; PVLAS experiment.
 
 ---
@@ -319,8 +305,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Historical disruption term in earlier EGDPP formulations coupling electromagnetic fields to metric perturbations.
 - **Project Context**: Superseded by dilaton interaction Lagrangian in current RVG framework.
-- **Mathematical/Technical Details**: Legacy form:
-  $$\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$$
+- **Mathematical/Technical Details**: Legacy form: `ℒ_disrupt = −(1/2)χB²h_μν h^μν`.
 - **References**: Historical; see Trace Anomaly Coupling.
 
 ---
@@ -345,9 +330,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The fundamental equation quantifying propulsive force from engineered vacuum refractive index gradients in the RVG framework.
 - **Project Context**: Central design equation for all propulsion calculations; integrates dilaton enhancement and magnetic energy density gradients over the active volume.
-- **Mathematical/Technical Details**: 
-  $$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla (\mathbf{B} \cdot \mathbf{B}) \right) dV$$
-  Force scales as T²/m; direction opposite highest B² concentration.
+- **Mathematical/Technical Details**: `F_lift = ∫ (1/2μ₀) Θ_dilaton(B) · ∇(B·B) dV`. Force scales as T²/m; direction opposite highest B² concentration.
 - **References**: RVG paper Section 4; Useful Equations; `simulations/equations.py`.
 
 ### Metglas Amorphous Iron
@@ -406,7 +389,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### Nested MADA
 
 - **Definition**: Recursive MADA configuration where each magnet position in a base unit is replaced by a complete subscale MADA assembly, creating multi-stage hierarchical flux compression.
-- **Project Context**: Advanced implementation for achieving extreme localized $B_{\text{opposing}}$ and $\nabla B^2$ (potentially >$10^{12}$ T²/m) through compounded frustration effects.
+- **Project Context**: Advanced implementation for achieving extreme localized B_opposing and ∇B² (potentially >10¹² T²/m) through compounded frustration effects.
 - **Mathematical/Technical Details**: Each nesting level multiplies effective amplification; practical limits from demagnetization and material saturation.
 - **References**: MADA section; RVG paper Section 6.2.
 
@@ -532,27 +515,21 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Propulsive force generated by the system, in newtons (N).
 - **Project Context**: Vectorized for 6DOF control; derived from Master Equation integration over active volume.
-- **Mathematical/Technical Details**: 
-  $$\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
-  Direction opposite B² maximum.
+- **Mathematical/Technical Details**: `F_net = |F_lift| · η_align · cosθ`. Direction opposite B² maximum.
 - **References**: Useful Equations; `simulations/thrust_model.py`.
 
 ### Trace Anomaly
 
 - **Definition**: The quantum correction that breaks classical conformal invariance in QED, producing a non-zero trace of the energy-momentum tensor even for massless fields.
 - **Project Context**: The mechanism enabling dilaton coupling to electromagnetic fields; without the trace anomaly, scalars would not interact with light. Generates the dilaton interaction Lagrangian.
-- **Mathematical/Technical Details**: 
-  $$T^\mu_\mu = \frac{\beta(g)}{2g} F_{\mu\nu}F^{\mu\nu} + m_f \bar{\psi}\psi$$
-  β-function encodes running coupling.
+- **Mathematical/Technical Details**: `T^μ_μ = (β(g)/2g)F_μνF^μν + m_f ψ̄ψ`. β-function encodes running coupling.
 - **References**: RVG paper Section 2.2.1; Huang (2018).
 
 ### Trace Anomaly Coupling
 
 - **Definition**: The direct interaction between the dilaton scalar field and electromagnetic energy density arising from the trace anomaly.
 - **Project Context**: Theoretical cornerstone of RVG; dictates that magnetic energy density (B² > E²) acts as a source term for the dilaton field, enabling "pumping" of the 95 GeV resonance via intense magnetic fields.
-- **Mathematical/Technical Details**: 
-  $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
-  Magnetic dominance required for positive coupling.
+- **Mathematical/Technical Details**: `ℒ_int ∝ (φ/f_φ)(B² − E²)`. Magnetic dominance required for positive coupling.
 - **References**: RVG paper Section 2.2.1.
 
 ---

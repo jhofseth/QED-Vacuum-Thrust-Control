@@ -5,7 +5,7 @@
 > 
 > **[Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation](http://dx.doi.org/10.2139/ssrn.5381654)**
 > 
-> This paper is currently **pending peer review** at a prestigious Physics journal. A preprint is available via the link above.
+> This paper is currently **pending review** at a prestigious Physics journal. A preprint is available via the link above.
 > 
 > The Python files, simulations, and other codebase components will be updated soon to align with the revised equations. **This note will be removed once all updates are complete.**
 

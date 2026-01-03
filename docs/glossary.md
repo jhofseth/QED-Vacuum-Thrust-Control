@@ -382,4 +382,4 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 
 This glossary evolves with the project and the RVG framework; contributions via pull requests are encouraged (see `CONTRIBUTING.md`). For API-specific terms, consult Sphinx docs in `/docs/api`.
 
-**Total entries**: 60+; a comprehensive reference for RVG-based QED-EMF propulsion development.
+**Total entries**: 40+; a comprehensive reference for RVG-based QED-EMF propulsion development.

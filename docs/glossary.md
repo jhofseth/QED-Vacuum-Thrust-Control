@@ -68,7 +68,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ## C
 ### Cluster + Atom Model
 - **Definition**: Theoretical description of the magnetic structure in α″-Fe₁₆N₂ where localized Fe clusters are separated by N atoms, preventing moment quenching.
-- **Project Context**: Explains giant saturation magnetization in iron nitride phases; foundational for developing high-$B\_{s}$ materials for RVG propulsion. Reduced bandwidth enhances exchange splitting.
+- **Project Context**: Explains giant saturation magnetization in iron nitride phases; foundational for developing high $B_s$ materials for RVG propulsion. Reduced bandwidth enhances exchange splitting.
 - **Mathematical/Technical Details**: Localized Fe clusters with N atom separation prevent magnetic moment quenching through reduced d-band hybridization.
 - **References**: RVG Unified Field Section on Giant Saturation Magnetization (Hofseth, 2025).
 ### Conformal Symmetry

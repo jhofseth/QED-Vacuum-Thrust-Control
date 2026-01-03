@@ -19,7 +19,7 @@ Open-source control system for QED vacuum polarization-based EMF propulsion in c
 
 **[Very Brief Sample Video: QED Vacuum Thrust Control System](https://drive.google.com/file/d/1_4zi3hHS7li0avwlS-Sk1KF_Y8pp4-vq/view?usp=drivesdk)**
 
-**[Please note: One of the most important tasks is properly shielding your QED vacuum polarization-based EMF propulsion AI control electronics.  I had two high-voltage laboratory power supplies that had to be thrown away.  They weren’t damaged due to the aforementioned AFAIK, but that will be many times your difficulty without proper shielding.  *See  [docs/shielding.pdf](docs/shielding.pdf)*]**
+**[Please note: One of the most important tasks is properly shielding your QED vacuum polarization-based EMF propulsion AI control electronics.  I had two high-voltage laboratory power supplies that had to be thrown away.  They weren't damaged due to the aforementioned AFAIK, but that will be many times your difficulty without proper shielding.  *See  [docs/shielding.pdf](docs/shielding.pdf)*]**
 
 [Explore the docs »](docs/)
 
@@ -45,7 +45,7 @@ Open-source control system for QED vacuum polarization-based EMF propulsion in c
 
 ## About The Project
 
-This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization.  Drawing from emerging theories like Emergent Gravity from Disrupted Photon Pairs (EGDPP), it enables simulation and control of magnetic amplification and direction assemblies (MADA) for EMF propulsion in spherical combat drones.  Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
+This repository provides an open-source control system for advanced EMF propulsion systems based on Quantum Electrodynamics (QED) vacuum polarization.  Drawing from the Refractive Vacuum Gravity (RVG) Unified Field framework—which synthesizes Disformal QED, the 95 GeV dilaton/radion resonance, and the Gordon Optical Metric—it enables simulation and control of magnetic amplification and direction assemblies (MADA) for EMF propulsion in spherical combat drones.  Optimized for asymmetric warfare, it supports high accelerations (>500g), stealth operations, and integration with materials for efficient magnetic circuits.
 
 Key applications include defense scenarios requiring non-ballistic trajectories, hover capabilities, and precision strikes while evading radar and thermal detection.
 
@@ -65,9 +65,9 @@ Key applications include defense scenarios requiring non-ballistic trajectories,
 
 ## Theory Overview
 
-The system leverages QED vacuum polarization, where strong opposing magnetic fields (B_opposing >~20 T; depends upon mass, with some B_opposing >60-90+ T) create virtual electron-positron pairs, inducing diamagnetic repulsion for propulsion.  Based on Heisenberg-Euler-Schwinger (HES) effective action at 0.1-1 MHz frequencies (i.e., pulsed), it achieves thrust via F ∝ χ B² ∇(h²) A ρ.  Pulsing (for spherical EMF propulsion drones): 50 Hz default (20 ms cycles) for balance, dynamically scaling to 100 Hz (agility) or 1 kHz (bursts) with variable duty (20-80%) – boosting efficiency 20-50%, evading detection, and extending range.
+The system leverages QED vacuum polarization within the Refractive Vacuum Gravity (RVG) Unified Field framework.  Strong opposing magnetic fields (B_opposing >~20 T; depends upon mass, with some B_opposing >60-90+ T) create virtual electron-positron pairs, modifying the vacuum's refractive index and inducing propulsive forces via the Master Equation of Levitation.  Based on the Euler-Heisenberg effective action enhanced by disformal gravity coupling, it achieves thrust via **F ∝ Θ_dilaton(B) ∇(B²)**.  Pulsing (for spherical EMF propulsion drones): 50 Hz default (20 ms cycles) for balance, dynamically scaling to 100 Hz (agility) or 1 kHz (bursts) with variable duty (20-80%) – boosting efficiency 20-50%, evading detection, and extending range.
 
-Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which is a scalar-tensor theory (spin-0 emergent gravity) with asymptotic safety.  The EGDPP model predicts a 95 GeV spin-0 resonance and integrates nonlinear QED with functional RG flows.  A public experiment is needed to confirm the RG modifier equation for χ (i.e., or any modifier equation), as simulations require it for proper EMF propulsion functionality.  Options include the current spin-0 emergent version, the old spin-2 emergent version, or an alternative modifier equation derived from experimental data; the system is neutral and adaptable.  I really don't care about my paper's hypothesis (i.e., EDGPP), because EMF propulsion *demonstrably* occurs and it 100% *requires* some modifier equation.  All I care about is truth, and QED vacuum polarization-based EMF propulsion is 100% truth that doesn't depend upon EGDPP—only upon a modifier equation.
+Inspired by U.S. Patent #5,929,732 (MADA) and the RVG Unified Field model (Hofseth, 2025), which synthesizes Disformal QED with the experimentally observed 95.4 GeV di-photon resonance (CMS/ATLAS, 3.1σ combined significance).  The framework posits this resonance as a dilaton/radion that couples to the trace anomaly of the energy-momentum tensor, permitting macroscopic engineering of the spacetime metric via specific electromagnetic configurations.  A public experiment is needed to confirm the dilaton enhancement factor Θ_dilaton(B), as simulations require it for proper EMF propulsion functionality.  The system is neutral and adaptable to alternative modifier equations derived from experimental data.  All I care about is truth, and QED vacuum polarization-based EMF propulsion is 100% truth that doesn't depend upon any specific theory—only upon a validated modifier equation.
 
 **For more on environmental interactions:**
 - [Interaction Mechanisms](docs/mechanism.md) - How the QED vacuum thrust system interacts with aerodynamic, hydrodynamic, and acoustic barriers
@@ -80,7 +80,7 @@ Inspired by U.S. Patent #5,929,732 (MADA) and EGDPP model (Hofseth, 2025), which
 - **AI Navigation**: MIMO networks for 6DOF control and real-time flux mapping
 - **MADA Pulsing**: 50-100 Hz pulsing (up to 1 kHz bursts) for efficiency >95%
 - **Thermal Management**: PCM channels and optional Bi₂Te₃ TEG for 10-40 kW dissipation
-- **Simulation Tools**: Python scripts for RG flow, thrust calculations, and threat modeling
+- **Simulation Tools**: Python scripts for vacuum refractive index gradients, thrust calculations, and threat modeling
 - **Material Optimization**: Holistic ranking for scalability and cost
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -99,7 +99,7 @@ Holistic ranking of magnetic materials for propulsion circuits (as of October 20
 
 *See full table in [docs/materials_ranking.pdf](docs/materials_ranking.pdf)*
 
-Prioritizes cobalt-free options for low-cost scalability.
+Prioritizes cobalt-free options for low-cost scalability.  Note: Effects manifest in **any ferromagnetic circuit material** (iron, silicon steel, Hiperco-50, etc.) via internal permeability amplification; higher-saturation materials like Minnealloy (~2.8–2.9 T) simply achieve equivalent peak fields with lower overdrive requirements.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -288,6 +288,12 @@ It is not merely "6 times" stronger. It is demonstrating an **effective B-value 
 
 This means that a MADA can take 5 stacks of 6 cheap N52 magnets with spacers removed ($25 total from Amazon; each stack of 6 is ~3T) to **~600+T B_opposing**. Put that inside a magnetic circuit in opposition to other identical adjacent MADA, and the B_opposing would be massive. That's before even factoring in additional B_opposing from the partially hybridized MADA pole positions.
 
+### Nested MADA Configurations and Hierarchical Amplification
+
+Advanced implementations involve **nesting** or recursion, where each of the five positions in a base MADA unit is replaced by a complete subscale MADA assembly (a "MADA-array").  Each subscale MADA can itself incorporate stacks of up to 12 magnets per position, creating multi-stage hierarchical flux compression.
+
+This recursive approach compounds frustration and focusing effects across levels, potentially achieving extreme localized B_opposing and ∇B² in the central convergence/frustration zone.  For the RVG framework, stacked and nested MADA configurations are particularly potent: the Master Equation rewards ultra-high localized B_opposing and steep ∇B² (potentially >10¹² T²/m in multi-stage frustration points) to strongly pump the dilaton enhancement Θ_dilaton(B), enabling significant vacuum polarization even with standard ferromagnetic cores under supra-saturation drive.
+
 ### Implementation in Code
 
 `simulations/equations.py` was updated to reflect:
@@ -311,7 +317,7 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
 **Key parameter:**
 - `k`: Scaling factor for MADA amplification (default `200.0` for ~200x vs. single magnet; may need to be set up to `529`)
 
-### Lockheed Martin Skunk Works’ Implementation of MADA in a Midsize CIA Air Branch Saucer-Shaped Mothership
+### Lockheed Martin Skunk Works' Implementation of MADA in a Midsize CIA Air Branch Saucer-Shaped Mothership
 
 See [Observational Insights](docs/insights.md).
 
@@ -404,13 +410,18 @@ make html
 
 ## Glossary
 
+- **95 GeV Resonance**: The dilaton/radion scalar boson observed at the LHC (CMS/ATLAS) with 3.1σ combined significance; couples to the trace anomaly and mediates vacuum refractive index modification
+- **Disformal Gravity**: Extension of scalar-tensor gravity where the physical metric couples to both the scalar field and its gradient, enabling directional metric distortion
+- **Dilaton Enhancement Factor (Θ_dilaton)**: The non-linear vacuum response function that grows with magnetic field intensity due to 95 GeV resonance pumping
+- **Gordon Optical Metric**: The effective metric describing photon propagation in a polarized vacuum; connects refractive index gradients to gravitational effects
 - **Heisenberg-Euler-Schwinger (HES) Action**: Effective field theory describing nonlinear QED effects in strong electromagnetic fields
-- **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing
-- **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties
-- **RG Flow**: Renormalization Group – Describes how physical parameters change with energy scale
-- **Spin-0 Emergent Gravity**: Scalar field theory where gravitational effects arise from QED disruptions
-- **Spin-2 Emergent Gravity**: The old version of EGDPP; the relevant modifier equation is also provided for testing, but neither old nor new modifiers are necessary if an experimentally derived modifier is desired/provided
-- **EGDPP**: Emergent Gravity from Disrupted Photon Pairs – Theoretical framework for gravity, but not necessary for QED vacuum polarization-based EMF propulsion (i.e., only a *modifier* equation is necessary)
+- **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing (U.S. Patent 5,929,732)
+- **Master Equation of Levitation**: The integrated thrust equation F = ∫(Θ_dilaton(B)·∇B²)dV that quantifies propulsive force from engineered vacuum gradients
+- **Polarizable Vacuum (PV)**: Theoretical representation where gravity manifests as variations in the vacuum's dielectric properties
+- **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties and vacuum refractive index
+- **Refractive Vacuum Gravity (RVG)**: The unified field framework synthesizing Disformal QED, the 95 GeV resonance, and metric engineering for propulsion
+- **Supra-Saturation**: Operating regime where opposing gap fields substantially exceed material saturation B_s, driving intense localized B and steep ∇B² for macroscopic vacuum effects
+- **Trace Anomaly**: Quantum correction that breaks conformal symmetry, enabling the dilaton to couple directly to electromagnetic energy density
 
 Full glossary available in [docs/glossary.md](docs/glossary.md).
 
@@ -426,6 +437,7 @@ Full glossary available in [docs/glossary.md](docs/glossary.md).
 - [x] Support for hardware interfacing (progress: `interfaces.py` but schematics not yet added)
 - [ ] Develop firmware for embedded controllers
 - [ ] Create simulation-to-hardware pipeline
+- [ ] Update Python files to align with RVG Unified Field equations
 
 See [open issues](https://github.com/jhofseth/QED-Vacuum-Thrust-Control/issues) for detailed status and discussions.
 
@@ -451,7 +463,7 @@ Project Link: [https://github.com/jhofseth/QED-Vacuum-Thrust-Control](https://gi
 
 ## Acknowledgments
 
-- Refractive Vacuum Gravity (RVG) Theory (Jesse D. Hofseth) https://dx.doi.org/10.2139/ssrn.5381654
+- Refractive Vacuum Gravity (RVG) Unified Field Theory (Jesse D. Hofseth) https://dx.doi.org/10.2139/ssrn.5381654
 - U.S. Patent #5,929,732 (Lockheed Martin Corporation) https://patents.google.com/patent/US5929732A/en
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 

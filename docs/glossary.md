@@ -17,7 +17,9 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: A scalar boson (spin-0) observed at the Large Hadron Collider with 3.1σ combined significance (CMS + ATLAS) in the di-photon channel, identified within the RVG framework as a dilaton/radion that couples to the trace anomaly of the energy-momentum tensor.
 - **Project Context**: The fundamental mediator governing the vacuum's refractive index; its excitation via strong magnetic fields enables macroscopic metric engineering for propulsion. Acts as a "softening agent" lowering the energy threshold for vacuum modification from Planck scales to Tesla scales.
-- **Mathematical/Technical Details**: Mass $m_\phi = 95.4$ GeV; couples to electromagnetic invariant via $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$; signal strength ~0.33 in CMS di-photon data.
+- **Mathematical/Technical Details**: Mass m_φ = 95.4 GeV; couples to electromagnetic invariant via interaction Lagrangian:
+  $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
+  Signal strength ~0.33 in CMS di-photon data.
 - **References**: RVG Unified Field paper (Hofseth, 2025); CMS/ATLAS collaboration data; Table 1 in manuscript.
 
 ### 6DOF (Six Degrees of Freedom)
@@ -37,7 +39,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 - **Project Context**: Critical for propulsion performance in spherical combat drones, enabling maneuvers exceeding 500 g for non-ballistic trajectories and evasion in asymmetric warfare. Simulations model acceleration under pulsed magnetic fields to predict drone agility and stability.
 - **Mathematical/Technical Details**: Derived from Master Equation as:
   $$a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$$
-  where **F**_lift is the integrated vacuum gradient force.
+  where F_lift is the integrated vacuum gradient force.
 - **References**: `simulations/thrust_model.py`; RVG Unified Field paper Section 4.
 
 ### AI Navigation
@@ -51,7 +53,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: A high-permeability, cobalt-free ferromagnetic alloy variant of Minnealloy, characterized by interstitial nitrogen and carbon atoms in an α-iron lattice, optimized for magnetic circuit applications.
 - **Project Context**: Ranked highly (95/100) for magnetic circuits in MADA assemblies due to superior saturation magnetization (~2.8–2.9 T) and low coercivity, enabling efficient supra-saturation fields without cobalt dependency for scalable production.
-- **Mathematical/Technical Details**: Saturation induction $B_s \approx 2.8$–$2.9$ T; enables equivalent peak $B$ with lower overdrive requirements compared to standard iron ($B_s \approx 2.1$ T).
+- **Mathematical/Technical Details**: Saturation induction B_s ≈ 2.8–2.9 T; enables equivalent peak B with lower overdrive requirements compared to standard iron (B_s ≈ 2.1 T).
 - **References**: `docs/materials_ranking.pdf`; RVG paper Section 5; Holistic materials ranking in README.md.
 
 ### α″-Fe₁₆N₂ (Alpha-Double-Prime Iron Nitride)
@@ -149,13 +151,13 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 - **Project Context**: The 95 GeV resonance identified as a dilaton mediates vacuum refractive index changes; its excitation via magnetic fields enables metric engineering.
 - **Mathematical/Technical Details**: Interaction Lagrangian:
   $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
-  Couples to trace anomaly T^μ_μ.
+  Couples to trace anomaly T^μ_μ (trace of stress-energy tensor).
 - **References**: RVG paper Sections 2–3; see also [95 GeV Resonance](#95-gev-resonance-dilatonradion).
 
 ### Dilaton Enhancement Factor (Θ_dilaton)
 
 - **Definition**: The non-linear vacuum response function characterizing how strongly the vacuum's refractive index responds to magnetic field intensity, mediated by the 95 GeV dilaton resonance.
-- **Project Context**: Central parameter in the Master Equation; weak at low $B$, grows strongly with field intensity as the dilaton is "pumped" by electromagnetic energy density. Replaces earlier χ-based formulations.
+- **Project Context**: Central parameter in the Master Equation; weak at low B, grows strongly with field intensity as the dilaton is "pumped" by electromagnetic energy density. Replaces earlier χ-based formulations.
 - **Mathematical/Technical Details**: Appears in Master Equation:
   $$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla B^2 \right) dV$$
   Functional form to be determined experimentally.
@@ -164,7 +166,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### Disformal Gravity
 
 - **Definition**: A generalization of scalar-tensor gravity where the physical metric couples to both the scalar field value and its gradient, enabling directional (not just conformal) metric distortions.
-- **Project Context**: Mechanism translating scalar field gradients (from $\nabla B^2$) into directional thrust vectors; the "Magnetic Beam" is essentially a "Disformal Beam" projecting modified metric along the gradient axis.
+- **Project Context**: Mechanism translating scalar field gradients (from ∇B²) into directional thrust vectors; the "Magnetic Beam" is essentially a "Disformal Beam" projecting modified metric along the gradient axis.
 - **Mathematical/Technical Details**: Physical metric:
   $$\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_\mu \phi \partial_\nu \phi$$
   Conformal term C(φ) rescales volumes; disformal term D(φ) distorts along gradient.
@@ -222,7 +224,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### Euler-Heisenberg Effective Action
 
 - **Definition**: The one-loop effective Lagrangian in QED describing nonlinear photon-photon interactions in strong electromagnetic fields, arising from virtual electron-positron pair creation.
-- **Project Context**: Basis for vacuum polarization effects; predicts refractive index changes in strong fields, enhanced by dilaton coupling in the RVG framework from $\Delta n \sim 10^{-22}$ (standard QED) to macroscopic values.
+- **Project Context**: Basis for vacuum polarization effects; predicts refractive index changes in strong fields, enhanced by dilaton coupling in the RVG framework from Δn ~ 10⁻²² (standard QED) to macroscopic values.
 - **Mathematical/Technical Details**: 
   $$\mathcal{L}_{\text{EH}} = -\frac{1}{4}F_{\mu\nu}F^{\mu\nu} + \frac{\alpha^2}{90m_e^4} \left[ (F_{\mu\nu}F^{\mu\nu})^2 + \frac{7}{4}(F_{\mu\nu}\tilde{F}^{\mu\nu})^2 \right]$$
 - **References**: RVG paper Section 3.1; PVLAS experiment.
@@ -242,7 +244,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: The condition in opposing-pole magnet configurations where like poles face each other, forcing magnetic flux lines to compress laterally rather than bridging the gap.
 - **Project Context**: Key mechanism in MADA/Bushman arrays creating regions of extreme magnetic pressure and steep field gradients for vacuum engineering.
-- **Mathematical/Technical Details**: Creates quasi-singularities in $\nabla B^2$ approaching $10^{10}$–$10^{12}$ T²/m in nested configurations.
+- **Mathematical/Technical Details**: Creates quasi-singularities in ∇B² approaching 10¹⁰–10¹² T²/m in nested configurations.
 - **References**: RVG paper Section 6; MADA section.
 
 ### Flux Mapping
@@ -316,8 +318,9 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### Lagrangian (ℒ_disrupt)
 
 - **Definition**: Historical disruption term in earlier EGDPP formulations coupling electromagnetic fields to metric perturbations.
-- **Project Context**: Superseded by dilaton interaction Lagrangian $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$ in current RVG framework.
-- **Mathematical/Technical Details**: Legacy: $\mathcal{L}\_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h\_{\mu\nu} h^{\mu\nu}$.
+- **Project Context**: Superseded by dilaton interaction Lagrangian in current RVG framework.
+- **Mathematical/Technical Details**: Legacy form:
+  $$\mathcal{L}_{\text{disrupt}} = -\frac{1}{2} \chi B^2 h_{\mu\nu} h^{\mu\nu}$$
 - **References**: Historical; see Trace Anomaly Coupling.
 
 ---
@@ -327,8 +330,8 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### MADA (Magnetic Amplification and Direction Assembly)
 
 - **Definition**: Patented device (U.S. Patent 5,929,732, Lockheed Martin Corporation) for focusing and amplifying magnetic beams using opposing-pole geometries, overcoming inverse power laws for extended-range field effects.
-- **Project Context**: Core hardware for generating B_opposing fields and steep $\nabla B^2$ gradients; simplifies EMF propulsion requirements by 200–500x through flux frustration and beam focusing.
-- **Mathematical/Technical Details**: Amplification factor $k = 200$–$529$; nested/stacked configurations can achieve >$10^{12}$ T²/m gradients in frustration zones.
+- **Project Context**: Core hardware for generating B_opposing fields and steep ∇B² gradients; simplifies EMF propulsion requirements by 200–500x through flux frustration and beam focusing.
+- **Mathematical/Technical Details**: Amplification factor k = 200–529; nested/stacked configurations can achieve >10¹² T²/m gradients in frustration zones.
 - **References**: U.S. Patent #5,929,732 (Bushman); Dedicated MADA section; RVG paper Section 6.
 
 ### Mach 26
@@ -502,9 +505,9 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 ### Supra-Saturation
 
-- **Definition**: Operating regime where the opposing gap magnetic field substantially exceeds the ferromagnetic material's saturation magnetization $B_s$, driving effective permeability toward unity ($\mu_{\text{eff}} \approx 1$) in the high-stress zone.
-- **Project Context**: Universal critical requirement for macroscopic vacuum effects; achievable with any ferromagnetic material given sufficient opposing field drive. Higher-$B_s$ materials (Minnealloy ~2.9 T) require less overdrive than lower-$B_s$ materials (iron ~2.1 T).
-- **Mathematical/Technical Details**: Requires $B_{\text{opposing}} \gg B_s$; enables intense localized $B$ and steep $\nabla B^2$ for strong Θ_dilaton pumping.
+- **Definition**: Operating regime where the opposing gap magnetic field substantially exceeds the ferromagnetic material's saturation magnetization B_s, driving effective permeability toward unity (μ_eff ≈ 1) in the high-stress zone.
+- **Project Context**: Universal critical requirement for macroscopic vacuum effects; achievable with any ferromagnetic material given sufficient opposing field drive. Higher-B_s materials (Minnealloy ~2.9 T) require less overdrive than lower-B_s materials (iron ~2.1 T).
+- **Mathematical/Technical Details**: Requires B_opposing ≫ B_s; enables intense localized B and steep ∇B² for strong Θ_dilaton pumping.
 - **References**: RVG paper Sections 5–7; Useful Equations; Materials discussion.
 
 ### Surface Field (B)
@@ -529,13 +532,15 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Propulsive force generated by the system, in newtons (N).
 - **Project Context**: Vectorized for 6DOF control; derived from Master Equation integration over active volume.
-- **Mathematical/Technical Details**: $\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$; direction opposite $B^2$ maximum.
+- **Mathematical/Technical Details**: 
+  $$\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$$
+  Direction opposite B² maximum.
 - **References**: Useful Equations; `simulations/thrust_model.py`.
 
 ### Trace Anomaly
 
 - **Definition**: The quantum correction that breaks classical conformal invariance in QED, producing a non-zero trace of the energy-momentum tensor even for massless fields.
-- **Project Context**: The mechanism enabling dilaton coupling to electromagnetic fields; without the trace anomaly, scalars would not interact with light. Generates interaction term $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$.
+- **Project Context**: The mechanism enabling dilaton coupling to electromagnetic fields; without the trace anomaly, scalars would not interact with light. Generates the dilaton interaction Lagrangian.
 - **Mathematical/Technical Details**: 
   $$T^\mu_\mu = \frac{\beta(g)}{2g} F_{\mu\nu}F^{\mu\nu} + m_f \bar{\psi}\psi$$
   β-function encodes running coupling.
@@ -544,7 +549,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 ### Trace Anomaly Coupling
 
 - **Definition**: The direct interaction between the dilaton scalar field and electromagnetic energy density arising from the trace anomaly.
-- **Project Context**: Theoretical cornerstone of RVG; dictates that magnetic energy density ($B^2 > E^2$) acts as a source term for the dilaton field, enabling "pumping" of the 95 GeV resonance via intense magnetic fields.
+- **Project Context**: Theoretical cornerstone of RVG; dictates that magnetic energy density (B² > E²) acts as a source term for the dilaton field, enabling "pumping" of the 95 GeV resonance via intense magnetic fields.
 - **Mathematical/Technical Details**: 
   $$\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$$
   Magnetic dominance required for positive coupling.
@@ -579,7 +584,7 @@ The glossary emphasizes empirical adaptability (e.g., modifier equations indepen
 
 - **Definition**: Transient particle-antiparticle pairs arising from vacuum fluctuations consistent with Heisenberg uncertainty, existing briefly before annihilation.
 - **Project Context**: Mediators of vacuum polarization; their creation/annihilation in strong B-fields modifies vacuum refractive properties.
-- **Mathematical/Technical Details**: Loop contributions to Euler-Heisenberg action; threshold for real pair creation at Schwinger field ~$10^{18}$ V/m.
+- **Mathematical/Technical Details**: Loop contributions to Euler-Heisenberg action; threshold for real pair creation at Schwinger field ~10¹⁸ V/m.
 - **References**: Theory Overview.
 
 ---

@@ -79,7 +79,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Conformal Term C(φ)
 - **Definition**: Scalar-dependent rescaling factor in disformal gravity coupling, $C(\phi)$ in the physical metric $\tilde{g}_{\mu\nu}$.
 - **Project Context**: Primary dilaton effect altering local volume element and clock rates in engineered vacuum regions.
-- **Mathematical/Technical Details**: Physical metric given by $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric given by $\tilde{g}\_{\mu\nu} = C(\phi)\, g\_{\mu\nu} + D(\phi)\, \partial\_{\mu} \phi\, \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ---
 ## D
@@ -101,17 +101,17 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Disformal QED
 - **Definition**: Extension of QED incorporating disformal transformations that couple electromagnetic fields to spacetime metric via a scalar field.
 - **Project Context**: Theoretical foundation linking Euler-Heisenberg nonlinearity, dilaton excitation, and metric distortion for directional thrust.
-- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi)\, g\_{\mu\nu} + D(\phi)\, \partial\_{\mu} \phi\, \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ### Disformal Term D(φ)
 - **Definition**: Scalar-gradient-dependent distortion factor in disformal gravity coupling, $D(\phi)$ in the physical metric.
 - **Project Context**: Enables directional (vectorized) metric distortion and thrust from steep scalar gradients produced by $\nabla B^2$.
-- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi)\, g\_{\mu\nu} + D(\phi)\, \partial\_{\mu} \phi\, \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ### Disformal Transformation
 - **Definition**: Generalized metric coupling to a scalar field including both conformal rescaling and gradient-dependent disformal terms.
 - **Project Context**: Mechanism translating magnetic gradients into directional spacetime distortions for RVG propulsion.
-- **Mathematical/Technical Details**: Full form $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
+- **Mathematical/Technical Details**: Full form $\tilde{g}\_{\mu\nu} = C(\phi)\, g\_{\mu\nu} + D(\phi)\, \partial\_{\mu} \phi\, \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal QED (Hofseth, 2025).
 ### Drop Tests
 - **Definition**: Free-fall experiments with opposing magnet arrays showing anomalous slower descent rates.

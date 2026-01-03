@@ -10,7 +10,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Acceleration (a)
 - **Definition**: The rate of change of velocity of an object with respect to time, typically measured in meters per second squared (m/s²) or gravitational units (g, where 1 g ≈ 9.81 m/s²).
 - **Project Context**: Essential for propulsion performance in spherical combat drones, enabling extreme maneuvers (>500 g) for non-ballistic trajectories and evasion in asymmetric warfare. Simulations predict acceleration from vacuum gradient forces in supra-saturation MADA/Bushman arrays.
-- **Mathematical/Technical Details**: $a = \mathbf{F}_{lift} / m_{system}$, where $\mathbf{F}_{lift}$ is derived from the Master Equation of Levitation.
+- **Mathematical/Technical Details**: $a = \mathbf{F}\_{lift} / m\_{system}$, where $\mathbf{F}\_{lift}$ is derived from the Master Equation of Levitation.
 - **References**: `simulations/thrust_model.py`; RVG Unified Field (Hofseth, 2025).
 ### AI Navigation
 - **Definition**: Artificial intelligence-driven systems for autonomous path planning, obstacle avoidance, and real-time decision-making in dynamic environments.
@@ -68,7 +68,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ## C
 ### Cluster + Atom Model
 - **Definition**: Theoretical description of the magnetic structure in α″-Fe₁₆N₂ where localized Fe clusters are separated by N atoms, preventing moment quenching.
-- **Project Context**: Explains giant saturation magnetization in iron nitride phases; foundational for developing high-$B_{s}$ materials for RVG propulsion. Reduced bandwidth enhances exchange splitting.
+- **Project Context**: Explains giant saturation magnetization in iron nitride phases; foundational for developing high-$B\_{s}$ materials for RVG propulsion. Reduced bandwidth enhances exchange splitting.
 - **Mathematical/Technical Details**: Localized Fe clusters with N atom separation prevent magnetic moment quenching through reduced d-band hybridization.
 - **References**: RVG Unified Field Section on Giant Saturation Magnetization (Hofseth, 2025).
 ### Conformal Symmetry
@@ -79,7 +79,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Conformal Term C(φ)
 - **Definition**: Scalar-dependent rescaling factor in disformal gravity coupling, $C(\phi)$ in the physical metric $\tilde{g}_{\mu\nu}$.
 - **Project Context**: Primary dilaton effect altering local volume element and clock rates in engineered vacuum regions.
-- **Mathematical/Technical Details**: Physical metric given by $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_{\mu} \phi \partial_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric given by $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ---
 ## D
@@ -91,27 +91,27 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Dilaton (Θ₉₅ or Φ)
 - **Definition**: A light scalar boson (~95.4 GeV) arising from spontaneous breaking of conformal/scale symmetry, coupling to the trace of the energy-momentum tensor.
 - **Project Context**: Central mediator in RVG; pumps non-linear vacuum response via trace anomaly, enabling macroscopic refractive index changes at achievable Tesla scales.
-- **Mathematical/Technical Details**: Interaction Lagrangian $\mathcal{L}_{int} \propto (\phi / f_{\phi})(B^2 - E^2)$; enhancement factor $\Theta_{dilaton}(B)$.
+- **Mathematical/Technical Details**: Interaction Lagrangian $\mathcal{L}\_{int} \propto (\phi / f\_{\phi})(B^2 - E^2)$; enhancement factor $\Theta\_{dilaton}(B)$.
 - **References**: RVG Unified Field Sections 2–3 (Hofseth, 2025).
 ### Dilaton Enhancement Factor Θ_dilaton(B)
 - **Definition**: Non-linear function describing the strength of vacuum polarizability activated by intense local magnetic fields via the 95 GeV dilaton.
 - **Project Context**: Determines the magnitude of refractive index gradients; weak at low $B$, grows strongly in supra-saturation regimes.
-- **Mathematical/Technical Details**: Appears in Master Equation as $\mathbf{F}_{lift} = \int_{V} \left( \frac{1}{2\mu_{0}} \Theta_{dilaton}(B) \cdot \nabla (B^2) \right) dV$.
+- **Mathematical/Technical Details**: Appears in Master Equation as $\mathbf{F}\_{lift} = \int\_{V} \left( \frac{1}{2\mu\_{0}} \Theta\_{dilaton}(B) \cdot \nabla (B^2) \right) dV$.
 - **References**: RVG Unified Field Master Equation derivation (Hofseth, 2025).
 ### Disformal QED
 - **Definition**: Extension of QED incorporating disformal transformations that couple electromagnetic fields to spacetime metric via a scalar field.
 - **Project Context**: Theoretical foundation linking Euler-Heisenberg nonlinearity, dilaton excitation, and metric distortion for directional thrust.
-- **Mathematical/Technical Details**: Physical metric $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_{\mu} \phi \partial_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ### Disformal Term D(φ)
 - **Definition**: Scalar-gradient-dependent distortion factor in disformal gravity coupling, $D(\phi)$ in the physical metric.
 - **Project Context**: Enables directional (vectorized) metric distortion and thrust from steep scalar gradients produced by $\nabla B^2$.
-- **Mathematical/Technical Details**: Physical metric $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_{\mu} \phi \partial_{\nu} \phi$.
+- **Mathematical/Technical Details**: Physical metric $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
 ### Disformal Transformation
 - **Definition**: Generalized metric coupling to a scalar field including both conformal rescaling and gradient-dependent disformal terms.
 - **Project Context**: Mechanism translating magnetic gradients into directional spacetime distortions for RVG propulsion.
-- **Mathematical/Technical Details**: Full form $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_{\mu} \phi \partial_{\nu} \phi$.
+- **Mathematical/Technical Details**: Full form $\tilde{g}\_{\mu\nu} = C(\phi) g\_{\mu\nu} + D(\phi) \partial\_{\mu} \phi \partial\_{\nu} \phi$.
 - **References**: RVG Unified Field Section on Disformal QED (Hofseth, 2025).
 ### Drop Tests
 - **Definition**: Free-fall experiments with opposing magnet arrays showing anomalous slower descent rates.
@@ -213,7 +213,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Master Equation of Levitation
 - **Definition**: Integrated force equation quantifying propellantless thrust from vacuum refractive index gradients.
 - **Project Context**: Central predictive tool for RVG propulsion performance in combat drones.
-- **Mathematical/Technical Details**: $\mathbf{F}_{lift} = \int_{V} \left( \frac{1}{2\mu_{0}} \Theta_{dilaton}(B) \cdot \nabla (B^2) \right) dV$; thrust directed opposite convergence point.
+- **Mathematical/Technical Details**: $\mathbf{F}\_{lift} = \int\_{V} \left( \frac{1}{2\mu\_{0}} \Theta\_{dilaton}(B) \cdot \nabla (B^2) \right) dV$; thrust directed opposite convergence point.
 - **References**: RVG Unified Field Section 4 (Hofseth, 2025).
 ### Metglas Amorphous Iron
 - **Definition**: Rapidly quenched iron-based metallic glass with high permeability and low losses.
@@ -350,7 +350,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Thrust (T or F_lift)
 - **Definition**: Propulsive force generated by vacuum refractive index gradients.
 - **Project Context**: Vectorized for omnidirectional control; directed opposite magnetic convergence point.
-- **Mathematical/Technical Details**: Master Equation; total $\mathbf{F}_{net} = |\mathbf{F}_{lift}| \cdot \eta_{align} \cdot \cos\theta$.
+- **Mathematical/Technical Details**: Master Equation; total $\mathbf{F}\_{net} = |\mathbf{F}\_{lift}| \cdot \eta\_{align} \cdot \cos\theta$.
 - **References**: RVG Unified Field Practical Toolkit; `simulations/thrust_model.py`.
 ### Trace Anomaly
 - **Definition**: Quantum mechanical breaking of classical scale invariance leading to non-zero trace of the energy-momentum tensor.
@@ -360,7 +360,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Trace Anomaly Coupling
 - **Definition**: Interaction between dilaton and electromagnetic fields induced by the quantum trace anomaly.
 - **Project Context**: Core mechanism allowing magnetic fields to pump the 95 GeV scalar and modify vacuum refractive index.
-- **Mathematical/Technical Details**: $\mathcal{L}_{int} \propto (\phi / f_{\phi})(B^2 - E^2)$.
+- **Mathematical/Technical Details**: $\mathcal{L}\_{int} \propto (\phi / f\_{\phi})(B^2 - E^2)$.
 - **References**: RVG Unified Field Section on Scalar Sector (Hofseth, 2025).
 ---
 ## V

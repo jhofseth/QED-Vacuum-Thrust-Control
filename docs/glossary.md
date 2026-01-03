@@ -10,7 +10,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Acceleration (a)
 - **Definition**: The rate of change of velocity of an object with respect to time, typically measured in meters per second squared (m/s²) or gravitational units (g, where 1 g ≈ 9.81 m/s²).
 - **Project Context**: Essential for propulsion performance in spherical combat drones, enabling extreme maneuvers (>500 g) for non-ballistic trajectories and evasion in asymmetric warfare. Simulations predict acceleration from vacuum gradient forces in supra-saturation MADA/Bushman arrays.
-- **Mathematical/Technical Details**: $a = \boldsymbol{F}_{\text{lift}} / m_{\text{system}}$, where $\boldsymbol{F}_{\text{lift}}$ is derived from the Master Equation of Levitation.
+- **Mathematical/Technical Details**: $a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$, where $\mathbf{F}_{\text{lift}}$ is derived from the Master Equation of Levitation.
 - **References**: `simulations/thrust_model.py`; RVG Unified Field (Hofseth, 2025).
 ### AI Navigation
 - **Definition**: Artificial intelligence-driven systems for autonomous path planning, obstacle avoidance, and real-time decision-making in dynamic environments.
@@ -100,10 +100,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Dilaton Enhancement Factor (Θ_dilaton(B))
 - **Definition**: Non-linear function describing the strength of vacuum polarizability activated by intense local magnetic fields via the 95 GeV dilaton.
 - **Project Context**: Determines the magnitude of refractive index gradients; weak at low $B$, grows strongly in supra-saturation regimes.
-- **Mathematical/Technical Details**: 
-  $$
-  \boldsymbol{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV.
-  $$
+- **Mathematical/Technical Details**: Appears in Master Equation as $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV$.
 - **References**: RVG Unified Field Master Equation derivation (Hofseth, 2025).
 ### Disformal QED
 - **Definition**: Extension of QED incorporating disformal transformations that couple electromagnetic fields to spacetime metric via a scalar field.
@@ -135,7 +132,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Efficiency (η)
 - **Definition**: Ratio of useful output power to input power.
 - **Project Context**: Target >95% for overall system; critical for extended range in stealth drone operations.
-- **Mathematical/Technical Details**: $\eta = \left( \frac{|\boldsymbol{F}_{\text{lift}}| \cdot v}{P} \right) \times 100\%$.
+- **Mathematical/Technical Details**: $\eta = \left( \frac{|\mathbf{F}_{\text{lift}}| \cdot v}{P} \right) \times 100\%$.
 - **References**: Practical Toolkit; Key Features.
 ### Electromagnetic Field (EMF) Propulsion
 - **Definition**: Propellantless thrust generation via engineered gradients in the vacuum refractive index using electromagnetic configurations.
@@ -162,7 +159,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Flux Mapping
 - **Definition**: Real-time 3D visualization and analysis of magnetic flux density.
 - **Project Context**: AI input for 6DOF navigation and optimal gradient alignment in RVG propulsion.
-- **Mathematical/Technical Details**: $\boldsymbol{B} = \nabla \times \boldsymbol{A}$.
+- **Mathematical/Technical Details**: $\mathbf{B} = \nabla \times \mathbf{A}$.
 - **References**: Key Features; `cad/flux_visualizer.py`.
 ---
 ## G
@@ -196,7 +193,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 - **Project Context**: Starting point for deriving vacuum gradient forces in the polarizable vacuum representation.
 - **Mathematical/Technical Details**: 
   $$
-  \boldsymbol{f} = -\frac{1}{2} E^2 \nabla \epsilon - \frac{1}{2} H^2 \nabla \mu
+  \mathbf{f} = -\frac{1}{2} E^2 \nabla \epsilon - \frac{1}{2} H^2 \nabla \mu
   $$
   (in charge/current-free regions).
 - **References**: RVG Unified Field Section on Master Equation Derivation (Hofseth, 2025).
@@ -210,7 +207,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### K (Vacuum Refractive Index)
 - **Definition**: Effective refractive index of the quantum vacuum, $K = \sqrt{\epsilon \mu / \epsilon_0 \mu_0}$.
 - **Project Context**: Primary engineered parameter in RVG; gradients in $K$ produce gravitational-like forces.
-- **Mathematical/Technical Details**: $K(\boldsymbol{r}) \approx 1 + \varTheta_{\text{dilaton}}(B) \frac{B^2}{B_{\text{crit}}^2}$; $\nabla K \propto \varTheta_{\text{dilaton}}(B) \nabla B^2$.
+- **Mathematical/Technical Details**: $K(\mathbf{r}) \approx 1 + \varTheta_{\text{dilaton}}(B) \frac{B^2}{B_{\text{crit}}^2}$; $\nabla K \propto \varTheta_{\text{dilaton}}(B) \nabla B^2$.
 - **References**: RVG Unified Field Practical Toolkit (Hofseth, 2025).
 ---
 ## M
@@ -229,7 +226,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 - **Project Context**: Central predictive tool for RVG propulsion performance in combat drones.
 - **Mathematical/Technical Details**: 
   $$
-  \boldsymbol{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV;
+  \mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV;
   $$
   thrust directed opposite convergence point.
 - **References**: RVG Unified Field Section 4 (Hofseth, 2025).
@@ -368,7 +365,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Thrust (T or F_lift)
 - **Definition**: Propulsive force generated by vacuum refractive index gradients.
 - **Project Context**: Vectorized for omnidirectional control; directed opposite magnetic convergence point.
-- **Mathematical/Technical Details**: Master Equation; total $\boldsymbol{F}_{\text{net}} = |\boldsymbol{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$.
+- **Mathematical/Technical Details**: Master Equation; total $\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$.
 - **References**: RVG Unified Field Practical Toolkit; `simulations/thrust_model.py`.
 ### Trace Anomaly
 - **Definition**: Quantum mechanical breaking of classical scale invariance leading to non-zero trace of the energy-momentum tensor.

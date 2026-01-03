@@ -17,7 +17,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 
 - **Definition**: The rate of change of velocity of an object with respect to time, typically measured in meters per second squared (m/s²) or gravitational units (g, where 1 g ≈ 9.81 m/s²).
 - **Project Context**: Essential for propulsion performance in spherical combat drones, enabling extreme maneuvers (>500 g) for non-ballistic trajectories and evasion in asymmetric warfare. Simulations predict acceleration from vacuum gradient forces in supra-saturation MADA/Bushman arrays.
-- **Mathematical/Technical Details**: $a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$, where $\mathbf{F}_{\text{lift}}$ is derived from the Master Equation of Levitation.
+- **Mathematical/Technical Details**: $a = \bm{F}_{\text{lift}} / m_{\text{system}}$, where $\bm{F}_{\text{lift}}$ is derived from the Master Equation of Levitation.
 - **References**: `simulations/thrust_model.py`; RVG Unified Field (Hofseth, 2025).
 
 ### AI Navigation

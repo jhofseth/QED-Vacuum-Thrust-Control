@@ -1,3 +1,4 @@
+mathbf isn't working in my GitHub glossary.md
 # Glossary
 This glossary provides a comprehensive compilation of terms, acronyms, concepts, and technical vocabulary relevant to the QED-Vacuum-Thrust-Control project. It is derived from the project's theoretical foundations in quantum electrodynamics (QED), Refractive Vacuum Gravity (RVG), Disformal QED, the 95 GeV dilaton/radion resonance, vacuum refractive index engineering, electromagnetic propulsion systems, materials science, control engineering, and simulation tools. Entries are organized alphabetically for ease of reference, with cross-references where applicable. Each entry includes:
 - **Definition**: A precise, formal explanation.
@@ -7,7 +8,7 @@ This glossary provides a comprehensive compilation of terms, acronyms, concepts,
 The glossary emphasizes practical metric engineering via high-gradient magnetic configurations (supra-saturation MADA/Bushman arrays) and the non-linear enhancement of vacuum polarizability by the 95 GeV dilaton. Terms cover core physics, engineering, materials, and ancillary concepts—including cosmological extensions—to support researchers, engineers, and contributors in developing high-thrust, stealthy combat drones.
 ---
 ## A
-### Acceleration ($a$)
+### Acceleration (a)
 - **Definition**: The rate of change of velocity of an object with respect to time, typically measured in meters per second squared (m/s²) or gravitational units (g, where 1 g ≈ 9.81 m/s²).
 - **Project Context**: Essential for propulsion performance in spherical combat drones, enabling extreme maneuvers (>500 g) for non-ballistic trajectories and evasion in asymmetric warfare. Simulations predict acceleration from vacuum gradient forces in supra-saturation MADA/Bushman arrays.
 - **Mathematical/Technical Details**: $a = \mathbf{F}_{\text{lift}} / m_{\text{system}}$, where $\mathbf{F}_{\text{lift}}$ is derived from the Master Equation of Levitation.
@@ -76,7 +77,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 - **Project Context**: Classically present in EM but broken quantum mechanically via trace anomaly; spontaneous breaking produces the dilaton as goldstone-like mode for RVG vacuum modification.
 - **Mathematical/Technical Details**: Classical $T^\mu_\mu = 0$ for EM; quantum anomaly introduces non-zero trace.
 - **References**: RVG Unified Field Section on Trace Anomaly (Hofseth, 2025).
-### Conformal Term ($C(\phi)$)
+### Conformal Term (C(φ))
 - **Definition**: Scalar-dependent rescaling factor in disformal gravity coupling, $C(\phi)$ in the physical metric $\tilde{g}_{\mu\nu}$.
 - **Project Context**: Primary dilaton effect altering local volume element and clock rates in engineered vacuum regions.
 - **Mathematical/Technical Details**: $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_\mu \phi \partial_\nu \phi$.
@@ -88,22 +89,22 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 - **Project Context**: Cosmological implication of RVG; laboratory metric engineering mirrors galactic-scale vacuum tension effects, providing unified micro-macro explanation.
 - **Mathematical/Technical Details**: Modifies effective gravitational potential without particulate dark matter.
 - **References**: RVG Unified Field Cosmology Section (Hofseth, 2025).
-### Dilaton ($\Theta_{95}$ or $\Phi$)
+### Dilaton (Θ₉₅ or Φ)
 - **Definition**: A light scalar boson (~95.4 GeV) arising from spontaneous breaking of conformal/scale symmetry, coupling to the trace of the energy-momentum tensor.
 - **Project Context**: Central mediator in RVG; pumps non-linear vacuum response via trace anomaly, enabling macroscopic refractive index changes at achievable Tesla scales.
-- **Mathematical/Technical Details**: Interaction Lagrangian $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$; enhancement factor $\Theta_{\text{dilaton}}(B)$.
+- **Mathematical/Technical Details**: Interaction Lagrangian $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$; enhancement factor $\varTheta_{\text{dilaton}}(B)$.
 - **References**: RVG Unified Field Sections 2–3 (Hofseth, 2025).
-### Dilaton Enhancement Factor ($\Theta_{\text{dilaton}}(B)$)
+### Dilaton Enhancement Factor (Θ_dilaton(B))
 - **Definition**: Non-linear function describing the strength of vacuum polarizability activated by intense local magnetic fields via the 95 GeV dilaton.
 - **Project Context**: Determines the magnitude of refractive index gradients; weak at low $B$, grows strongly in supra-saturation regimes.
-- **Mathematical/Technical Details**: Appears in Master Equation as $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV$.
+- **Mathematical/Technical Details**: Appears in Master Equation as $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV$.
 - **References**: RVG Unified Field Master Equation derivation (Hofseth, 2025).
 ### Disformal QED
 - **Definition**: Extension of QED incorporating disformal transformations that couple electromagnetic fields to spacetime metric via a scalar field.
 - **Project Context**: Theoretical foundation linking Euler-Heisenberg nonlinearity, dilaton excitation, and metric distortion for directional thrust.
 - **Mathematical/Technical Details**: Physical metric $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_\mu \phi \partial_\nu \phi$.
 - **References**: RVG Unified Field Section on Disformal Gravity Coupling (Hofseth, 2025).
-### Disformal Term ($D(\phi)$)
+### Disformal Term (D(φ))
 - **Definition**: Scalar-gradient-dependent distortion factor in disformal gravity coupling, $D(\phi)$ in the physical metric.
 - **Project Context**: Enables directional (vectorized) metric distortion and thrust from steep scalar gradients produced by $\nabla B^2$.
 - **Mathematical/Technical Details**: $\tilde{g}_{\mu\nu} = C(\phi) g_{\mu\nu} + D(\phi) \partial_\mu \phi \partial_\nu \phi$.
@@ -184,7 +185,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Helmholtz Force Density
 - **Definition**: Force density on a polarizable medium in inhomogeneous electromagnetic fields.
 - **Project Context**: Starting point for deriving vacuum gradient forces in the polarizable vacuum representation.
-- **Mathematical/Technical Details**: $\mathbf{f} = -\frac{1}{2} E^2 \nabla \epsilon - \frac{1}{2} H^2 \nabla \mu$ (in charge/current-free regions).
+- **Mathematical/Technical Details**: $\bm{f} = -\frac{1}{2} E^2 \nabla \epsilon - \frac{1}{2} H^2 \nabla \mu$ (in charge/current-free regions).
 - **References**: RVG Unified Field Section on Master Equation Derivation (Hofseth, 2025).
 ### Hiperco-50
 - **Definition**: High-saturation cobalt-iron alloy (50% Co, 50% Fe + V).
@@ -213,7 +214,7 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 ### Master Equation of Levitation
 - **Definition**: Integrated force equation quantifying propellantless thrust from vacuum refractive index gradients.
 - **Project Context**: Central predictive tool for RVG propulsion performance in combat drones.
-- **Mathematical/Technical Details**: $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV$; thrust directed opposite convergence point.
+- **Mathematical/Technical Details**: $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \varTheta_{\text{dilaton}}(B) \cdot \nabla (B^2) \right) dV$; thrust directed opposite convergence point.
 - **References**: RVG Unified Field Section 4 (Hofseth, 2025).
 ### Metglas Amorphous Iron
 - **Definition**: Rapidly quenched iron-based metallic glass with high permeability and low losses.
@@ -347,23 +348,16 @@ The glossary emphasizes practical metric engineering via high-gradient magnetic 
 - **Project Context**: Handles 10–40 kW from pulsing via PCM and optional TEG.
 - **Mathematical/Technical Details**: Eddy losses $\propto f^2 B^2 t^2$.
 - **References**: Key Features.
-Thrust (T or $\mathbf{F}_{\text{lift}}$)
-Definition: Propulsive force generated by vacuum refractive index gradients.
-Project Context: Vectorized for omnidirectional control; directed opposite magnetic convergence point.
-Mathematical/Technical Details: Master Equation; total $\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$.
-References: RVG Unified Field Practical Toolkit; simulations/thrust_model.py.
-Trace Anomaly Coupling
-Definition: Interaction between dilaton and electromagnetic fields induced by the quantum trace anomaly.
-Project Context: Core mechanism allowing magnetic fields to pump the 95 GeV scalar and modify vacuum refractive index.
-Mathematical/Technical Details: $\mathcal{L}_{\text{int}} \propto \frac{\phi}{f_\phi} (B^2 - E^2)$.
-References: RVG Unified Field Section on Scalar Sector (Hofseth, 2025).
-
-### Thrust ($T$ or $\mathbf{F}_{\text{lift}}$)
+### Thrust (T or F_lift)
 - **Definition**: Propulsive force generated by vacuum refractive index gradients.
 - **Project Context**: Vectorized for omnidirectional control; directed opposite magnetic convergence point.
 - **Mathematical/Technical Details**: Master Equation; total $\mathbf{F}_{\text{net}} = |\mathbf{F}_{\text{lift}}| \cdot \eta_{\text{align}} \cdot \cos\theta$.
 - **References**: RVG Unified Field Practical Toolkit; `simulations/thrust_model.py`.
-
+### Trace Anomaly
+- **Definition**: Quantum mechanical breaking of classical scale invariance leading to non-zero trace of the energy-momentum tensor.
+- **Project Context**: Enables dilaton coupling to electromagnetic fields despite classical tracelessness.
+- **Mathematical/Technical Details**: $T^\mu_\mu = \frac{\beta(g)}{2g} F_{\mu\nu}F^{\mu\nu} + \cdots$.
+- **References**: RVG Unified Field Section on Trace Anomaly Coupling (Hofseth, 2025).
 ### Trace Anomaly Coupling
 - **Definition**: Interaction between dilaton and electromagnetic fields induced by the quantum trace anomaly.
 - **Project Context**: Core mechanism allowing magnetic fields to pump the 95 GeV scalar and modify vacuum refractive index.

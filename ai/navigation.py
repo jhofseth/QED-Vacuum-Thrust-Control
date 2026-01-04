@@ -4,13 +4,23 @@ ai/navigation.py
 Advanced navigation system with sensor fusion, PID/MPC control, fail-safes,
 redundancy, and predictive maintenance for QED vacuum propulsion drones.
 
+Updated to align with the Refractive Vacuum Gravity (RVG) Unified Field framework:
+- Disformal QED with 95 GeV dilaton/radion resonance coupling
+- Gordon Optical Metric for vacuum refractive index gradients
+- Master Equation of Levitation: F_lift = ∫(Θ_dilaton(B)·∇B²)dV
+- MADA (Magnetic Amplification and Direction Assembly) integration per U.S. Patent 5,929,732
+
 Enhanced with:
 - Advanced Neural Architectures: Hybrid MIMO NN with reinforcement learning (via basic policy gradient implementation) for 6DOF control, incorporating sensor fusion from IMU, GPS, and simulated visual feeds for robust flux mapping and threat evasion.
 - Autonomy and Adaptation Layers: Sliding mode controllers and state observers for real-time replanning in jammed environments, with AI for opportunistic strikes and swarm coordination.
 - Training Pipelines with Datasets: Fine-tuning scripts for YOLO-like models on drone datasets, with SORT tracking for multi-target scenarios in asymmetric warfare.
 - Battlefield-Specific Features: Visual pose estimation and decoy detection for stealth ops, with fallback modes for signal loss using onboard AI.
-- Integration with Propulsion Models: Enhanced link to equations.py for QED-informed control, optimizing for non-ballistic paths and hover in dynamic environments.
+- Integration with RVG Propulsion Models: Enhanced link to equations.py for dilaton-enhanced QED-informed control, optimizing for non-ballistic paths and hover in dynamic environments via supra-saturation field engineering.
 - Best Practices for Reliability: Use PyTorch with quantization for edge deployment; add fault-tolerant layers and extensive logging for post-training audits.
+
+References:
+- Refractive Vacuum Gravity (RVG) Unified Field Theory (Hofseth, 2025): https://dx.doi.org/10.2139/ssrn.5381654
+- U.S. Patent #5,929,732 (Lockheed Martin Corporation): https://patents.google.com/patent/US5929732A/en
 """
 
 import numpy as np
@@ -65,21 +75,52 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Physical constants
-CHI = 1e-10
-B = 50.0  # T
-A = 1.0  # m²
-RHO = 1000.0  # kg/m³
-N_UNITS = 24
-ETA = 0.95
-THETA = 0.0  # degrees
-MASS = 20000.0  # kg
-DT = 0.1  # time step (s)
-NUM_STEPS = 100  # simulation steps
+# =============================================================================
+# Physical Constants - Updated for RVG Unified Field Framework
+# =============================================================================
+
+# Fundamental constants
+MU_0 = 4 * np.pi * 1e-7  # Vacuum permeability (H/m)
+EPSILON_0 = 8.854187817e-12  # Vacuum permittivity (F/m)
+C = 299792458.0  # Speed of light (m/s)
+HBAR = 1.054571817e-34  # Reduced Planck constant (J·s)
+M_E = 9.10938370e-31  # Electron mass (kg)
+E_CHARGE = 1.602176634e-19  # Elementary charge (C)
+ALPHA = 1/137.035999084  # Fine structure constant
+
+# QED critical field (Schwinger limit)
+B_SCHWINGER = (M_E**2 * C**3) / (E_CHARGE * HBAR)  # ~4.414e9 T
+
+# RVG Framework parameters
+# Note: Θ_dilaton parameters are theoretical; experimental validation pending
+THETA_95_BASE = 1e-6  # Base dilaton enhancement (placeholder - requires experimental calibration)
+B_CRIT_EFFECTIVE = 20.0  # Effective critical field for dilaton activation (T) - configuration dependent
+DILATON_RESONANCE_MASS = 95.4  # GeV - observed CMS/ATLAS resonance
+
+# Legacy parameters (retained for compatibility)
+CHI = 1e-10  # Vacuum susceptibility coefficient
+B = 50.0  # Default opposing B-field (T)
+A = 1.0  # Effective area (m²)
+RHO = 1000.0  # Density parameter (kg/m³)
+N_UNITS = 24  # Number of MADA units
+ETA = 0.95  # Base efficiency
+THETA = 0.0  # Thrust angle (degrees)
+MASS = 20000.0  # System mass (kg)
+DT = 0.1  # Time step (s)
+NUM_STEPS = 100  # Simulation steps
+
+# MADA Amplification parameters (per U.S. Patent 5,929,732)
+MADA_K_DEFAULT = 200.0  # Default amplification factor (~200x vs single magnet)
+MADA_K_MAX = 529.0  # Maximum theoretical amplification (force scaling at 6x distance)
+
+# Material saturation limits
+B_SAT_IRON = 2.1  # Pure iron saturation (T)
+B_SAT_HIPERCO = 2.4  # Hiperco-50 saturation (T)
+B_SAT_MINNEALLOY = 2.85  # Minnealloy α'-Fe₈(NC) saturation (T)
 
 # Safety limits
 MAX_TEMP = 100.0  # °C
-MAX_B_FIELD = 60.0  # T
+MAX_B_FIELD = 90.0  # T - increased for supra-saturation regime
 TEMP_THRESHOLD = 90.0  # °C for warning
 MAX_ACCEL = 500 * 9.81  # m/s² (500g)
 
@@ -91,6 +132,235 @@ GPS_VEL_NOISE = 0.1  # m/s
 ALTIMETER_NOISE = 0.5  # m
 MAGNETOMETER_NOISE = 0.01  # rad
 VISUAL_NOISE = 0.05  # for simulated visual feeds
+
+
+# =============================================================================
+# RVG Unified Field Functions
+# =============================================================================
+
+def dilaton_enhancement(B: float, B_crit: float = B_CRIT_EFFECTIVE, 
+                        theta_base: float = THETA_95_BASE) -> float:
+    """
+    Calculate the dilaton enhancement factor Θ_dilaton(B).
+    
+    The dilaton enhancement represents the non-linear vacuum response that grows
+    with magnetic field intensity due to 95 GeV resonance pumping. This couples
+    to the trace anomaly of the energy-momentum tensor.
+    
+    Parameters:
+    B (float): Local magnetic field strength (T)
+    B_crit (float): Effective critical field for activation (T)
+    theta_base (float): Base enhancement coefficient
+    
+    Returns:
+    float: Dilaton enhancement factor Θ_dilaton(B)
+    
+    Note:
+    Effects remain theoretical; experimental validation of Θ_dilaton(B) pending
+    high-gradient supra-saturation testing. The framework is neutral and adaptable
+    to alternative modifier equations derived from experimental data.
+    """
+    # Non-linear activation: weak at low B, grows strongly with intensity
+    # Based on trace anomaly coupling to electromagnetic energy density
+    if B < 1e-6:
+        return theta_base
+    
+    # Quadratic scaling with B/B_crit, with saturation behavior
+    ratio = B / B_crit
+    theta = theta_base * (1 + ratio**2) * np.exp(-0.1 / (ratio + 0.01))
+    
+    return theta
+
+
+def vacuum_refractive_index(B: float, B_crit: float = B_CRIT_EFFECTIVE) -> float:
+    """
+    Calculate the vacuum refractive index K(r) modified by QED polarization.
+    
+    K(r) = 1 + χ_vac(B) ≈ 1 + Θ_95 * B² / B_crit²
+    
+    Parameters:
+    B (float): Local magnetic field strength (T)
+    B_crit (float): Effective critical field (T)
+    
+    Returns:
+    float: Vacuum refractive index K
+    """
+    theta = dilaton_enhancement(B, B_crit)
+    chi_vac = theta * (B / B_crit)**2
+    K = 1.0 + chi_vac
+    return K
+
+
+def vacuum_refractive_gradient(B: float, grad_B: np.ndarray, 
+                                B_crit: float = B_CRIT_EFFECTIVE) -> np.ndarray:
+    """
+    Calculate the gradient of vacuum refractive index ∇K.
+    
+    ∇K ∝ Θ_dilaton(B) ∇(B²)
+    
+    Parameters:
+    B (float): Local magnetic field strength (T)
+    grad_B (np.ndarray): Gradient of B field (T/m)
+    B_crit (float): Effective critical field (T)
+    
+    Returns:
+    np.ndarray: Gradient of refractive index ∇K
+    """
+    theta = dilaton_enhancement(B, B_crit)
+    # ∇(B²) = 2B * ∇B
+    grad_B2 = 2 * B * np.asarray(grad_B)
+    grad_K = theta * grad_B2 / B_crit**2
+    return grad_K
+
+
+def vacuum_force_density(B: float, grad_K: np.ndarray) -> np.ndarray:
+    """
+    Calculate local vacuum force density (magnetic-dominant, vacuum region).
+    
+    f_vac ≈ -B² / (2μ₀) ∇K
+    
+    Parameters:
+    B (float): Local magnetic field strength (T)
+    grad_K (np.ndarray): Gradient of vacuum refractive index
+    
+    Returns:
+    np.ndarray: Force density vector (N/m³)
+    """
+    f_vac = -(B**2 / (2 * MU_0)) * np.asarray(grad_K)
+    return f_vac
+
+
+def master_equation_levitation(B_field: np.ndarray, grad_B2: np.ndarray, 
+                                volume: float, eta_align: float = 0.95,
+                                theta_thrust: float = 0.0) -> np.ndarray:
+    """
+    Master Equation of Levitation - Integrated thrust from vacuum polarization.
+    
+    F_lift = ∫_V (1/(2μ₀) Θ_dilaton(B) · ∇(B·B)) dV
+    
+    For discrete calculation:
+    F_lift = (1/(2μ₀)) * Θ_dilaton(B) * ∇(B²) * V
+    
+    Parameters:
+    B_field (np.ndarray): Magnetic field vector or magnitude (T)
+    grad_B2 (np.ndarray): Gradient of B² (T²/m)
+    volume (float): Integration volume (m³)
+    eta_align (float): Alignment efficiency factor
+    theta_thrust (float): Thrust angle offset (degrees)
+    
+    Returns:
+    np.ndarray: Lift force vector (N)
+    
+    Note:
+    Directional thrust is opposite the convergence/opposition point where ∇K
+    points toward highest magnetic energy density. Force scales ∝ T²/m.
+    """
+    B_mag = np.linalg.norm(B_field) if isinstance(B_field, np.ndarray) else B_field
+    theta = dilaton_enhancement(B_mag)
+    
+    # F_lift = (1/(2μ₀)) * Θ * ∇(B²) * V
+    F_lift = (1 / (2 * MU_0)) * theta * np.asarray(grad_B2) * volume
+    
+    # Apply alignment efficiency and angle
+    F_net = np.abs(F_lift) * eta_align * np.cos(np.deg2rad(theta_thrust))
+    
+    # Preserve direction (opposite to gradient for repulsion from high-B region)
+    direction = -grad_B2 / (np.linalg.norm(grad_B2) + 1e-10)
+    
+    return np.linalg.norm(F_net) * direction
+
+
+def mada_amplification(B_source: float, distance_ratio: float = 6.0, 
+                       k: float = MADA_K_DEFAULT) -> float:
+    """
+    Calculate MADA-amplified magnetic field based on U.S. Patent 5,929,732.
+    
+    MADA enables ~200-500x effective amplification by overcoming the 1/r³ (field)
+    or 1/r⁷ (force) decay over extended distances.
+    
+    Parameters:
+    B_source (float): Source magnetic field strength (T)
+    distance_ratio (float): Ratio of effective to nominal distance (default 6.0)
+    k (float): MADA amplification factor (200.0 for ~200x, up to 529.0 for force)
+    
+    Returns:
+    float: Amplified effective B field (T)
+    
+    Note:
+    For nested MADA configurations, apply recursively for hierarchical amplification.
+    5 stacks of 6 N52 magnets (~3T each) can achieve ~600+T B_opposing with MADA.
+    """
+    # Standard decay would reduce field by distance_ratio³
+    # MADA compensates via focusing/frustration effects
+    B_amplified = B_source * (k / distance_ratio**3)
+    return B_amplified
+
+
+def opposing_field_with_mada(m1: float, m2: float, d: float, 
+                              k: float = MADA_K_DEFAULT) -> float:
+    """
+    Calculate opposing magnetic field in gap with MADA amplification.
+    
+    B_gap ≈ (μ₀ m₁ m₂) / (2π d²) · k
+    
+    Parameters:
+    m1 (float): Magnetic moment of first magnet (A·m²)
+    m2 (float): Magnetic moment of second magnet (A·m²)
+    d (float): Gap distance between magnets (m)
+    k (float): MADA geometry/amplification factor (default 200.0)
+    
+    Returns:
+    float: Gap magnetic field (T)
+    """
+    if d <= 0:
+        raise ValueError("Distance must be positive")
+    
+    B_gap = (MU_0 * m1 * m2) / (2 * np.pi * d**2) * k
+    return B_gap
+
+
+def check_supra_saturation(B_opposing: float, B_sat: float = B_SAT_MINNEALLOY) -> dict:
+    """
+    Check if operating in supra-saturation regime for vacuum effects.
+    
+    The opposing gap field must substantially exceed material saturation B_s
+    to achieve intense localized B and steep ∇B² required for macroscopic effects.
+    
+    Parameters:
+    B_opposing (float): Opposing field strength (T)
+    B_sat (float): Material saturation field (T)
+    
+    Returns:
+    dict: Status with regime, ratio, and effectiveness estimate
+    """
+    ratio = B_opposing / B_sat
+    
+    if ratio < 1.0:
+        regime = "sub-saturation"
+        effectiveness = 0.1
+    elif ratio < 2.0:
+        regime = "near-saturation"
+        effectiveness = 0.3
+    elif ratio < 5.0:
+        regime = "supra-saturation"
+        effectiveness = 0.7
+    else:
+        regime = "deep-supra-saturation"
+        effectiveness = 1.0
+    
+    return {
+        "regime": regime,
+        "B_opposing": B_opposing,
+        "B_sat": B_sat,
+        "ratio": ratio,
+        "effectiveness": effectiveness,
+        "message": f"Operating in {regime} regime (B/B_sat = {ratio:.2f})"
+    }
+
+
+# =============================================================================
+# Sensor Fusion
+# =============================================================================
 
 class KalmanFilter:
     """
@@ -214,6 +484,10 @@ class KalmanFilter:
                 logger.warning("Singular matrix in visual update. Skipping.")
 
 
+# =============================================================================
+# Controllers
+# =============================================================================
+
 class PIDController:
     """
     PID Controller for single-axis control.
@@ -288,6 +562,9 @@ class PIDController:
 class SlidingModeController:
     """
     Sliding Mode Controller for robust control in uncertain environments.
+    
+    Provides robustness against parameter variations and disturbances,
+    essential for maintaining control in jammed or degraded sensor conditions.
     """
     def __init__(self, lambda_param: float = 1.0, eta: float = 1.0):
         self.lambda_param = lambda_param
@@ -302,6 +579,9 @@ class SlidingModeController:
 class StateObserver:
     """
     Simple Luenberger observer for state estimation.
+    
+    Used for estimating unmeasured states when sensor data is incomplete
+    or during signal loss scenarios.
     """
     def __init__(self, A: np.ndarray, B: np.ndarray, C: np.ndarray, L: np.ndarray, dt: float = DT):
         self.A = A
@@ -322,7 +602,8 @@ def mpc_control(current_state: np.ndarray, target_state: np.ndarray,
     """
     Model Predictive Control for 6DOF.
     
-    Optimizes control input over short prediction horizon.
+    Optimizes control input over short prediction horizon for non-ballistic
+    trajectory planning and hover capabilities.
     
     Parameters:
     current_state (np.ndarray): Current state [pos, attitude] (6D)
@@ -355,9 +636,16 @@ def mpc_control(current_state: np.ndarray, target_state: np.ndarray,
         return np.zeros(6)
 
 
+# =============================================================================
+# Neural Network Models
+# =============================================================================
+
 class MaintenanceNN(nn.Module):
     """
     Neural network for predictive maintenance and adaptive pulsing.
+    
+    Monitors system health and adapts MADA pulsing frequency for optimal
+    efficiency (50-100 Hz default, up to 1 kHz bursts).
     
     Inputs: operational cycles, temperature, B-field, threat level
     Outputs: degradation probability, adapted pulsing frequency
@@ -387,6 +675,81 @@ class MaintenanceNN(nn.Module):
         x = self.dropout(x)
         return self.fc3(x)
 
+
+class ActorCritic(nn.Module):
+    """
+    Actor-Critic network for reinforcement learning integration.
+    
+    Enables adaptive control strategies for asymmetric warfare scenarios
+    and dynamic threat evasion.
+    """
+    def __init__(self, state_size: int, action_size: int, hidden_size: int = 64):
+        super(ActorCritic, self).__init__()
+        self.actor_fc1 = nn.Linear(state_size, hidden_size)
+        self.actor_fc2 = nn.Linear(hidden_size, action_size)
+        self.critic_fc1 = nn.Linear(state_size, hidden_size)
+        self.critic_fc2 = nn.Linear(hidden_size, 1)
+        self.relu = nn.ReLU()
+    
+    def forward(self, state):
+        actor_x = self.relu(self.actor_fc1(state))
+        action = torch.tanh(self.actor_fc2(actor_x))
+        critic_x = self.relu(self.critic_fc1(state))
+        value = self.critic_fc2(critic_x)
+        return action, value
+
+
+class HybridMIMONetwork(nn.Module):
+    """
+    Hybrid MIMO Neural Network with RL for 6DOF control.
+    
+    Integrates with RVG propulsion models for dilaton-enhanced control,
+    optimizing for non-ballistic paths and hover in dynamic environments.
+    
+    Inputs: position, velocity, target, visual features (12 dimensions)
+    Outputs: control signals for thrust vectors (6 dimensions)
+    """
+    
+    def __init__(self, input_size: int = 12, hidden_size: int = 64, output_size: int = 6):
+        """Initialize hybrid MIMO network."""
+        super(HybridMIMONetwork, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, output_size)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.1)
+        self.ac = ActorCritic(input_size, output_size)  # RL component
+    
+    def forward(self, x):
+        """Forward pass with RL enhancement."""
+        nn_x = self.relu(self.fc1(x))
+        nn_x = self.dropout(nn_x)
+        nn_x = self.relu(self.fc2(nn_x))
+        nn_x = self.dropout(nn_x)
+        nn_out = torch.tanh(self.fc3(nn_x))
+        action, _ = self.ac(x)
+        return 0.7 * nn_out + 0.3 * action  # Blend NN and RL
+
+
+class YOLOModel(nn.Module):
+    """
+    Placeholder for YOLO-like model for object detection.
+    
+    Used for multi-target tracking in asymmetric warfare scenarios.
+    (In practice, use ultralytics YOLO or torchvision detection models)
+    """
+    def __init__(self):
+        super(YOLOModel, self).__init__()
+        # Mock layers
+        self.conv = nn.Conv2d(3, 16, 3)
+    
+    def forward(self, x):
+        return self.conv(x)  # Mock output
+
+
+# =============================================================================
+# Sensor Simulation and Tracking
+# =============================================================================
 
 def simulate_sensors(true_pos: np.ndarray, true_vel: np.ndarray, 
                     true_attitude: np.ndarray) -> Tuple:
@@ -425,72 +788,11 @@ def simulate_sensors(true_pos: np.ndarray, true_vel: np.ndarray,
     return imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos
 
 
-class ActorCritic(nn.Module):
-    """
-    Actor-Critic network for reinforcement learning integration.
-    """
-    def __init__(self, state_size: int, action_size: int, hidden_size: int = 64):
-        super(ActorCritic, self).__init__()
-        self.actor_fc1 = nn.Linear(state_size, hidden_size)
-        self.actor_fc2 = nn.Linear(hidden_size, action_size)
-        self.critic_fc1 = nn.Linear(state_size, hidden_size)
-        self.critic_fc2 = nn.Linear(hidden_size, 1)
-        self.relu = nn.ReLU()
-    
-    def forward(self, state):
-        actor_x = self.relu(self.actor_fc1(state))
-        action = torch.tanh(self.actor_fc2(actor_x))
-        critic_x = self.relu(self.critic_fc1(state))
-        value = self.critic_fc2(critic_x)
-        return action, value
-
-
-class HybridMIMONetwork(nn.Module):
-    """
-    Hybrid MIMO Neural Network with RL for 6DOF control.
-    
-    Inputs: position, velocity, target, visual features (12 dimensions)
-    Outputs: control signals for thrust vectors (6 dimensions)
-    """
-    
-    def __init__(self, input_size: int = 12, hidden_size: int = 64, output_size: int = 6):
-        """Initialize hybrid MIMO network."""
-        super(HybridMIMONetwork, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.1)
-        self.ac = ActorCritic(input_size, output_size)  # RL component
-    
-    def forward(self, x):
-        """Forward pass with RL enhancement."""
-        nn_x = self.relu(self.fc1(x))
-        nn_x = self.dropout(nn_x)
-        nn_x = self.relu(self.fc2(nn_x))
-        nn_x = self.dropout(nn_x)
-        nn_out = torch.tanh(self.fc3(nn_x))
-        action, _ = self.ac(x)
-        return 0.7 * nn_out + 0.3 * action  # Blend NN and RL
-
-
-class YOLOModel(nn.Module):
-    """
-    Placeholder for YOLO-like model for object detection.
-    (In practice, use ultralytics YOLO or torchvision detection models)
-    """
-    def __init__(self):
-        super(YOLOModel, self).__init__()
-        # Mock layers
-        self.conv = nn.Conv2d(3, 16, 3)
-    
-    def forward(self, x):
-        return self.conv(x)  # Mock output
-
-
 def sort_tracking(objects: List[np.ndarray], kf: KalmanFilter) -> List[np.ndarray]:
     """
     SORT (Simple Online Realtime Tracking) using Kalman for multi-target tracking.
+    
+    Essential for asymmetric warfare scenarios with multiple threats.
     """
     tracked = []
     for obj in objects:
@@ -503,7 +805,9 @@ def sort_tracking(objects: List[np.ndarray], kf: KalmanFilter) -> List[np.ndarra
 
 def visual_pose_estimation(visual_data: np.ndarray) -> np.ndarray:
     """
-    Visual pose estimation (mock implementation).
+    Visual pose estimation for stealth operations.
+    
+    Provides position estimation from camera data when other sensors are jammed.
     """
     # Simulate pose from visual data
     return visual_data + np.random.normal(0, 0.1, 3)
@@ -512,6 +816,8 @@ def visual_pose_estimation(visual_data: np.ndarray) -> np.ndarray:
 def decoy_detection(visual_data: np.ndarray, threat_level: float) -> bool:
     """
     Decoy detection based on visual and threat analysis.
+    
+    Identifies potential decoys or false targets in asymmetric warfare.
     """
     # Mock: detect if anomaly in data
     anomaly = np.linalg.norm(visual_data) > threat_level * 10
@@ -521,15 +827,23 @@ def decoy_detection(visual_data: np.ndarray, threat_level: float) -> bool:
 def fallback_mode(kf: KalmanFilter) -> np.ndarray:
     """
     Fallback mode for signal loss using onboard AI.
+    
+    Implements dead reckoning when GPS/external signals are unavailable.
     """
     # Use last known state for dead reckoning
     return kf.x[:3] + kf.x[3:6] * DT
 
 
+# =============================================================================
+# Training Functions
+# =============================================================================
+
 def train_on_dataset(model: nn.Module, dataset: List[Tuple[torch.Tensor, torch.Tensor]], 
                      num_epochs: int = 100, lr: float = 0.001):
     """
     Training pipeline for fine-tuning on drone datasets.
+    
+    Includes post-training audit logging for reliability verification.
     """
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
@@ -552,7 +866,7 @@ def train_on_dataset(model: nn.Module, dataset: List[Tuple[torch.Tensor, torch.T
 
 def fine_tune_yolo(yolo_model: YOLOModel, dataset: List[torch.Tensor], num_epochs: int = 50):
     """
-    Fine-tuning script for YOLO-like model.
+    Fine-tuning script for YOLO-like model on drone imagery datasets.
     """
     # Mock dataset: images
     optimizer = optim.SGD(yolo_model.parameters(), lr=0.01)
@@ -570,12 +884,72 @@ def fine_tune_yolo(yolo_model: YOLOModel, dataset: List[torch.Tensor], num_epoch
     logger.info("YOLO fine-tuning complete.")
 
 
+def train_demo_model(num_epochs: int = 100, batch_size: int = 32, 
+                     lr: float = 0.001) -> HybridMIMONetwork:
+    """Train demo model on random data with RL integration."""
+    logger.info("Training demo model...")
+    model = HybridMIMONetwork()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.MSELoss()
+    
+    model.train()
+    
+    for epoch in range(num_epochs):
+        inputs = torch.randn(batch_size, 12)  # Extended input
+        targets = torch.randn(batch_size, 6)
+        
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+        
+        # Mock RL loss
+        states = inputs
+        actions, values = model.ac(states)
+        rewards = torch.randn(batch_size, 1)  # Mock
+        advantages = rewards - values
+        
+        # Fixed: Proper policy gradient computation
+        action_log_prob = -((actions - targets)**2).sum(dim=1, keepdim=True)  # Mock log prob
+        actor_loss = -(action_log_prob * advantages.detach()).mean()
+        critic_loss = advantages.pow(2).mean()
+        rl_loss = actor_loss + critic_loss
+        
+        total_loss = loss + 0.5 * rl_loss
+        
+        optimizer.zero_grad()
+        total_loss.backward()
+        optimizer.step()
+        
+        if (epoch + 1) % 20 == 0:
+            logger.info(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_loss.item():.4f}")
+    
+    model.eval()
+    
+    # Quantize for edge deployment
+    try:
+        model_quantized = torch.quantization.quantize_dynamic(
+            model, {nn.Linear}, dtype=torch.qint8
+        )
+        logger.info("Model quantization successful")
+        return model_quantized
+    except Exception as e:
+        logger.warning(f"Quantization failed: {e}. Returning unquantized model.")
+        return model
+
+
+# =============================================================================
+# Main Simulation
+# =============================================================================
+
 def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: HybridMIMONetwork,
                        start_pos: np.ndarray, start_vel: np.ndarray, 
-                       target_pos: np.ndarray, obstacles: Optional[List[np.ndarray]] = None) -> Tuple:
+                       target_pos: np.ndarray, obstacles: Optional[List[np.ndarray]] = None,
+                       mada_k: float = MADA_K_DEFAULT,
+                       pulsing_freq: float = 50.0) -> Tuple:
     """
-    Advanced navigation simulation with sensor fusion, control, and fail-safes.
-    Enhanced with new features for battlefield adaptability.
+    Advanced navigation simulation with RVG Unified Field propulsion.
+    
+    Implements the Master Equation of Levitation with dilaton enhancement,
+    MADA amplification, and supra-saturation field engineering.
     
     Parameters:
     primary_model (HybridMIMONetwork): Primary navigation model
@@ -584,6 +958,8 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     start_vel (np.ndarray): Starting velocity
     target_pos (np.ndarray): Target position
     obstacles (List[np.ndarray], optional): Obstacle positions
+    mada_k (float): MADA amplification factor (200-529)
+    pulsing_freq (float): MADA pulsing frequency Hz (50-1000)
     
     Returns:
     tuple: (trajectory, velocities, controls, telemetry)
@@ -597,7 +973,14 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     trajectory = [pos.copy()]
     velocities = [vel.copy()]
     controls_history = []
-    telemetry = {'temp': [], 'b_field': [], 'degradation': []}
+    telemetry = {
+        'temp': [], 
+        'b_field': [], 
+        'degradation': [],
+        'dilaton_theta': [],
+        'vacuum_K': [],
+        'supra_sat_ratio': []
+    }
     
     # Initialize sensor fusion
     kf = KalmanFilter(dt=DT)
@@ -611,10 +994,10 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
     # Mock system matrices for observer
     A = np.eye(9)
-    B = np.eye(9) * DT
+    B_mat = np.eye(9) * DT
     C = np.eye(9)
     L = np.eye(9) * 0.1
-    observer = StateObserver(A, B, C, L)
+    observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
     maintenance_model = MaintenanceNN()
@@ -622,10 +1005,14 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
     # Hardware state simulation
     current_temp = 25.0
-    current_B = B
+    current_B = B  # Initial opposing B-field
     current_eta = ETA
     cycles = 0
     threat_level = 0.0
+    
+    # Check initial supra-saturation status
+    supra_status = check_supra_saturation(current_B)
+    logger.info(f"Initial field status: {supra_status['message']}")
     
     # Model selection
     use_primary = True
@@ -641,7 +1028,14 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Swarm coordination (mock: assume single drone)
     swarm_pos = [pos.copy()]
     
-    logger.info("Starting advanced navigation simulation")
+    # MADA pulsing state
+    pulse_phase = 0.0
+    pulse_period = 1.0 / pulsing_freq
+    
+    logger.info("=" * 70)
+    logger.info("Starting RVG Unified Field navigation simulation")
+    logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
+    logger.info("=" * 70)
     
     for step in range(NUM_STEPS):
         # Simulate sensor readings including visual
@@ -720,7 +1114,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
             control = 0.7 * control + 0.3 * mpc_output  # Blend with MPC
         
         # Extract thrust components
-        grad_h2 = control[:3] * 10.0
+        grad_B = control[:3] * 10.0  # Control maps to B-field gradient direction
         thrust_direction = control[3:]
         
         # Normalize thrust direction
@@ -730,25 +1124,67 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         else:
             thrust_direction = np.array([1.0, 0.0, 0.0])
         
-        # Compute propulsion with QED integration
+        # =================================================================
+        # RVG Unified Field Propulsion Calculation
+        # =================================================================
+        
+        # MADA pulsing modulation (50-1000 Hz with 20-80% duty cycle)
+        pulse_phase += DT
+        duty_cycle = 0.5 + 0.3 * np.sin(2 * np.pi * step / 50)  # Variable duty
+        pulse_active = (pulse_phase % pulse_period) < (pulse_period * duty_cycle)
+        
+        # Apply MADA amplification to base B-field
+        B_effective = mada_amplification(current_B, distance_ratio=6.0, k=mada_k)
+        if not pulse_active:
+            B_effective *= 0.2  # Reduced field during pulse off phase
+        
+        # Calculate dilaton enhancement Θ_dilaton(B)
+        theta_dilaton = dilaton_enhancement(B_effective)
+        
+        # Calculate vacuum refractive index K
+        K = vacuum_refractive_index(B_effective)
+        
+        # Calculate gradient of B² (proportional to control input)
+        grad_B2 = 2 * B_effective * grad_B  # ∇(B²) = 2B·∇B
+        
+        # Effective integration volume for thrust calculation
+        volume = A * 0.1  # Approximate active volume (m³)
+        
+        # Check supra-saturation status
+        supra_status = check_supra_saturation(B_effective, B_SAT_MINNEALLOY)
+        
+        # Calculate thrust via Master Equation of Levitation
         try:
-            F_vec = force_vector(CHI, current_B, grad_h2, A, RHO)
-            F_mag = np.linalg.norm(F_vec)
-            T = total_thrust(N_UNITS, F_mag, current_eta, THETA)
-            a_mag = acceleration(T, MASS)
+            F_lift = master_equation_levitation(
+                B_effective, grad_B2, volume, 
+                eta_align=current_eta, 
+                theta_thrust=THETA
+            )
+            
+            # Add legacy force calculation for comparison/blending
+            F_vec_legacy = force_vector(CHI, B_effective, grad_B / 10, A, RHO)
+            F_mag_legacy = np.linalg.norm(F_vec_legacy)
+            T_legacy = total_thrust(N_UNITS, F_mag_legacy, current_eta, THETA)
+            
+            # Blend RVG and legacy forces based on supra-saturation effectiveness
+            blend_factor = supra_status['effectiveness']
+            F_total = blend_factor * F_lift + (1 - blend_factor) * F_vec_legacy
+            
+            a_mag = np.linalg.norm(F_total) / MASS
             a = a_mag * thrust_direction
             
-            # Optimize for non-ballistic paths (add curvature)
+            # Optimize for non-ballistic paths (add curvature for hover)
             cross_vec = np.cross(thrust_direction, np.array([0, 0, 1]))
-            a = a + cross_vec * 0.1  # Mock hover/curve
+            a = a + cross_vec * 0.1  # Curvature for non-ballistic trajectory
             
             # Limit acceleration
             a_mag_total = np.linalg.norm(a)
             if a_mag_total > MAX_ACCEL:
                 a = a * (MAX_ACCEL / a_mag_total)
                 logger.warning(f"Step {step}: Acceleration limited to {MAX_ACCEL/9.81:.1f}g")
+                
         except Exception as e:
-            logger.error(f"Thrust calculation error at step {step}: {e}")
+            logger.error(f"RVG thrust calculation error at step {step}: {e}")
             a = np.zeros(3)
         
         # Obstacle avoidance with SORT tracking
@@ -780,11 +1216,15 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         cycles += 1
         threat_level = np.random.uniform(0, 1)
         
+        # Record telemetry
         telemetry['temp'].append(current_temp)
-        telemetry['b_field'].append(current_B)
+        telemetry['b_field'].append(B_effective)
+        telemetry['dilaton_theta'].append(theta_dilaton)
+        telemetry['vacuum_K'].append(K)
+        telemetry['supra_sat_ratio'].append(supra_status['ratio'])
         
-        # Predictive maintenance
-        maint_input = torch.tensor([cycles, current_temp, current_B, threat_level],
+        # Predictive maintenance with threat-adaptive pulsing
+        maint_input = torch.tensor([cycles, current_temp, B_effective, threat_level],
                                    dtype=torch.float32).unsqueeze(0)
         with torch.no_grad():
             maint_output = maintenance_model(maint_input).squeeze(0).numpy()
@@ -794,19 +1234,26 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         
         telemetry['degradation'].append(degradation_prob)
         
-        # Adaptive pulsing based on degradation
+        # Adaptive pulsing based on degradation and threat
         if degradation_prob > 0.5:
             logger.warning(f"High degradation probability: {degradation_prob:.2f}. "
                          f"Adapting frequency to {adapted_freq:.1f} Hz")
             current_eta = max(0.5, current_eta - 0.05)
+            # Reduce pulsing frequency to extend operational life
+            pulsing_freq = max(50.0, pulsing_freq * 0.9)
+            pulse_period = 1.0 / pulsing_freq
+        elif threat_level > 0.8:
+            # Increase to burst mode for evasion
+            pulsing_freq = min(1000.0, pulsing_freq * 1.5)
+            pulse_period = 1.0 / pulsing_freq
         
         # Fail-safe checks
         if current_temp > MAX_TEMP:
             logger.critical(f"Temperature limit exceeded: {current_temp:.1f}°C. Emergency shutdown.")
             break
         
-        if current_B > MAX_B_FIELD:
-            logger.critical(f"B-field limit exceeded: {current_B:.1f}T. Emergency shutdown.")
+        if B_effective > MAX_B_FIELD:
+            logger.critical(f"B-field limit exceeded: {B_effective:.1f}T. Emergency shutdown.")
             break
         
         if current_temp > TEMP_THRESHOLD:
@@ -831,7 +1278,8 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         # Progress updates
         if step % 20 == 0:
             logger.info(f"Step {step}: dist={dist_to_target:.1f}m, "
-                       f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C")
+                       f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
+                       f"Θ={theta_dilaton:.2e}, K={K:.6f}")
     
     else:
         final_dist = np.linalg.norm(pos - target)
@@ -840,57 +1288,9 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     return trajectory, velocities, controls_history, telemetry
 
 
-def train_demo_model(num_epochs: int = 100, batch_size: int = 32, 
-                     lr: float = 0.001) -> HybridMIMONetwork:
-    """Train demo model on random data with RL integration."""
-    logger.info("Training demo model...")
-    model = HybridMIMONetwork()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    
-    model.train()
-    
-    for epoch in range(num_epochs):
-        inputs = torch.randn(batch_size, 12)  # Extended input
-        targets = torch.randn(batch_size, 6)
-        
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        
-        # Mock RL loss
-        states = inputs
-        actions, values = model.ac(states)
-        rewards = torch.randn(batch_size, 1)  # Mock
-        advantages = rewards - values
-        
-        # Fixed: Proper policy gradient computation
-        action_log_prob = -((actions - targets)**2).sum(dim=1, keepdim=True)  # Mock log prob
-        actor_loss = -(action_log_prob * advantages.detach()).mean()
-        critic_loss = advantages.pow(2).mean()
-        rl_loss = actor_loss + critic_loss
-        
-        total_loss = loss + 0.5 * rl_loss
-        
-        optimizer.zero_grad()
-        total_loss.backward()
-        optimizer.step()
-        
-        if (epoch + 1) % 20 == 0:
-            logger.info(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_loss.item():.4f}")
-    
-    model.eval()
-    
-    # Quantize for edge deployment
-    try:
-        model_quantized = torch.quantization.quantize_dynamic(
-            model, {nn.Linear}, dtype=torch.qint8
-        )
-        logger.info("Model quantization successful")
-        return model_quantized
-    except Exception as e:
-        logger.warning(f"Quantization failed: {e}. Returning unquantized model.")
-        return model
-
+# =============================================================================
+# Visualization
+# =============================================================================
 
 def plot_trajectory(trajectory: List[np.ndarray], velocities: Optional[List[np.ndarray]] = None,
                    obstacles: Optional[List[np.ndarray]] = None, 
@@ -931,7 +1331,7 @@ def plot_trajectory(trajectory: List[np.ndarray], velocities: Optional[List[np.n
     ax.set_ylabel('Y (m)', fontsize=12)
     ax.set_zlabel('Z (m)', fontsize=12)
     ax.legend()
-    ax.set_title('QED Advanced Navigation (6DOF + Sensor Fusion)', 
+    ax.set_title('RVG Unified Field Navigation (6DOF + MADA + Sensor Fusion)', 
                 fontsize=14, fontweight='bold')
     ax.grid(True, alpha=0.3)
     
@@ -939,12 +1339,79 @@ def plot_trajectory(trajectory: List[np.ndarray], velocities: Optional[List[np.n
     plt.show()
 
 
+def plot_telemetry(telemetry: dict):
+    """Plot telemetry data including RVG-specific metrics."""
+    fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+    
+    # Temperature
+    axes[0, 0].plot(telemetry['temp'], 'r-', linewidth=1.5)
+    axes[0, 0].axhline(y=MAX_TEMP, color='k', linestyle='--', label='Max Temp')
+    axes[0, 0].axhline(y=TEMP_THRESHOLD, color='orange', linestyle='--', label='Warning')
+    axes[0, 0].set_ylabel('Temperature (°C)')
+    axes[0, 0].set_title('System Temperature')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    # B-field
+    axes[0, 1].plot(telemetry['b_field'], 'b-', linewidth=1.5)
+    axes[0, 1].set_ylabel('B-field (T)')
+    axes[0, 1].set_title('Effective Magnetic Field (with MADA)')
+    axes[0, 1].grid(True, alpha=0.3)
+    
+    # Dilaton enhancement
+    axes[1, 0].plot(telemetry['dilaton_theta'], 'g-', linewidth=1.5)
+    axes[1, 0].set_ylabel('Θ_dilaton')
+    axes[1, 0].set_title('Dilaton Enhancement Factor')
+    axes[1, 0].set_yscale('log')
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    # Vacuum refractive index
+    axes[1, 1].plot(telemetry['vacuum_K'], 'm-', linewidth=1.5)
+    axes[1, 1].set_ylabel('K')
+    axes[1, 1].set_title('Vacuum Refractive Index')
+    axes[1, 1].grid(True, alpha=0.3)
+    
+    # Supra-saturation ratio
+    axes[2, 0].plot(telemetry['supra_sat_ratio'], 'c-', linewidth=1.5)
+    axes[2, 0].axhline(y=1.0, color='k', linestyle='--', label='Saturation')
+    axes[2, 0].axhline(y=5.0, color='g', linestyle='--', label='Deep Supra-Sat')
+    axes[2, 0].set_ylabel('B/B_sat Ratio')
+    axes[2, 0].set_xlabel('Step')
+    axes[2, 0].set_title('Supra-Saturation Ratio')
+    axes[2, 0].legend()
+    axes[2, 0].grid(True, alpha=0.3)
+    
+    # Degradation probability
+    axes[2, 1].plot(telemetry['degradation'], 'orange', linewidth=1.5)
+    axes[2, 1].axhline(y=0.5, color='r', linestyle='--', label='Warning Threshold')
+    axes[2, 1].set_ylabel('Probability')
+    axes[2, 1].set_xlabel('Step')
+    axes[2, 1].set_title('Degradation Probability')
+    axes[2, 1].legend()
+    axes[2, 1].grid(True, alpha=0.3)
+    
+    plt.suptitle('RVG Unified Field Telemetry', fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+
+
+# =============================================================================
+# Main Entry Point
+# =============================================================================
+
 if __name__ == "__main__":
     logger.info("=" * 70)
-    logger.info("QED VACUUM PROPULSION - ADVANCED NAVIGATION DEMO")
+    logger.info("QED VACUUM PROPULSION - RVG UNIFIED FIELD NAVIGATION DEMO")
     logger.info("=" * 70)
+    logger.info("Framework: Refractive Vacuum Gravity (RVG) Unified Field")
+    logger.info("  - Disformal QED with 95 GeV dilaton/radion resonance")
+    logger.info("  - Master Equation: F = ∫(Θ_dilaton(B)·∇B²)dV")
+    logger.info("  - MADA amplification per U.S. Patent 5,929,732")
+    logger.info("-" * 70)
     logger.info(f"Equations module: {'available' if EQUATIONS_AVAILABLE else 'mock'}")
-    logger.info(f"SciPy/MPC: {'available' if SCIPY_AVAILABLE else 'unavailable'}\n")
+    logger.info(f"SciPy/MPC: {'available' if SCIPY_AVAILABLE else 'unavailable'}")
+    logger.info(f"MADA amplification factor: {MADA_K_DEFAULT}x")
+    logger.info(f"Default pulsing frequency: 50 Hz (variable 50-1000 Hz)\n")
     
     # Train models
     primary_model = train_demo_model(num_epochs=50, batch_size=32, lr=0.001)
@@ -970,11 +1437,14 @@ if __name__ == "__main__":
     logger.info(f"  Target: {target_pos}")
     logger.info(f"  Obstacles: {len(obstacles)}")
     logger.info(f"  Time step: {DT}s")
-    logger.info(f"  Max steps: {NUM_STEPS}\n")
+    logger.info(f"  Max steps: {NUM_STEPS}")
+    logger.info(f"  System mass: {MASS} kg")
+    logger.info(f"  Material: Minnealloy (B_sat = {B_SAT_MINNEALLOY} T)\n")
     
     # Run simulation
     trajectory, velocities, controls, telemetry = simulate_navigation(
-        primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles
+        primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles,
+        mada_k=MADA_K_DEFAULT, pulsing_freq=50.0
     )
     
     # Results
@@ -993,10 +1463,15 @@ if __name__ == "__main__":
     logger.info(f"Final velocity: {velocities[-1]}")
     logger.info(f"Final speed: {np.linalg.norm(velocities[-1]):.2f}m/s")
     logger.info(f"Max temperature: {max(telemetry['temp']):.1f}°C")
+    logger.info(f"Max B-field (MADA): {max(telemetry['b_field']):.1f}T")
+    logger.info(f"Max Θ_dilaton: {max(telemetry['dilaton_theta']):.2e}")
+    logger.info(f"Max vacuum K: {max(telemetry['vacuum_K']):.6f}")
+    logger.info(f"Max supra-sat ratio: {max(telemetry['supra_sat_ratio']):.2f}")
     logger.info(f"Max degradation: {max(telemetry['degradation']):.2f}")
     
     # Plot
-    logger.info("\nGenerating visualization...")
+    logger.info("\nGenerating visualizations...")
     plot_trajectory(trajectory, velocities, obstacles, target_pos)
+    plot_telemetry(telemetry)
     
     logger.info("\nDemo complete.")

@@ -4,7 +4,18 @@ simulations/equations.py
 Core physics equations for QED vacuum thrust calculations.
 Includes magnetic field calculations, RG flow, force vectors, and performance metrics.
 
+Updated to align with the Refractive Vacuum Gravity (RVG) Unified Field framework:
+- Disformal QED coupling
+- 95 GeV dilaton/radion resonance enhancement
+- Master Equation of Levitation
+- Gordon Optical Metric formulation
+
 All equations derived from theoretical framework with proper validation and error handling.
+
+References:
+    Hofseth, J.D. (2025). "Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, 
+    the 95 GeV Resonance, and the Metric Engineering of Static Levitation"
+    http://dx.doi.org/10.2139/ssrn.5381654
 """
 
 import numpy as np
@@ -17,7 +28,7 @@ import warnings
 try:
     import scipy.optimize as opt
     import scipy.stats as stats
-    from scipy.integrate import solve_ivp
+    from scipy.integrate import solve_ivp, quad
     SCIPY_FULL_AVAILABLE = True
 except ImportError:
     SCIPY_FULL_AVAILABLE = False
@@ -71,16 +82,53 @@ except ImportError:
 import json
 import csv
 
+# =============================================================================
 # Physical Constants
+# =============================================================================
+
 MU_0 = const.mu_0  # Vacuum permeability (H/m)
 G = const.G  # Gravitational constant (m³/kg/s²)
 C = const.c  # Speed of light (m/s)
 EPSILON_0 = const.epsilon_0  # Vacuum permittivity (F/m)
+HBAR = const.hbar  # Reduced Planck constant (J·s)
+M_E = const.m_e  # Electron mass (kg)
+E_CHARGE = const.e  # Elementary charge (C)
+ALPHA = const.alpha  # Fine structure constant (~1/137)
 
-# EGDPP-specific constants (example values; refine via experiments)
+# =============================================================================
+# RVG Unified Field Constants
+# =============================================================================
+
+# Schwinger critical field (QED vacuum breakdown threshold)
+# B_crit = m_e^2 * c^2 / (e * hbar) ≈ 4.414 × 10^9 T
+B_CRIT_SCHWINGER = (M_E**2 * C**3) / (E_CHARGE * HBAR)
+
+# 95 GeV Dilaton/Radion resonance parameters
+# Based on CMS/ATLAS di-photon excess with 3.1σ combined significance
+DILATON_MASS_GEV = 95.4  # GeV (observed resonance)
+DILATON_MASS_J = DILATON_MASS_GEV * 1e9 * E_CHARGE  # Convert to Joules
+
+# Dilaton coupling strength (theoretical estimate - requires experimental validation)
+# This is a placeholder; actual value must be determined experimentally
+THETA_95_BASELINE = 1e-8  # Baseline dilaton enhancement factor
+
+# Trace anomaly coupling coefficient (from disformal gravity)
+# beta_EM ≈ 1/45 for QED trace anomaly
+BETA_EM = 1.0 / 45.0
+
+# Effective B_crit for RVG (lower than Schwinger due to dilaton enhancement)
+# This represents the field scale where vacuum polarization becomes significant
+# with dilaton resonance pumping - MUST BE VALIDATED EXPERIMENTALLY
+B_CRIT_RVG = 1e6  # Tesla (effective threshold with dilaton enhancement)
+
+# EGDPP-specific constants (legacy - retained for compatibility)
 CHI_UV = 1e-10  # UV-scale susceptibility
 G_COUPLING = 1.0  # Coupling constant
 LAMBDA_PARAM = 0.1  # Lambda in RG flow
+
+# =============================================================================
+# Battery and Thermal Constants
+# =============================================================================
 
 # Battery constants (LiPo and solid-state)
 LIPO_NOMINAL_V = 3.7  # V per cell
@@ -94,10 +142,22 @@ THERMAL_COND = 1.5  # W/mK
 ZT_BI2TE3 = 1.0  # Figure of merit at room temp
 TEG_EFF_FACTOR = ZT_BI2TE3 / (4 + 2 * ZT_BI2TE3)  # Carnot-like approximation
 
+# =============================================================================
+# MADA and Convergence Constants
+# =============================================================================
+
 # MADA convergence thresholds
 CONVERGENCE_OPTIMAL = 0.95  # Quality for optimal operation
 CONVERGENCE_WARNING = 0.85  # Warning threshold
 CONVERGENCE_CRITICAL = 0.80  # Critical threshold - emergency shutdown
+
+# MADA amplification factors (from U.S. Patent 5,929,732)
+# Distance increase from 1 inch to 6 inches implies:
+# - Field amplification (1/r³): ~216x
+# - Force amplification (1/r⁷): ~529x
+MADA_FIELD_AMPLIFICATION = 216.0
+MADA_FORCE_AMPLIFICATION = 529.0
+MADA_DEFAULT_K = 200.0  # Conservative default
 
 # Simulation constants
 SPEED_OF_SOUND = 343.0  # m/s at sea level
@@ -105,8 +165,272 @@ PHYSICS_STEP_RATE = 240  # Hz for PyBullet simulation
 SWARM_ATTACK_PROBABILITY = 0.005  # Per step probability
 EPSILON = 1e-12  # Small value for numerical stability
 
+
 # =============================================================================
-# Modular Equation Classes with Parameterization
+# RVG Unified Field: Core Functions
+# =============================================================================
+
+def dilaton_enhancement(B: Union[float, np.ndarray], 
+                        theta_baseline: float = THETA_95_BASELINE,
+                        B_scale: float = B_CRIT_RVG) -> Union[float, np.ndarray]:
+    """
+    Calculate the dilaton enhancement factor Θ_dilaton(B).
+    
+    This represents the non-linear vacuum response that grows with magnetic
+    field intensity due to 95 GeV resonance pumping. The enhancement is
+    weak at low B but grows strongly with intensity.
+    
+    Args:
+        B: Magnetic field magnitude (T)
+        theta_baseline: Baseline enhancement factor (default from THETA_95_BASELINE)
+        B_scale: Characteristic field scale (T) where enhancement becomes significant
+    
+    Returns:
+        Θ_dilaton(B) - dimensionless enhancement factor
+    
+    Note:
+        The exact functional form requires experimental validation.
+        Current implementation uses a phenomenological model:
+        Θ_dilaton(B) = θ_baseline * (B/B_scale)^2 * [1 + (B/B_scale)^2]
+        
+        This captures:
+        - Quadratic onset at low fields (Euler-Heisenberg regime)
+        - Enhanced growth at high fields (dilaton resonance pumping)
+    """
+    B = np.asarray(B, dtype=float)
+    B_ratio = B / B_scale
+    
+    # Phenomenological model with dilaton enhancement
+    # Linear term: standard QED vacuum polarization
+    # Quadratic term: dilaton resonance enhancement
+    theta = theta_baseline * B_ratio**2 * (1 + B_ratio**2)
+    
+    return theta
+
+
+def vacuum_susceptibility(B: Union[float, np.ndarray],
+                          include_dilaton: bool = True) -> Union[float, np.ndarray]:
+    """
+    Calculate vacuum magnetic susceptibility χ_vac(B).
+    
+    The vacuum susceptibility determines the refractive index modification
+    due to QED vacuum polarization, enhanced by dilaton coupling.
+    
+    Args:
+        B: Magnetic field magnitude (T)
+        include_dilaton: If True, include 95 GeV dilaton enhancement
+    
+    Returns:
+        χ_vac(B) - dimensionless susceptibility
+    
+    Note:
+        Standard QED (Euler-Heisenberg) gives χ_vac ~ (α/45π)(B/B_crit)² ~ 10^-24 at 1T
+        With dilaton enhancement, χ_vac can be orders of magnitude larger.
+    """
+    B = np.asarray(B, dtype=float)
+    
+    # Standard Euler-Heisenberg contribution
+    chi_EH = (2 * ALPHA / (45 * np.pi)) * (B / B_CRIT_SCHWINGER)**2
+    
+    if include_dilaton:
+        # Enhanced by dilaton factor
+        theta = dilaton_enhancement(B)
+        chi_vac = chi_EH * (1 + theta / THETA_95_BASELINE)
+    else:
+        chi_vac = chi_EH
+    
+    return chi_vac
+
+
+def refractive_index(B: Union[float, np.ndarray],
+                     include_dilaton: bool = True) -> Union[float, np.ndarray]:
+    """
+    Calculate the vacuum refractive index K(r).
+    
+    From the RVG framework:
+        K(r) = 1 + χ_vac(B) ≈ 1 + Θ_95 * B²/B_crit²
+    
+    The refractive index modification is the key to understanding
+    vacuum-based propulsion - gradients in K produce forces.
+    
+    Args:
+        B: Magnetic field magnitude (T)
+        include_dilaton: If True, include dilaton enhancement
+    
+    Returns:
+        K - refractive index (dimensionless, ≥ 1)
+    """
+    chi = vacuum_susceptibility(B, include_dilaton)
+    return 1.0 + chi
+
+
+def refractive_index_gradient(B: Union[float, np.ndarray],
+                               grad_B2: np.ndarray,
+                               include_dilaton: bool = True) -> np.ndarray:
+    """
+    Calculate the gradient of refractive index ∇K.
+    
+    From the RVG framework:
+        ∇K ∝ Θ_dilaton(B) * ∇(B²)
+    
+    This gradient is proportional to the vacuum force density.
+    
+    Args:
+        B: Magnetic field magnitude (T) at the point of interest
+        grad_B2: Gradient of B² = ∇(B·B) (T²/m) - 3D vector
+        include_dilaton: If True, include dilaton enhancement
+    
+    Returns:
+        ∇K (1/m) - 3D vector
+    """
+    grad_B2 = np.asarray(grad_B2, dtype=float)
+    
+    if grad_B2.shape[-1] != 3:
+        raise ValueError("grad_B2 must be a 3D vector or array of 3D vectors")
+    
+    B = np.asarray(B, dtype=float)
+    
+    # dχ/d(B²) for Euler-Heisenberg
+    dchi_dB2_EH = (2 * ALPHA / (45 * np.pi)) / B_CRIT_SCHWINGER**2
+    
+    if include_dilaton:
+        theta = dilaton_enhancement(B)
+        # Enhanced gradient
+        dchi_dB2 = dchi_dB2_EH * (1 + theta / THETA_95_BASELINE)
+    else:
+        dchi_dB2 = dchi_dB2_EH
+    
+    # ∇K = dK/d(B²) * ∇(B²) = dχ/d(B²) * ∇(B²)
+    if np.ndim(B) == 0:
+        grad_K = dchi_dB2 * grad_B2
+    else:
+        grad_K = dchi_dB2[..., np.newaxis] * grad_B2
+    
+    return grad_K
+
+
+def vacuum_force_density(B: Union[float, np.ndarray],
+                          grad_K: np.ndarray) -> np.ndarray:
+    """
+    Calculate the local vacuum force density.
+    
+    From the RVG framework (magnetic-dominant, vacuum region):
+        f_vac ≈ -B² / (2μ₀) * ∇K
+    
+    This is the force per unit volume arising from vacuum polarization
+    gradients in the presence of strong magnetic fields.
+    
+    Args:
+        B: Magnetic field magnitude (T)
+        grad_K: Gradient of refractive index (1/m) - 3D vector
+    
+    Returns:
+        f_vac (N/m³) - force density 3D vector
+    
+    Note:
+        The negative sign indicates force opposes the gradient direction,
+        i.e., the system is pushed away from regions of high refractive index.
+    """
+    B = np.asarray(B, dtype=float)
+    grad_K = np.asarray(grad_K, dtype=float)
+    
+    if grad_K.shape[-1] != 3:
+        raise ValueError("grad_K must be a 3D vector")
+    
+    # f = -B² / (2μ₀) * ∇K
+    prefactor = -B**2 / (2 * MU_0)
+    
+    if np.ndim(B) == 0:
+        f_vac = prefactor * grad_K
+    else:
+        f_vac = prefactor[..., np.newaxis] * grad_K
+    
+    return f_vac
+
+
+def master_equation_levitation(B_field: np.ndarray,
+                                grad_B2_field: np.ndarray,
+                                volume_elements: np.ndarray,
+                                include_dilaton: bool = True) -> np.ndarray:
+    """
+    Calculate thrust using the Master Equation of Levitation.
+    
+    From the RVG framework:
+        F_lift = ∫_V (1/(2μ₀) * Θ_dilaton(B) * ∇(B·B)) dV
+    
+    This is the fundamental equation for QED vacuum thrust, integrating
+    the vacuum force density over the active volume.
+    
+    Args:
+        B_field: Magnetic field magnitudes at each volume element (T) - shape (N,)
+        grad_B2_field: Gradient of B² at each volume element (T²/m) - shape (N, 3)
+        volume_elements: Volume of each element (m³) - shape (N,)
+        include_dilaton: If True, include dilaton enhancement
+    
+    Returns:
+        F_lift (N) - total thrust vector (3D)
+    
+    Note:
+        For practical computation, discretize the volume into elements
+        and sum the contributions. Higher resolution gives better accuracy.
+    """
+    B_field = np.asarray(B_field, dtype=float)
+    grad_B2_field = np.asarray(grad_B2_field, dtype=float)
+    volume_elements = np.asarray(volume_elements, dtype=float)
+    
+    if B_field.shape[0] != grad_B2_field.shape[0]:
+        raise ValueError("B_field and grad_B2_field must have same number of elements")
+    if B_field.shape[0] != volume_elements.shape[0]:
+        raise ValueError("B_field and volume_elements must have same number of elements")
+    if grad_B2_field.shape[1] != 3:
+        raise ValueError("grad_B2_field must have shape (N, 3)")
+    
+    # Calculate enhancement factor at each point
+    if include_dilaton:
+        theta = dilaton_enhancement(B_field)
+    else:
+        theta = np.ones_like(B_field) * THETA_95_BASELINE
+    
+    # Integrand: (1/(2μ₀)) * Θ(B) * ∇(B²) * dV
+    prefactor = theta / (2 * MU_0)
+    
+    # Element-wise contribution: prefactor * grad_B2 * dV
+    F_elements = prefactor[:, np.newaxis] * grad_B2_field * volume_elements[:, np.newaxis]
+    
+    # Sum over all volume elements
+    F_lift = np.sum(F_elements, axis=0)
+    
+    return F_lift
+
+
+def total_thrust_rvg(F_lift: np.ndarray, 
+                     eta_align: float = 1.0,
+                     theta_angle: float = 0.0) -> float:
+    """
+    Calculate net thrust from the Master Equation result.
+    
+    From the RVG framework:
+        F_net = |F_lift| * η_align * cos(θ)
+    
+    Args:
+        F_lift: Lift force vector from master_equation_levitation (N)
+        eta_align: Alignment efficiency factor (0-1)
+        theta_angle: Angle of thrust relative to desired direction (degrees)
+    
+    Returns:
+        F_net (N) - scalar net thrust magnitude
+    """
+    if not 0 <= eta_align <= 1:
+        raise ValueError("eta_align must be between 0 and 1")
+    
+    F_lift = np.asarray(F_lift, dtype=float)
+    F_mag = np.linalg.norm(F_lift)
+    
+    return F_mag * eta_align * np.cos(np.deg2rad(theta_angle))
+
+
+# =============================================================================
+# Magnetic Field Calculations
 # =============================================================================
 
 class MagneticField:
@@ -139,75 +463,44 @@ class MagneticField:
         return (self.B_r / 2) * (term1 + term2)
 
 
-class DisruptionLagrangian:
+def axial_field(B_r: float, L: float, R: float, z: float) -> float:
     """
-    Class for disruption Lagrangian with parameterization.
+    Calculate the precise axial magnetic field for solenoid/Halbach stacks.
     
-    Attributes:
-        chi (float): Susceptibility
-        B (float): Magnetic field (T)
-        h_mu_nu (np.ndarray): Metric perturbation (4x4)
-        h_mu_nu_inv (np.ndarray): Inverse metric perturbation (4x4)
+    From the RVG framework (Eq. for precise axial field):
+        B(z) = (B_r/2) * [(L + z)/√(R² + (L + z)²) - z/√(R² + z²)]
+    
+    This is the on-axis field of a cylindrical permanent magnet or solenoid.
+    Extend to multi-layer via summation for Halbach arrays.
+    
+    Args:
+        B_r: Remanence field strength (T)
+        L: Length of magnet (m)
+        R: Radius of magnet (m)
+        z: Axial distance from magnet face (m)
+    
+    Returns:
+        B(z) - axial field strength (T)
+    
+    Note:
+        - z = 0 is at the near face of the magnet
+        - z < 0 is inside the magnet
+        - z > 0 is beyond the near face
     """
+    if B_r <= 0 or L <= 0 or R <= 0:
+        raise ValueError("B_r, L, and R must be positive")
     
-    def __init__(self, chi: float, B: float, h_mu_nu: np.ndarray, h_mu_nu_inv: np.ndarray):
-        """Initialize Lagrangian calculator with validation."""
-        if chi < 0 or B < 0:
-            raise ValueError("chi and B must be non-negative")
-        
-        self.chi = chi
-        self.B = B
-        self.h_mu_nu = np.asarray(h_mu_nu, dtype=float)
-        self.h_mu_nu_inv = np.asarray(h_mu_nu_inv, dtype=float)
-        
-        if self.h_mu_nu.shape != (4, 4) or self.h_mu_nu_inv.shape != (4, 4):
-            raise ValueError("Metric tensors must be 4x4 arrays")
+    term1 = (L + z) / np.sqrt(R**2 + (L + z)**2)
+    term2 = z / np.sqrt(R**2 + z**2) if abs(z) > EPSILON else 0.0
     
-    def compute(self) -> float:
-        """Compute Lagrangian value."""
-        contraction = np.einsum('ij,ij->', self.h_mu_nu, self.h_mu_nu_inv)
-        return -0.5 * self.chi * self.B**2 * contraction
+    return (B_r / 2) * (term1 - term2)
 
-
-class ThrustForce:
-    """
-    Class for thrust force vector with parameterization.
-    
-    Attributes:
-        chi (float): Susceptibility
-        B (float): Magnetic field magnitude (T)
-        grad_h2 (np.ndarray): Gradient of h^2 (3D vector)
-        A (float): Area (m²)
-        rho (float): Density (kg/m³)
-    """
-    
-    def __init__(self, chi: float, B: float, grad_h2: np.ndarray, A: float, rho: float):
-        """Initialize thrust force calculator with validation."""
-        if chi < 0 or B < 0 or A <= 0 or rho <= 0:
-            raise ValueError("Parameters must satisfy chi, B >= 0; A, rho > 0")
-        
-        self.chi = chi
-        self.B = B
-        self.grad_h2 = np.asarray(grad_h2, dtype=float)
-        
-        if self.grad_h2.shape != (3,):
-            raise ValueError("grad_h2 must be a 3D vector")
-        
-        self.A = A
-        self.rho = rho
-    
-    def compute(self) -> np.ndarray:
-        """Compute force vector."""
-        return self.chi * self.B**2 * self.grad_h2 * self.A * self.rho
-
-
-# =============================================================================
-# Core Physics Functions
-# =============================================================================
 
 def surface_field(B_r: float, L: float, R: float, d: float) -> float:
     """
     Calculate the surface magnetic field.
+    
+    This is the legacy function; for RVG applications, use axial_field().
     
     Args:
         B_r: Remanence field strength (T)
@@ -222,27 +515,36 @@ def surface_field(B_r: float, L: float, R: float, d: float) -> float:
     return mf.compute_surface()
 
 
-def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
+def opposing_field(m1: float, m2: float, d: float, k: float = MADA_DEFAULT_K) -> float:
     """
-    Calculate the opposing magnetic field magnitude.
+    Calculate the opposing magnetic field magnitude (flux concentration in gap).
+    
+    From the RVG framework:
+        B_gap ≈ (μ₀ * m₁ * m₂) / (2π * d²) * k
     
     IMPORTANT: This calculates the MAGNITUDE of the combined field strength
     when two magnetic moments are OPPOSING (pointing at each other).
     This function does NOT verify field direction - use validate_mada_convergence()
     to ensure fields are actually opposing before using this value.
     
+    The k factor accounts for MADA amplification (from U.S. Patent 5,929,732):
+    - Field amplification (1/r³ scaling): ~216x
+    - Force amplification (1/r⁷ scaling): ~529x
+    - Default k=200 is conservative; may need k=529 for force calculations
+    
     Args:
-        m1: Magnetic moment 1 (A m²)
-        m2: Magnetic moment 2 (A m²)
+        m1: Magnetic moment 1 (A·m²)
+        m2: Magnetic moment 2 (A·m²)
         d: Distance between MADA units (m)
-        k: Scaling factor for MADA amplification (default 200.0 for ~200x vs. single magnet; may need to be set up to 529)
+        k: Scaling factor for MADA amplification (default 200.0)
     
     Returns:
-        Opposing field magnitude B_opposing (T)
+        B_opposing (T) - opposing field magnitude
     
     Note:
         Result is only valid if MADA units are properly configured with
         fields pointing toward each other (converging at focal point).
+        For nested MADA configurations, multiply k factors hierarchically.
     """
     if m1 <= 0 or m2 <= 0 or d <= 0:
         raise ValueError("Magnetic moments and distance must be positive")
@@ -257,7 +559,7 @@ def calculate_field_at_point(m: float, position_source: np.ndarray,
     Calculate magnetic field vector at a target point from a magnetic dipole.
     
     Args:
-        m: Magnetic moment magnitude (A m²)
+        m: Magnetic moment magnitude (A·m²)
         position_source: Position of magnetic source [x, y, z] (m)
         position_target: Position where field is calculated [x, y, z] (m)
         direction: Direction unit vector of magnetic moment [x, y, z]
@@ -285,6 +587,43 @@ def calculate_field_at_point(m: float, position_source: np.ndarray,
     return B
 
 
+def calculate_grad_B2(B_field_func: Callable, position: np.ndarray, 
+                       delta: float = 1e-6) -> np.ndarray:
+    """
+    Calculate ∇(B²) = ∇(B·B) numerically using finite differences.
+    
+    This gradient is central to the Master Equation of Levitation.
+    
+    Args:
+        B_field_func: Function that takes position [x, y, z] and returns B magnitude
+        position: Point at which to calculate gradient [x, y, z] (m)
+        delta: Step size for finite difference (m)
+    
+    Returns:
+        ∇(B²) (T²/m) - 3D vector
+    """
+    position = np.asarray(position, dtype=float)
+    grad_B2 = np.zeros(3)
+    
+    for i in range(3):
+        pos_plus = position.copy()
+        pos_plus[i] += delta
+        pos_minus = position.copy()
+        pos_minus[i] -= delta
+        
+        B_plus = B_field_func(pos_plus)
+        B_minus = B_field_func(pos_minus)
+        
+        # ∇(B²) = 2B * ∇B, but we compute directly
+        grad_B2[i] = (B_plus**2 - B_minus**2) / (2 * delta)
+    
+    return grad_B2
+
+
+# =============================================================================
+# MADA Convergence Validation
+# =============================================================================
+
 def calculate_convergence_quality(B1: np.ndarray, B2: np.ndarray) -> float:
     """
     Calculate MADA convergence quality (how well fields oppose).
@@ -299,9 +638,9 @@ def calculate_convergence_quality(B1: np.ndarray, B2: np.ndarray) -> float:
     
     Returns:
         Convergence quality [-1, 1]
-        1.0 = Perfect opposition (fields pointing directly at each other) ✅
+        1.0 = Perfect opposition (fields pointing directly at each other) ✓
         0.0 = Perpendicular fields
-        -1.0 = Parallel fields (both pointing same direction) ❌
+        -1.0 = Parallel fields (both pointing same direction) ✗
     
     Raises:
         ValueError: If either field vector has zero magnitude
@@ -395,18 +734,18 @@ def validate_mada_convergence(B1: np.ndarray, B2: np.ndarray,
 
 def opposing_field_with_validation(m1: float, m2: float, d: float, 
                                    B1_vec: np.ndarray, B2_vec: np.ndarray, 
-                                   k: float = 1.0) -> Tuple[float, Dict[str, Any]]:
+                                   k: float = MADA_DEFAULT_K) -> Tuple[float, Dict[str, Any]]:
     """
     Calculate opposing field WITH convergence validation.
     This is the SAFE version that verifies fields are actually opposing.
     
     Args:
-        m1: Magnetic moment 1 (A m²)
-        m2: Magnetic moment 2 (A m²)
+        m1: Magnetic moment 1 (A·m²)
+        m2: Magnetic moment 2 (A·m²)
         d: Distance (m)
         B1_vec: Field vector from MADA unit 1 [Bx, By, Bz] (T)
         B2_vec: Field vector from MADA unit 2 [Bx, By, Bz] (T)
-        k: Scaling factor (default 1.0)
+        k: Scaling factor (default MADA_DEFAULT_K)
     
     Returns:
         Tuple of (B_opposing (float), convergence_info (dict))
@@ -423,21 +762,82 @@ def opposing_field_with_validation(m1: float, m2: float, d: float,
     return B_opp, convergence
 
 
+# =============================================================================
+# Pulsed Enhancement and Drive
+# =============================================================================
+
 def pulsed_enhancement(n: float, I: float) -> float:
     """
     Calculate the pulsed magnetic field enhancement.
+    
+    From the RVG framework (pulsed drive):
+        ΔB = μ₀ * n * ΔI
+    
+    Asymmetric waveforms can produce net momentum through
+    vacuum polarization asymmetry.
     
     Args:
         n: Number of turns per unit length (1/m)
         I: Current (A)
     
     Returns:
-        Delta B (T)
+        ΔB (T) - field enhancement
     """
     if n < 0 or I < 0:
         raise ValueError("Turns and current must be non-negative")
     
     return MU_0 * n * I
+
+
+def pulsed_field_rate(n: float, dI_dt: float) -> float:
+    """
+    Calculate the rate of change of pulsed magnetic field.
+    
+    From the RVG framework:
+        dB/dt = μ₀ * n * dI/dt
+    
+    Args:
+        n: Number of turns per unit length (1/m)
+        dI_dt: Rate of change of current (A/s)
+    
+    Returns:
+        dB/dt (T/s)
+    """
+    return MU_0 * n * dI_dt
+
+
+# =============================================================================
+# Lagrangian and Source Terms (Legacy + Extended)
+# =============================================================================
+
+class DisruptionLagrangian:
+    """
+    Class for disruption Lagrangian with parameterization.
+    
+    Attributes:
+        chi (float): Susceptibility
+        B (float): Magnetic field (T)
+        h_mu_nu (np.ndarray): Metric perturbation (4x4)
+        h_mu_nu_inv (np.ndarray): Inverse metric perturbation (4x4)
+    """
+    
+    def __init__(self, chi: float, B: float, h_mu_nu: np.ndarray, h_mu_nu_inv: np.ndarray):
+        """Initialize Lagrangian calculator with validation."""
+        if chi < 0 or B < 0:
+            raise ValueError("chi and B must be non-negative")
+        
+        self.chi = chi
+        self.B = B
+        self.h_mu_nu = np.asarray(h_mu_nu, dtype=float)
+        self.h_mu_nu_inv = np.asarray(h_mu_nu_inv, dtype=float)
+        
+        if self.h_mu_nu.shape != (4, 4) or self.h_mu_nu_inv.shape != (4, 4):
+            raise ValueError("Metric tensors must be 4x4 arrays")
+    
+    def compute(self) -> float:
+        """Compute Lagrangian value."""
+        contraction = np.einsum('ij,ij->', self.h_mu_nu, self.h_mu_nu_inv)
+        return -0.5 * self.chi * self.B**2 * contraction
 
 
 def lagrangian_disrupt(chi: float, B: float, h_mu_nu: np.ndarray, 
@@ -457,6 +857,61 @@ def lagrangian_disrupt(chi: float, B: float, h_mu_nu: np.ndarray,
     dl = DisruptionLagrangian(chi, B, h_mu_nu, h_mu_nu_inv)
     return dl.compute()
 
+
+def euler_heisenberg_lagrangian(E: float, B: float) -> float:
+    """
+    Calculate the Euler-Heisenberg effective Lagrangian density.
+    
+    L_EH = ε₀E²/2 - B²/(2μ₀) + (2α²ε₀²/45m_e⁴c⁵) * [(E² - c²B²)² + 7(E·B)²c²]
+    
+    For purely magnetic case (E=0):
+    L_EH = -B²/(2μ₀) + (2α²/45) * (ħ/m_e c)³ * (1/μ₀) * (B/B_crit)⁴
+    
+    Args:
+        E: Electric field magnitude (V/m)
+        B: Magnetic field magnitude (T)
+    
+    Returns:
+        L_EH (J/m³) - Lagrangian density
+    """
+    # Classical term
+    L_classical = EPSILON_0 * E**2 / 2 - B**2 / (2 * MU_0)
+    
+    # QED correction (simplified for E·B = 0)
+    B_ratio = B / B_CRIT_SCHWINGER
+    E_ratio = E / (B_CRIT_SCHWINGER * C)
+    
+    # Coefficient
+    coeff = (2 * ALPHA**2 / 45) * (HBAR / (M_E * C))**3 / MU_0
+    
+    # QED terms
+    L_qed = coeff * ((E_ratio**2 - B_ratio**2)**2 + 7 * (E_ratio * B_ratio)**2)
+    
+    return L_classical + L_qed
+
+
+def source_term(chi: float, B: float, h_mu_nu: np.ndarray) -> np.ndarray:
+    """
+    Calculate the source term δT_μν (approximation).
+    
+    Args:
+        chi: Susceptibility
+        B: Magnetic field (T)
+        h_mu_nu: Metric perturbation (4x4)
+    
+    Returns:
+        δT_μν (4x4 array)
+    """
+    h_mu_nu = np.asarray(h_mu_nu, dtype=float)
+    if h_mu_nu.shape != (4, 4):
+        raise ValueError("Metric tensor must be 4x4 array")
+    
+    return chi * B**2 * h_mu_nu
+
+
+# =============================================================================
+# RG Flow Functions
+# =============================================================================
 
 def rg_beta_chi_spin0(chi: float, g: float, lambda_val: float) -> float:
     """
@@ -499,38 +954,83 @@ def rg_beta_chi_spin2(chi: float, eta_chi: float, c: float, g: float) -> float:
     return (4 + eta_chi) * chi + c * g * chi
 
 
-def source_term(chi: float, B: float, h_mu_nu: np.ndarray) -> np.ndarray:
+def integrate_rg_flow(beta_func: Callable, chi_init: float = CHI_UV, 
+                     t_span: Tuple[float, float] = (1e-10, 1e10), 
+                     args: Tuple = (G_COUPLING, LAMBDA_PARAM)) -> Any:
     """
-    Calculate the source term delta T_mu_nu (approximation).
+    Integrate RG flow for chi using scipy.integrate.
     
     Args:
-        chi: Susceptibility
-        B: Magnetic field (T)
-        h_mu_nu: Metric perturbation (4x4)
+        beta_func: Beta function (e.g., rg_beta_chi_spin0)
+        chi_init: Initial chi
+        t_span: Energy scale range (will be log-scaled)
+        args: Additional args for beta_func
     
     Returns:
-        delta T_mu_nu (4x4 array)
+        scipy.integrate.solve_ivp result
     """
-    h_mu_nu = np.asarray(h_mu_nu, dtype=float)
-    if h_mu_nu.shape != (4, 4):
-        raise ValueError("Metric tensor must be 4x4 array")
+    if not SCIPY_FULL_AVAILABLE:
+        raise ImportError("scipy.integrate required for RG flow integration")
     
-    return chi * B**2 * h_mu_nu
+    def dchi_dt(t, chi):
+        return beta_func(chi[0], *args)
+    
+    log_t_span = (np.log(t_span[0]), np.log(t_span[1]))
+    return solve_ivp(dchi_dt, log_t_span, [chi_init], method='RK45', dense_output=True)
+
+
+# =============================================================================
+# Force and Thrust (Legacy + RVG Enhanced)
+# =============================================================================
+
+class ThrustForce:
+    """
+    Class for thrust force vector with parameterization.
+    
+    Attributes:
+        chi (float): Susceptibility
+        B (float): Magnetic field magnitude (T)
+        grad_h2 (np.ndarray): Gradient of h² (3D vector)
+        A (float): Area (m²)
+        rho (float): Density (kg/m³)
+    """
+    
+    def __init__(self, chi: float, B: float, grad_h2: np.ndarray, A: float, rho: float):
+        """Initialize thrust force calculator with validation."""
+        if chi < 0 or B < 0 or A <= 0 or rho <= 0:
+            raise ValueError("Parameters must satisfy chi, B >= 0; A, rho > 0")
+        
+        self.chi = chi
+        self.B = B
+        self.grad_h2 = np.asarray(grad_h2, dtype=float)
+        
+        if self.grad_h2.shape != (3,):
+            raise ValueError("grad_h2 must be a 3D vector")
+        
+        self.A = A
+        self.rho = rho
+    
+    def compute(self) -> np.ndarray:
+        """Compute force vector."""
+        return self.chi * self.B**2 * self.grad_h2 * self.A * self.rho
 
 
 def force_vector(chi: float, B: float, grad_h2: np.ndarray, 
                 A: float, rho: float) -> np.ndarray:
     """
-    Calculate the force vector.
+    Calculate the force vector (legacy formulation).
     
-    IMPORTANT: This force is only valid when B is from properly OPPOSING
+    IMPORTANT: For RVG-compliant calculations, use master_equation_levitation()
+    or vacuum_force_density() instead.
+    
+    This force is only valid when B is from properly OPPOSING
     magnetic fields (converging at focal point). Use validate_mada_convergence()
     to verify field configuration before relying on this calculation.
     
     Args:
         chi: Susceptibility
         B: Magnetic field magnitude (T)
-        grad_h2: Gradient of h^2 (3D vector)
+        grad_h2: Gradient of h² (3D vector)
         A: Area (m²)
         rho: Density (kg/m³)
     
@@ -539,6 +1039,42 @@ def force_vector(chi: float, B: float, grad_h2: np.ndarray,
     """
     tf = ThrustForce(chi, B, grad_h2, A, rho)
     return tf.compute()
+
+
+def force_vector_rvg(B: float, grad_B2: np.ndarray, 
+                     volume: float,
+                     include_dilaton: bool = True) -> np.ndarray:
+    """
+    Calculate force vector using RVG framework.
+    
+    This is the RVG-compliant version that properly accounts for
+    dilaton enhancement and vacuum polarization physics.
+    
+    F = (Θ_dilaton(B) / (2μ₀)) * ∇(B²) * V
+    
+    Args:
+        B: Magnetic field magnitude at region of interest (T)
+        grad_B2: Gradient of B² (T²/m) - 3D vector
+        volume: Volume of active region (m³)
+        include_dilaton: If True, include dilaton enhancement
+    
+    Returns:
+        Force F (3D vector, N)
+    """
+    grad_B2 = np.asarray(grad_B2, dtype=float)
+    
+    if grad_B2.shape != (3,):
+        raise ValueError("grad_B2 must be a 3D vector")
+    
+    if include_dilaton:
+        theta = dilaton_enhancement(B)
+    else:
+        theta = THETA_95_BASELINE
+    
+    # F = (Θ / 2μ₀) * ∇(B²) * V
+    F = (theta / (2 * MU_0)) * grad_B2 * volume
+    
+    return F
 
 
 def total_thrust(N: int, F: Union[float, np.ndarray], 
@@ -586,11 +1122,18 @@ def acceleration(T: float, m: float) -> float:
     return T / m
 
 
+# =============================================================================
+# Power and Efficiency
+# =============================================================================
+
 def power_consumption_vectorized(I: Union[float, np.ndarray], 
                                 R: Union[float, np.ndarray], 
                                 P_eddy: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     """
     Calculate power consumption (vectorized).
+    
+    From the RVG framework:
+        P = I²R_coil + P_eddy + P_switching
     
     Args:
         I: Current (A)
@@ -616,6 +1159,9 @@ def efficiency_vectorized(T: Union[float, np.ndarray],
                          P: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     """
     Calculate efficiency (vectorized).
+    
+    From the RVG framework:
+        η = (|F_lift| * v / P) * 100%
     
     Args:
         T: Thrust (N)
@@ -645,6 +1191,9 @@ def range_calc(v: float, E: float, P: float) -> float:
     """
     Calculate range.
     
+    From the RVG framework:
+        R ≈ v * t_op = v * (E_stored / P)
+    
     Args:
         v: Velocity (m/s)
         E: Energy (J)
@@ -662,33 +1211,8 @@ def range_calc(v: float, E: float, P: float) -> float:
 
 
 # =============================================================================
-# Advanced Physics Functions
+# Trajectory and Evasion
 # =============================================================================
-
-def integrate_rg_flow(beta_func: Callable, chi_init: float = CHI_UV, 
-                     t_span: Tuple[float, float] = (1e-10, 1e10), 
-                     args: Tuple = (G_COUPLING, LAMBDA_PARAM)) -> Any:
-    """
-    Integrate RG flow for chi using scipy.integrate.
-    
-    Args:
-        beta_func: Beta function (e.g., rg_beta_chi_spin0)
-        chi_init: Initial chi
-        t_span: Energy scale range (will be log-scaled)
-        args: Additional args for beta_func
-    
-    Returns:
-        scipy.integrate.solve_ivp result
-    """
-    if not SCIPY_FULL_AVAILABLE:
-        raise ImportError("scipy.integrate required for RG flow integration")
-    
-    def dchi_dt(t, chi):
-        return beta_func(chi[0], *args)
-    
-    log_t_span = (np.log(t_span[0]), np.log(t_span[1]))
-    return solve_ivp(dchi_dt, log_t_span, [chi_init], method='RK45', dense_output=True)
-
 
 def non_ballistic_trajectory(start_pos: np.ndarray, target_pos: np.ndarray, 
                             curvature: float = 0.5, steps: int = 100) -> np.ndarray:
@@ -748,7 +1272,7 @@ def radar_evasion_probability(traj: np.ndarray, radar_pos: np.ndarray,
     if min_dist < EPSILON:
         return 0.0
     
-    # Simple inverse model: P_evade = 1 / (1 + RCS / min_dist^4)
+    # Simple inverse model: P_evade = 1 / (1 + RCS / min_dist⁴)
     return 1.0 / (1.0 + rcs / min_dist**4)
 
 
@@ -849,7 +1373,7 @@ def teg_power_recovery(Delta_T: Union[float, np.ndarray], area: float,
                       thickness: float, load_res: float = 1.0) -> Union[float, np.ndarray]:
     """
     Calculate power recovered from Bi2Te3 TEG.
-    Simplified model: P = (alpha Delta_T)^2 / (4 R_int) for matched load.
+    Simplified model: P = (α·ΔT)² / (4·R_int) for matched load.
     
     Args:
         Delta_T: Temperature difference (K)
@@ -881,7 +1405,7 @@ def thermal_dissipation_model(P_in: Union[float, np.ndarray],
     Args:
         P_in: Input power (W)
         eta_thermal: Thermal efficiency (0-1)
-        Delta_T_max: Max allowable Delta T (K)
+        Delta_T_max: Max allowable ΔT (K)
         area: TEG area (m²)
         thickness: TEG thickness (m)
     
@@ -904,7 +1428,7 @@ def thermal_dissipation(P_in: float, eta_thermal: float = 0.95,
     Args:
         P_in: Input power (W)
         eta_thermal: Thermal efficiency
-        Delta_T_max: Max allowable Delta T (K)
+        Delta_T_max: Max allowable ΔT (K)
     
     Returns:
         Tuple of (heat_dissipated (W), recovered (W))
@@ -921,7 +1445,8 @@ def parallel_monte_carlo_thrust(params: Dict[str, Any],
                                uncertainties: Dict[str, float], 
                                n_sim: int = 1000, 
                                n_processes: int = 4,
-                               random_seed: Optional[int] = None) -> np.ndarray:
+                               random_seed: Optional[int] = None,
+                               use_rvg: bool = True) -> np.ndarray:
     """
     Parallel Monte Carlo using multiprocessing with reproducibility.
     
@@ -931,6 +1456,7 @@ def parallel_monte_carlo_thrust(params: Dict[str, Any],
         n_sim: Number of simulations
         n_processes: Number of parallel processes
         random_seed: Random seed for reproducibility
+        use_rvg: If True, use RVG framework equations
     
     Returns:
         Array of thrust values from simulations
@@ -956,13 +1482,24 @@ def parallel_monte_carlo_thrust(params: Dict[str, Any],
         delta_B = pulsed_enhancement(sim_params.get('n_turns', 100), scaled_I)
         B_total = B + delta_B
         
-        F_vec = force_vector(
-            sim_params.get('chi', 1e-10), 
-            B_total, 
-            sim_params.get('grad_h2', np.array([1.0, 0.0, 0.0])),
-            sim_params.get('A', 1.0), 
-            sim_params.get('rho', 1000.0)
-        )
+        if use_rvg:
+            # Use RVG framework
+            F_vec = force_vector_rvg(
+                B_total,
+                sim_params.get('grad_B2', np.array([1e10, 0.0, 0.0])),
+                sim_params.get('volume', 0.001),
+                include_dilaton=True
+            )
+        else:
+            # Legacy calculation
+            F_vec = force_vector(
+                sim_params.get('chi', 1e-10), 
+                B_total, 
+                sim_params.get('grad_h2', np.array([1.0, 0.0, 0.0])),
+                sim_params.get('A', 1.0), 
+                sim_params.get('rho', 1000.0)
+            )
+        
         F_mag = np.linalg.norm(F_vec)
         T = total_thrust(
             sim_params.get('N', 24), 
@@ -1123,6 +1660,40 @@ def plot_rg_modifier(chi_values: np.ndarray, beta_values: np.ndarray,
     plt.ylabel('β_χ')
     plt.grid(True, alpha=0.3)
     plt.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+    
+    if filename:
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
+
+
+def plot_dilaton_enhancement(B_range: np.ndarray = None, 
+                             filename: Optional[str] = None) -> None:
+    """
+    Plot dilaton enhancement factor vs magnetic field.
+    
+    Args:
+        B_range: Array of B values (T). Default: 1 to 1e8 T (log scale)
+        filename: If provided, save to file instead of showing
+    """
+    if not MATPLOTLIB_AVAILABLE:
+        raise ImportError("Matplotlib required for visualization")
+    
+    if B_range is None:
+        B_range = np.logspace(0, 8, 200)
+    
+    theta = dilaton_enhancement(B_range)
+    
+    plt.figure(figsize=(10, 6))
+    plt.loglog(B_range, theta, linewidth=2)
+    plt.axvline(x=B_CRIT_RVG, color='r', linestyle='--', alpha=0.5, 
+                label=f'B_crit (RVG) = {B_CRIT_RVG:.0e} T')
+    plt.title('Dilaton Enhancement Factor Θ(B)')
+    plt.xlabel('Magnetic Field B (T)')
+    plt.ylabel('Θ_dilaton')
+    plt.grid(True, alpha=0.3)
+    plt.legend()
     
     if filename:
         plt.savefig(filename, dpi=300, bbox_inches='tight')
@@ -1305,6 +1876,18 @@ def symbolic_surface_field() -> sp.Expr:
     return (B_r / 2) * (term1 + term2)
 
 
+def symbolic_axial_field() -> sp.Expr:
+    """
+    Return symbolic expression for axial field (RVG framework).
+    
+    B(z) = (B_r/2) * [(L + z)/√(R² + (L + z)²) - z/√(R² + z²)]
+    """
+    B_r, L, R, z = sp.symbols('B_r L R z', real=True)
+    term1 = (L + z) / sp.sqrt(R**2 + (L + z)**2)
+    term2 = z / sp.sqrt(R**2 + z**2)
+    return (B_r / 2) * (term1 - term2)
+
+
 def symbolic_opposing_field() -> sp.Expr:
     """Return symbolic expression for opposing field."""
     m1, m2, d, k = sp.symbols('m_1 m_2 d k', positive=True, real=True)
@@ -1312,8 +1895,40 @@ def symbolic_opposing_field() -> sp.Expr:
     return (mu_0 * m1 * m2 / (2 * sp.pi * d**2)) * k
 
 
+def symbolic_refractive_index() -> sp.Expr:
+    """
+    Return symbolic expression for refractive index (RVG framework).
+    
+    K = 1 + Θ_95 * B²/B_crit²
+    """
+    B, B_crit, Theta_95 = sp.symbols('B B_crit Theta_95', positive=True, real=True)
+    return 1 + Theta_95 * (B**2 / B_crit**2)
+
+
+def symbolic_vacuum_force_density() -> sp.Expr:
+    """
+    Return symbolic expression for vacuum force density (RVG framework).
+    
+    f_vac = -B² / (2μ₀) * ∇K (scalar version for magnitude)
+    """
+    B, mu_0, grad_K = sp.symbols('B mu_0 grad_K', real=True)
+    return -B**2 / (2 * mu_0) * grad_K
+
+
+def symbolic_master_equation() -> sp.Expr:
+    """
+    Return symbolic expression for Master Equation of Levitation (integrand).
+    
+    F_lift = ∫ (Θ_dilaton(B) / (2μ₀)) * ∇(B²) dV
+    
+    Returns the integrand for single point calculation.
+    """
+    B, mu_0, Theta, grad_B2 = sp.symbols('B mu_0 Theta grad_B2', real=True)
+    return (Theta / (2 * mu_0)) * grad_B2
+
+
 def symbolic_force_vector() -> sp.Expr:
-    """Return symbolic expression for force vector (scalar version)."""
+    """Return symbolic expression for force vector (scalar version - legacy)."""
     chi, B, A, rho = sp.symbols('chi B A rho', real=True)
     grad_h2 = sp.Symbol('grad_h2', real=True)
     return chi * B**2 * grad_h2 * A * rho
@@ -1325,6 +1940,17 @@ def symbolic_rg_beta_chi_spin0() -> sp.Expr:
     return -4 * chi + (g / (2 * sp.pi)) * (chi / (1 - 2 * lam))
 
 
+def symbolic_dilaton_enhancement() -> sp.Expr:
+    """
+    Return symbolic expression for dilaton enhancement factor.
+    
+    Θ_dilaton(B) = θ_baseline * (B/B_scale)² * [1 + (B/B_scale)²]
+    """
+    B, B_scale, theta_baseline = sp.symbols('B B_scale theta_baseline', positive=True, real=True)
+    B_ratio = B / B_scale
+    return theta_baseline * B_ratio**2 * (1 + B_ratio**2)
+
+
 # =============================================================================
 # Unit Tests
 # =============================================================================
@@ -1333,9 +1959,24 @@ def test_surface_field() -> None:
     """Unit test for surface_field calculation."""
     expected = (1.4 / 2) * (0.3 / np.sqrt(0.15**2 + 0.3**2) + 
                             0.35 / np.sqrt(0.15**2 + 0.35**2))
-    result = surface_field(1.4, 0.3, 0.15, 0.05)
+    result = surface_field(B_r=1.4, L=0.3, R=0.15, d=0.05)
     assert np.isclose(result, expected), f"Expected {expected}, got {result}"
     print("✓ test_surface_field PASSED")
+
+
+def test_axial_field() -> None:
+    """Unit test for axial_field calculation (RVG framework)."""
+    # At z=0, B should equal surface field at d=0 for same geometry
+    B_r, L, R = 1.4, 0.3, 0.15
+    result = axial_field(B_r, L, R, z=0.05)
+    
+    # Manual calculation
+    term1 = (L + 0.05) / np.sqrt(R**2 + (L + 0.05)**2)
+    term2 = 0.05 / np.sqrt(R**2 + 0.05**2)
+    expected = (B_r / 2) * (term1 - term2)
+    
+    assert np.isclose(result, expected), f"Expected {expected}, got {result}"
+    print("✓ test_axial_field PASSED")
 
 
 def test_convergence_quality() -> None:
@@ -1363,14 +2004,81 @@ def test_pulsed_enhancement() -> None:
     print("✓ test_pulsed_enhancement PASSED")
 
 
+def test_dilaton_enhancement() -> None:
+    """Unit test for dilaton enhancement factor."""
+    # At B = B_CRIT_RVG, should get non-trivial enhancement
+    B = B_CRIT_RVG
+    theta = dilaton_enhancement(B)
+    expected = THETA_95_BASELINE * 1.0**2 * (1 + 1.0**2)  # = 2 * baseline
+    assert np.isclose(theta, expected), f"Expected {expected}, got {theta}"
+    
+    # At B = 0, should get 0
+    theta_zero = dilaton_enhancement(0.0)
+    assert np.isclose(theta_zero, 0.0), f"Expected 0.0, got {theta_zero}"
+    
+    print("✓ test_dilaton_enhancement PASSED")
+
+
+def test_refractive_index() -> None:
+    """Unit test for refractive index calculation."""
+    # At B = 0, K should be exactly 1
+    K_zero = refractive_index(0.0)
+    assert np.isclose(K_zero, 1.0), f"Expected 1.0, got {K_zero}"
+    
+    # At any B > 0, K should be > 1
+    K_nonzero = refractive_index(100.0)
+    assert K_nonzero > 1.0, f"Expected K > 1, got {K_nonzero}"
+    
+    print("✓ test_refractive_index PASSED")
+
+
+def test_vacuum_force_density() -> None:
+    """Unit test for vacuum force density calculation."""
+    B = 50.0  # Tesla
+    grad_K = np.array([1e-10, 0.0, 0.0])  # 1/m
+    
+    f = vacuum_force_density(B, grad_K)
+    
+    # Check direction: should be opposite to grad_K
+    assert f[0] < 0, f"Force should be negative in x-direction, got {f[0]}"
+    assert np.isclose(f[1], 0.0), f"Force y-component should be 0, got {f[1]}"
+    assert np.isclose(f[2], 0.0), f"Force z-component should be 0, got {f[2]}"
+    
+    print("✓ test_vacuum_force_density PASSED")
+
+
+def test_master_equation() -> None:
+    """Unit test for Master Equation of Levitation."""
+    # Simple test with uniform field and gradient
+    N = 10
+    B_field = np.ones(N) * 50.0  # 50 T
+    grad_B2 = np.tile([1e10, 0.0, 0.0], (N, 1))  # 10^10 T²/m in x
+    volumes = np.ones(N) * 1e-6  # 1 mm³ each
+    
+    F = master_equation_levitation(B_field, grad_B2, volumes)
+    
+    # Check it returns 3D vector
+    assert F.shape == (3,), f"Expected shape (3,), got {F.shape}"
+    
+    # Check force is in x-direction (same as gradient)
+    assert F[0] > 0, f"Force should be positive in x-direction, got {F[0]}"
+    
+    print("✓ test_master_equation PASSED")
+
+
 def run_all_tests() -> None:
     """Run all unit tests."""
     print("\n" + "=" * 70)
     print("Running Unit Tests")
     print("=" * 70)
     test_surface_field()
+    test_axial_field()
     test_convergence_quality()
     test_pulsed_enhancement()
+    test_dilaton_enhancement()
+    test_refractive_index()
+    test_vacuum_force_density()
+    test_master_equation()
     print("=" * 70)
     print("All tests passed!")
     print("=" * 70 + "\n")
@@ -1383,6 +2091,7 @@ def run_all_tests() -> None:
 if __name__ == "__main__":
     print("=" * 70)
     print("QED Vacuum Thrust Control - Equations Module")
+    print("RVG Unified Field Framework")
     print("=" * 70)
     
     print("\nModule Information:")
@@ -1394,40 +2103,77 @@ if __name__ == "__main__":
     print(f"  QuTiP available: {QUTIP_AVAILABLE}")
     print(f"  PySCF available: {PYSCF_AVAILABLE}")
     
+    print("\nRVG Framework Constants:")
+    print(f"  Schwinger B_crit: {B_CRIT_SCHWINGER:.3e} T")
+    print(f"  RVG effective B_crit: {B_CRIT_RVG:.3e} T")
+    print(f"  Dilaton mass: {DILATON_MASS_GEV} GeV")
+    print(f"  Baseline Θ_95: {THETA_95_BASELINE:.3e}")
+    print(f"  MADA default k: {MADA_DEFAULT_K}")
+    
     # Run unit tests
     run_all_tests()
     
     # Example calculations
-    print("\nExample Calculations:")
+    print("\nExample Calculations (RVG Framework):")
     print("-" * 70)
     
-    print("\n1. Surface Field:")
+    print("\n1. Axial Field (Halbach/Solenoid):")
+    B_ax = axial_field(B_r=1.4, L=0.3, R=0.15, z=0.05)
+    print(f"   B(z=0.05m) = {B_ax:.4f} T")
+    
+    print("\n2. Surface Field (Legacy):")
     B_surf = surface_field(B_r=1.4, L=0.3, R=0.15, d=0.05)
     print(f"   B_surface = {B_surf:.4f} T")
     
-    print("\n2. Opposing Field (magnitude only - validation required):")
-    B_opp = opposing_field(m1=100, m2=100, d=0.1, k=1.0)
+    print("\n3. Opposing Field (MADA, k=200):")
+    B_opp = opposing_field(m1=100, m2=100, d=0.1, k=MADA_DEFAULT_K)
     print(f"   B_opposing = {B_opp:.6e} T")
     
-    print("\n3. MADA Convergence Validation:")
+    print("\n4. MADA Convergence Validation:")
     B1_correct = np.array([-50.0, 0.0, 0.0])
     B2_correct = np.array([50.0, 0.0, 0.0])
     conv = validate_mada_convergence(B1_correct, B2_correct)
     print(f"   {conv['message']}")
     
-    print("\n4. Force Vector:")
-    F = force_vector(chi=1e-10, B=20, grad_h2=np.array([1, 0, 0]), A=0.01, rho=2700)
-    print(f"   F = {F} N")
-    print(f"   |F| = {np.linalg.norm(F):.4f} N")
+    print("\n5. Dilaton Enhancement Factor:")
+    for B_test in [1.0, 100.0, 1e6, 1e7]:
+        theta = dilaton_enhancement(B_test)
+        print(f"   Θ({B_test:.0e} T) = {theta:.6e}")
     
-    print("\n5. Total Thrust:")
-    T = total_thrust(N=10, F=100, eta=0.95, theta=0)
+    print("\n6. Refractive Index:")
+    for B_test in [1.0, 100.0, 1e6]:
+        K = refractive_index(B_test)
+        print(f"   K({B_test:.0e} T) = {K:.12f}")
+    
+    print("\n7. Vacuum Force Density:")
+    B_test = 50.0
+    grad_K_test = np.array([1e-10, 0.0, 0.0])
+    f_vac = vacuum_force_density(B_test, grad_K_test)
+    print(f"   f_vac at B={B_test}T, ∇K=[{grad_K_test[0]:.0e},0,0] = {f_vac} N/m³")
+    
+    print("\n8. Force Vector (RVG):")
+    F = force_vector_rvg(B=50.0, grad_B2=np.array([1e10, 0, 0]), volume=0.001)
+    print(f"   F = {F} N")
+    print(f"   |F| = {np.linalg.norm(F):.6e} N")
+    
+    print("\n9. Master Equation of Levitation (Discrete):")
+    N_elements = 100
+    B_field = np.ones(N_elements) * 60.0  # 60 T uniform
+    grad_B2_field = np.tile([1e12, 0.0, 0.0], (N_elements, 1))  # 10^12 T²/m
+    volumes = np.ones(N_elements) * 1e-6  # 1 mm³ each
+    F_lift = master_equation_levitation(B_field, grad_B2_field, volumes)
+    print(f"   F_lift = {F_lift} N")
+    print(f"   |F_lift| = {np.linalg.norm(F_lift):.4f} N")
+    
+    print("\n10. Total Thrust (24 MADA units):")
+    T = total_thrust(N=24, F=np.linalg.norm(F_lift), eta=0.95, theta=0)
     print(f"   Thrust = {T:.2f} N")
     
-    print("\n6. Acceleration:")
-    a = acceleration(T=1000, m=50)
+    print("\n11. Acceleration (50 kg system):")
+    a = acceleration(T=T, m=50)
     print(f"   Acceleration = {a:.2f} m/s² ({a/9.81:.2f}g)")
     
     print("\n" + "=" * 70)
     print("Module loaded successfully!")
+    print("RVG Unified Field equations ready for simulation.")
     print("=" * 70)

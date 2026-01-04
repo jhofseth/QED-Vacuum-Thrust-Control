@@ -16,7 +16,7 @@ These experiments focus on measuring vacuum polarization-induced thrust under st
 **Key Equations:**
 
 **Master Equation of Levitation:**
-$\vec{F}\_{lift} = \int\_{V} \left( \frac{1}{2\mu\_{0}} \Theta\_{dilaton}(B) \cdot \nabla (B^2) \right) dV$
+$$\mathbf{F}\_{lift} = \int\_{V} \left( \frac{1}{2\mu\_{0}} \Theta\_{dilaton}(B) \cdot \nabla (B^2) \right) dV$$
 
 **Vacuum Refractive Index:**
 $$K(\mathbf{r}) = 1 + \chi_{\text{vac}}(B) \approx 1 + \Theta_{95} \frac{B^2}{B_{\text{crit}}^2}$$

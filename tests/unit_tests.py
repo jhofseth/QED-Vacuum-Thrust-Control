@@ -2,7 +2,11 @@
 # Pytest-based unit tests for core functions in simulations/equations.py,
 # including thrust calculations (force_vector, total_thrust, acceleration),
 # magnetic fields (opposing_field, pulsed_enhancement), and others.
-# CRITICAL: Added tests for MADA field convergence validation.
+#
+# Tests the RVG (Refractive Vacuum Gravity) Unified Field framework equations
+# including the Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
+#
+# CRITICAL: Added tests for MADA field convergence validation (essential for Θ_dilaton).
 # Assumes equations.py is in the parent directory or sys.path.
 
 import sys

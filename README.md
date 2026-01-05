@@ -86,7 +86,7 @@ Holistic ranking of magnetic materials for propulsion circuits (as of October 20
 | 4 | Minnealloy (α″-Fe₁₆(C,N)₂) | 92/100 |
 | 5 | Pure Iron (ARMCO) | 90/100 |
 
-*See full table in [docs/materials_ranking.pdf](docs/materials_ranking.md)*
+*See full table in [docs/materials_ranking.md](docs/materials_ranking.md)*
 
 Prioritizes cobalt-free options for low-cost scalability.  Note: Effects manifest in **any ferromagnetic circuit material** (iron, silicon steel, Hiperco-50, etc.) via internal permeability amplification; higher-saturation materials like Minnealloy (~2.8–2.9 T) simply achieve equivalent peak fields with lower overdrive requirements.
 

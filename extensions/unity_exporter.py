@@ -1,8 +1,12 @@
 # extensions/unity_exporter.py
 # This module provides scripts for exporting FreeCAD models (.fcstd) to Unity-compatible formats (e.g., OBJ)
-# for VR threat modeling. It uses FreeCAD's Python API to load, process, and export models.
+# for VR threat modeling of RVG (Refractive Vacuum Gravity) Unified Field propulsion systems.
+#
+# Uses FreeCAD's Python API to load, process, and export models.
 # Usage: python unity_exporter.py --input path/to/model.fcstd --output path/to/export.obj
 # Requires FreeCAD installed and added to PYTHONPATH (e.g., sys.path.append('/usr/lib/freecad/lib')).
+#
+# For VR visualization of MADA configurations and Master Equation thrust vectors.
 
 import sys
 import argparse
@@ -44,7 +48,13 @@ except ImportError as e:
 
 def export_to_obj(input_fcstd, output_obj, part_name=None):
     """
-    Export FreeCAD model to OBJ format.
+    Export FreeCAD model to OBJ format for Unity VR visualization.
+    
+    Used for RVG Unified Field propulsion system modeling, including:
+    - MADA unit configurations
+    - Magnetic field convergence visualization
+    - Thrust vector representations
+    - Supra-saturation zone mapping
     
     Parameters:
     input_fcstd (str): Path to .fcstd file
@@ -90,6 +100,7 @@ def export_to_obj(input_fcstd, output_obj, part_name=None):
         Mesh.export(exportable_objects, output_obj)
         
         print(f"Successfully exported {len(exportable_objects)} object(s) to {output_obj}")
+        print(f"Ready for Unity VR RVG propulsion visualization")
         return True
     
     except Exception as e:
@@ -108,12 +119,16 @@ def export_to_obj(input_fcstd, output_obj, part_name=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Export FreeCAD models to OBJ for Unity VR threat modeling.",
+        description="Export FreeCAD models to OBJ for Unity VR RVG propulsion threat modeling.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+RVG Unified Field Visualization:
+  Export CAD models of MADA units, magnetic circuits, and drone assemblies
+  for VR simulation of the Master Equation of Levitation thrust vectors.
+
 Examples:
   python unity_exporter.py --input model.fcstd --output model.obj
-  python unity_exporter.py --input model.fcstd --output model.obj --part "Body"
+  python unity_exporter.py --input model.fcstd --output model.obj --part "MADA_Assembly"
         """
     )
     parser.add_argument("--input", type=str, required=True, help="Path to .fcstd file")
@@ -134,6 +149,10 @@ Examples:
     # Validate output file extension
     if not args.output.lower().endswith('.obj'):
         print(f"Warning: Output file {args.output} does not have .obj extension.")
+    
+    print("=" * 60)
+    print("RVG UNIFIED FIELD - Unity VR Exporter")
+    print("=" * 60)
     
     # Perform export
     success = export_to_obj(args.input, args.output, args.part)

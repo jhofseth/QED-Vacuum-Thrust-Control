@@ -4,6 +4,10 @@ hardware/mada_gpio_controller.py
 Raspberry Pi GPIO controller for MADA (Magnetic Amplification and Direction Assembly) units.
 Provides independent control of azimuth and elevation stepper motors for each MADA.
 
+Used for RVG (Refractive Vacuum Gravity) Unified Field propulsion systems.
+Proper MADA orientation is critical for the Master Equation of Levitation:
+F = ∫(Θ_dilaton(B)·∇B²)dV
+
 HARDWARE REQUIREMENTS:
 - Raspberry Pi 5 (or 4/3B+ with GPIO)
 - DRV8825 or A4988 stepper drivers (one per axis)
@@ -18,7 +22,7 @@ PIN ASSIGNMENTS:
 
 INTEGRATION WITH THRUST_MODEL.PY:
 - Import and use in real-time mode for physical MADA control
-- Validates alignment with MADAConvergenceValidator
+- Validates alignment with MADAConvergenceValidator for Θ_dilaton optimization
 - Coordinates with Hall sensor readings for closed-loop control
 """
 

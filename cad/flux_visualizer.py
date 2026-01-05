@@ -1,7 +1,11 @@
 # cad/flux_visualizer.py
 # This module provides rendering scripts for visualizing magnetic flux maps,
-# thermal dissipation, and interactive 3D views of the spherical drone prototype.
-# CRITICAL: Added MADA convergence visualization to verify proper field opposition.
+# thermal dissipation, and interactive 3D views of the spherical drone prototype
+# for RVG (Refractive Vacuum Gravity) Unified Field propulsion systems.
+#
+# CRITICAL: Added MADA convergence visualization to verify proper field opposition,
+# which is essential for the Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
+#
 # Uses Matplotlib for static plots and Plotly for interactive visualizations.
 # Assumes data from simulations (e.g., B fields from equations.py) or CAD exports.
 # Example usage: python flux_visualizer.py --mode flux --input data.npy

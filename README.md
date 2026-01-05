@@ -1,14 +1,3 @@
-> [!IMPORTANT]
-> ## ⚠️ Temporary Note – Equations Section Update
-> 
-> **The "Useful Equations" section has been updated** to reflect the recently submitted paper:
-> 
-> **[Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation](http://dx.doi.org/10.2139/ssrn.5381654)**
-> 
-> This paper is currently **pending review** at a prestigious Physics journal. A preprint is available via the link above.
-> 
-> The Python files, simulations, and other codebase components will be updated soon to align with the revised equations. **This note will be removed once all updates are complete.**
-
 # QED-Vacuum-Thrust-Control
 
 Open-source control system for QED vacuum polarization-based EMF propulsion in combat drones.  Optimizes magnetic circuits with materials like Minnealloy & Hiperco-50 for high-thrust (e.g., Mach 26), stealthy ops in asymmetric warfare.  Features AI navigation, MADA pulsing, thermal management, and simulation tools for defense applications.

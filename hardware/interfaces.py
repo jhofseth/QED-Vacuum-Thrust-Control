@@ -1,7 +1,10 @@
 """
 hardware/interfaces.py
 
-Hardware interface module for the QED-Vacuum-Thrust-Control system.
+Hardware interface module for the RVG (Refractive Vacuum Gravity) Unified Field propulsion system.
+
+This module provides interfaces for controlling MADA (Magnetic Amplification and Direction Assembly)
+units and supporting hardware for the Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
 
 Provides interfaces for:
 - Flight controllers (PX4, ArduPilot via pymavlink)
@@ -14,6 +17,10 @@ Provides interfaces for:
 - User Interface Hooks: CLI/GUI via Tkinter/WebSockets
 - Modularity: Abstract base classes, thread-safety
 - Compliance: Logging for export control, vulnerability scanning
+
+Framework: Based on RVG Unified Field theory (Hofseth, 2025)
+- Paper: https://dx.doi.org/10.2139/ssrn.5381654
+- Key equations: Master Equation of Levitation, Dilaton Enhancement Factor Θ_dilaton
 """
 
 import time
@@ -106,7 +113,7 @@ logger = logging.getLogger(__name__)
 
 
 class VehicleState(Enum):
-    """Enumeration of vehicle states."""
+    """Enumeration of vehicle states for RVG propulsion system."""
     DISARMED = 0
     ARMED = 1
     FLYING = 2
@@ -114,7 +121,7 @@ class VehicleState(Enum):
 
 
 class SecureCommunication:
-    """Secure communication layer with AES encryption."""
+    """Secure communication layer with AES encryption for RVG propulsion control."""
     
     def __init__(self, key: bytes):
         """
@@ -150,7 +157,7 @@ class SecureCommunication:
 
 
 class AbstractInterface(ABC):
-    """Abstract base class for extensible interfaces."""
+    """Abstract base class for extensible RVG propulsion interfaces."""
     
     @abstractmethod
     def connect(self):
@@ -172,7 +179,7 @@ class FlightControllerInterface(AbstractInterface):
                  baudrate: int = 115200, timeout: int = 30,
                  use_dronekit: bool = False, secure_key: Optional[bytes] = None):
         """
-        Initialize connection to flight controller.
+        Initialize connection to flight controller for RVG propulsion system.
         
         Parameters:
         connection_string (str): MAVLink connection string
@@ -224,13 +231,10 @@ class FlightControllerInterface(AbstractInterface):
     def send_command(self, command: str) -> Optional[str]:
         if self.secure:
             encrypted = self.secure.encrypt(command.encode())
-            # Send encrypted (placeholder: actual send via master/vehicle)
             logger.debug("Sent encrypted command")
-            # Receive and decrypt response (placeholder)
-            response = b'placeholder_response'  # Replace with actual recv
+            response = b'placeholder_response'
             return self.secure.decrypt(response).decode()
         else:
-            # Non-secure send (placeholder)
             return "OK"
 
     def send_rc_override(self, channels: List[int]):
@@ -238,7 +242,6 @@ class FlightControllerInterface(AbstractInterface):
             raise ValueError("Must provide exactly 8 channel values")
         
         if self.use_dronekit:
-            # DroneKit RC override (example)
             msg = self.vehicle.message_factory.rc_channels_override_encode(
                 self.vehicle.target_system, self.vehicle.target_component, *channels
             )
@@ -252,10 +255,9 @@ class FlightControllerInterface(AbstractInterface):
         logger.debug(f"RC override sent: {channels}")
 
     def arm_vehicle(self, force: bool = False):
-        logger.info("Arming vehicle...")
+        logger.info("Arming RVG propulsion vehicle...")
         if self.use_dronekit:
             self.vehicle.armed = True
-            # Wait for arming to complete
             timeout = 10
             start = time.time()
             while not self.vehicle.armed and time.time() - start < timeout:
@@ -272,15 +274,14 @@ class FlightControllerInterface(AbstractInterface):
         
         if ack:
             self.state = VehicleState.ARMED
-            logger.info("Vehicle armed")
+            logger.info("Vehicle armed - MADA systems ready")
             return True
         return False
 
     def disarm_vehicle(self, force: bool = False):
-        logger.info("Disarming vehicle...")
+        logger.info("Disarming RVG propulsion vehicle...")
         if self.use_dronekit:
             self.vehicle.armed = False
-            # Wait for disarming to complete
             timeout = 10
             start = time.time()
             while self.vehicle.armed and time.time() - start < timeout:
@@ -297,7 +298,7 @@ class FlightControllerInterface(AbstractInterface):
         
         if ack:
             self.state = VehicleState.DISARMED
-            logger.info("Vehicle disarmed")
+            logger.info("Vehicle disarmed - MADA systems offline")
             return True
         return False
 
@@ -333,7 +334,12 @@ class FlightControllerInterface(AbstractInterface):
 
 
 class MicrocontrollerPWMInterface(AbstractInterface):
-    """Interface for microcontroller PWM control (ESP32/Teensy) with security."""
+    """
+    Interface for microcontroller PWM control (ESP32/Teensy) with security.
+    
+    Used for controlling MADA coils to generate B_opposing fields for the
+    Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
+    """
     
     def __init__(self, port: str = '/dev/ttyUSB0', baudrate: int = 115200, 
                  timeout: float = 1.0, secure_key: Optional[bytes] = None):
@@ -342,7 +348,7 @@ class MicrocontrollerPWMInterface(AbstractInterface):
         self.timeout = timeout
         self.ser = None
         self.secure = SecureCommunication(secure_key) if secure_key else None
-        self.lock = threading.Lock()  # Thread-safety
+        self.lock = threading.Lock()
         self.connect()
 
     def connect(self):
@@ -381,6 +387,7 @@ class MicrocontrollerPWMInterface(AbstractInterface):
                 return None
 
     def set_pwm(self, pin: int, frequency: int, duty_cycle: int):
+        """Set PWM on specified pin for MADA coil control."""
         if not (0 <= duty_cycle <= 1023):
             raise ValueError("Invalid duty cycle (must be 0-1023)")
         command = f"PWM:{pin}:{frequency}:{duty_cycle}"
@@ -392,8 +399,21 @@ class MicrocontrollerPWMInterface(AbstractInterface):
 
     def pulse_mada(self, pin: int, frequency: int = 50, duration: float = 1.0, 
                    duty_cycle: float = 0.5, bursts: Optional[int] = None):
+        """
+        Pulse MADA coil for RVG propulsion.
+        
+        Generates pulsed B_opposing field for dilaton enhancement (Θ_dilaton).
+        Default 50 Hz for balance, scale to 100 Hz (agility) or 1 kHz (bursts).
+        
+        Parameters:
+        pin (int): GPIO pin number
+        frequency (int): Pulse frequency in Hz
+        duration (float): Duration in seconds
+        duty_cycle (float): Duty cycle 0-1
+        bursts (int, optional): Number of discrete bursts instead of continuous
+        """
         duty_value = int(duty_cycle * 1023)
-        logger.info(f"Starting MADA pulse on pin {pin}")
+        logger.info(f"Starting MADA pulse on pin {pin} for RVG propulsion")
         if bursts:
             period = 1.0 / frequency
             for _ in range(bursts):
@@ -408,19 +428,20 @@ class MicrocontrollerPWMInterface(AbstractInterface):
         logger.info("MADA pulsing complete")
 
     def emergency_stop(self):
+        """Emergency stop for MADA systems."""
         return self.send_command("STOP")
 
 
 class SensorActuatorDrivers:
-    """Drivers for sensors and actuators with data fusion."""
+    """Drivers for sensors and actuators with data fusion for RVG propulsion."""
     
     def __init__(self, i2c_bus=None, serial_port=None):
         self.imu = None
         self.gps = None
         self.gps_serial = None
-        self.ads_b = None  # Placeholder
-        self.teg = None  # Placeholder
-        self.data_fusion = {}  # Fused data store
+        self.ads_b = None
+        self.teg = None
+        self.data_fusion = {}
         self.lock = threading.Lock()
         
         if IMU_AVAILABLE and i2c_bus:
@@ -437,9 +458,6 @@ class SensorActuatorDrivers:
                 self.gps.send_command(b"PMTK220,1000")
             except Exception as e:
                 logger.error(f"Failed to initialize GPS: {e}")
-        
-        # ADS-B: Requires external lib/setup, e.g., dump1090
-        # TEG: Assume ADC read via serial/microcontroller
 
     def read_imu(self) -> Dict[str, Any]:
         if self.imu:
@@ -472,11 +490,9 @@ class SensorActuatorDrivers:
         return {}
 
     def read_ads_b(self):
-        # Placeholder for ADS-B data
         return {"aircraft_nearby": []}
 
     def read_teg(self):
-        # Placeholder for TEG power/thermal data
         return {"voltage": 0.0, "current": 0.0}
 
     def fuse_data(self):
@@ -487,8 +503,6 @@ class SensorActuatorDrivers:
                 **self.read_ads_b(),
                 **self.read_teg()
             }
-            # Add 6DOF stability logic (e.g., Kalman filter placeholder)
-            # IFF: Optical/radio-silent (placeholder: check against known friends)
         return self.data_fusion
     
     def close(self):
@@ -499,15 +513,15 @@ class SensorActuatorDrivers:
 
 if ROS2_AVAILABLE:
     class RealTimeControlNode(Node):
-        """ROS2 Node for real-time control with low-latency loops."""
+        """ROS2 Node for real-time RVG propulsion control with low-latency loops."""
         
-        def __init__(self, loop_period: float = 0.01, node_name: str = 'real_time_control_node'):
+        def __init__(self, loop_period: float = 0.01, node_name: str = 'rvg_control_node'):
             super().__init__(node_name)
             self.loop_period = loop_period
             self.timer = self.create_timer(loop_period, self.control_loop_callback)
 
         def control_loop_callback(self):
-            # Custom logic: Read sensors, apply control
+            # Custom logic: Read sensors, apply control for Master Equation thrust
             pass
 
         def shutdown(self):
@@ -515,7 +529,7 @@ if ROS2_AVAILABLE:
 
 
 class HILSILBridge:
-    """Hardware/Software-in-the-Loop bridge to simulations."""
+    """Hardware/Software-in-the-Loop bridge to RVG simulations."""
     
     def __init__(self, sim_path: str = '../simulations'):
         self.sim_path = sim_path
@@ -523,12 +537,11 @@ class HILSILBridge:
         self.navigation = None
 
     def link_thrust_model(self):
-        # Import and run thrust_model.py (dynamic import)
         import sys
         if self.sim_path not in sys.path:
             sys.path.append(self.sim_path)
         try:
-            import thrust_model  # Assume thrust_model.py exists
+            import thrust_model
             self.thrust_model = thrust_model
         except ImportError as e:
             logger.error(f"Failed to import thrust_model: {e}")
@@ -545,12 +558,11 @@ class HILSILBridge:
             logger.error(f"Failed to import navigation: {e}")
 
     def run_hil_simulation(self, params: Dict):
-        # Run simulation with hardware feedback (placeholder)
+        """Run HIL simulation with RVG Unified Field parameters."""
         if self.thrust_model:
             try:
-                result = self.thrust_model.main(params)  # Assume main function
-                logger.info(f"HIL thrust sim: {result}")
-                # Log for compliance
+                result = self.thrust_model.main(params)
+                logger.info(f"HIL RVG thrust sim: {result}")
                 with open("hil_log.txt", "a") as f:
                     f.write(json.dumps(params) + "\n")
             except Exception as e:
@@ -560,16 +572,15 @@ class HILSILBridge:
 
 
 class UserInterfaceHooks:
-    """Hooks for CLI/GUI/WebSocket control."""
+    """Hooks for CLI/GUI/WebSocket control of RVG propulsion system."""
     
     def __init__(self, use_gui: bool = False, ws_url: Optional[str] = None):
         self.gui = None
         self.ws = None
         if use_gui and TKINTER_AVAILABLE:
             self.gui = tk.Tk()
-            self.gui.title("QED Control Dashboard")
-            # Add widgets for metrics (placeholder)
-            tk.Label(self.gui, text="Propulsion Metrics").pack()
+            self.gui.title("RVG Unified Field Propulsion Dashboard")
+            tk.Label(self.gui, text="RVG Propulsion Metrics").pack()
         
         if ws_url and WEBSOCKET_AVAILABLE:
             try:
@@ -578,9 +589,7 @@ class UserInterfaceHooks:
                 logger.error(f"Failed to connect to WebSocket: {e}")
     
     def update_dashboard(self, metrics: Dict):
-        # Update GUI/WS with metrics
         if self.gui:
-            # Placeholder update
             pass
         if self.ws:
             try:
@@ -603,7 +612,7 @@ class UserInterfaceHooks:
 
 
 class ComplianceTools:
-    """Tools for compliance and auditing."""
+    """Tools for compliance and auditing of RVG propulsion systems."""
     
     @staticmethod
     def log_export_control(data: Dict):
@@ -616,18 +625,15 @@ class ComplianceTools:
 
     @staticmethod
     def vulnerability_scan():
-        # Placeholder: Integrate with tools like bandit or safety
         try:
             import bandit
-            # Run scan (example)
             logger.info("Vulnerability scan complete - no issues (placeholder)")
         except ImportError:
             logger.warning("Bandit not installed for scanning")
 
 
-# Ethernet/LTE hooks (placeholder: socket for remote control)
 class RemoteControl:
-    """Ethernet/LTE modem hooks for remote control."""
+    """Ethernet/LTE modem hooks for remote control of RVG propulsion."""
     
     def __init__(self, host: str = '0.0.0.0', port: int = 5000):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -635,7 +641,7 @@ class RemoteControl:
         self.sock.bind((host, port))
         self.sock.listen(1)
         self.running = False
-        logger.info(f"Listening for remote control on {host}:{port}")
+        logger.info(f"RVG remote control listening on {host}:{port}")
 
     def handle_connection(self):
         while self.running:
@@ -644,7 +650,6 @@ class RemoteControl:
                 conn, addr = self.sock.accept()
                 logger.info(f"Remote connection from {addr}")
                 data = conn.recv(1024)
-                # Process command (secure if needed)
                 conn.send(b"ACK")
                 conn.close()
             except socket.timeout:
@@ -661,16 +666,17 @@ class RemoteControl:
         self.sock.close()
 
 
-# Anti-jamming fallbacks (placeholder: switch protocols on failure)
 def anti_jamming_fallback():
+    """Anti-jamming fallbacks for RVG propulsion control."""
     logger.warning("Jamming detected - switching to fallback (placeholder)")
 
 
 def main():
-    """Example usage of enhanced hardware interfaces."""
+    """Example usage of RVG Unified Field hardware interfaces."""
     
     logger.info("=" * 60)
-    logger.info("QED Vacuum Thrust Control - Enhanced Hardware Interface Demo")
+    logger.info("RVG UNIFIED FIELD - Enhanced Hardware Interface Demo")
+    logger.info("Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV")
     logger.info("=" * 60)
     
     # Secure key example
@@ -696,7 +702,7 @@ def main():
             logger.error(f"MCU demo failed: {e}")
     
     # Sensors
-    sensors = SensorActuatorDrivers()  # Add i2c/serial as needed
+    sensors = SensorActuatorDrivers()
     fused = sensors.fuse_data()
     logger.info(f"Fused data: {fused}")
     sensors.close()
@@ -707,9 +713,8 @@ def main():
     hil.run_hil_simulation({"b_opposing": 50})
     
     # UI
-    ui = UserInterfaceHooks(use_gui=False)  # Set to False to avoid blocking
+    ui = UserInterfaceHooks(use_gui=False)
     ui.update_dashboard({"thrust": 100})
-    # ui.run_gui()  # Uncomment to run GUI
     ui.close()
     
     # Compliance
@@ -719,11 +724,11 @@ def main():
     # Remote
     remote = RemoteControl()
     remote.start()
-    time.sleep(2)  # Let it run briefly
+    time.sleep(2)
     remote.stop()
     
     logger.info("\n" + "=" * 60)
-    logger.info("Enhanced hardware interface demo complete")
+    logger.info("RVG Unified Field hardware interface demo complete")
     logger.info("=" * 60)
 
 

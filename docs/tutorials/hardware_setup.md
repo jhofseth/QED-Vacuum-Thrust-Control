@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This guide helps you transition from software simulations (e.g., simulations/thrust_model.py and ai/navigation.py) to physical hardware prototypes for the QED Vacuum Thrust Control system. It covers assembling a basic spherical drone, integrating sensors (IMU, GPS, altimeter, magnetometer, **Hall sensors for MADA convergence**), and prototyping magnetic circuits for low-power testing (scalable to B_opposing >20 T).
+This guide helps you transition from software simulations (e.g., simulations/thrust_model.py and ai/navigation.py) to physical hardware prototypes for the RVG (Refractive Vacuum Gravity) Unified Field propulsion system. It covers assembling a basic spherical drone, integrating sensors (IMU, GPS, altimeter, magnetometer, **Hall sensors for MADA convergence**), and prototyping magnetic circuits for low-power testing (scalable to B_opposing >20 T, with some applications requiring >60-90+ T).
 
-**CRITICAL**: This guide includes mandatory MADA convergence validation steps to ensure magnetic fields are properly opposing. Skipping these steps will result in zero thrust and wasted testing effort.
+**CRITICAL**: This guide includes mandatory MADA convergence validation steps to ensure magnetic fields are properly opposing. Skipping these steps will result in zero thrust via the Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
 
-Focus: Start with low-power neodymium magnets for safety, then scale to electromagnets. Emphasize sensor fusion for real-time navigation and **MADA field monitoring**.
+Focus: Start with low-power neodymium magnets for safety, then scale to electromagnets. Emphasize sensor fusion for real-time navigation and **MADA field monitoring for optimal Θ_dilaton enhancement**.
 
-**Safety Warning**: High magnetic fields and currents can be dangerous. Use protective gear, current limits, and test in isolated areas. Monitor for thermal overloads (>100°C shutdown) and **magnetic field misalignment (convergence quality < 0.8)**.
+**Safety Warning**: High magnetic fields and currents can be dangerous. Use protective gear, current limits, and test in isolated areas. Monitor for thermal overloads (>100°C shutdown) and **magnetic field misalignment (convergence quality < 0.8 means no effective Θ_dilaton)**.
 
 ---
 

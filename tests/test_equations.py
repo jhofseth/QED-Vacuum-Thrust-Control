@@ -1,3 +1,19 @@
+"""
+tests/test_equations.py
+
+Pytest-based unit tests for core physics equations in simulations/equations.py.
+
+Tests the RVG (Refractive Vacuum Gravity) Unified Field framework equations including:
+- Magnetic field calculations (surface_field, opposing_field, pulsed_enhancement)
+- Vacuum polarization parameters (dilaton_enhancement, vacuum_refractive_index)
+- Master Equation of Levitation components (force_vector, total_thrust, acceleration)
+- Power and efficiency calculations
+
+Based on: "Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, the 95 GeV Resonance,
+and the Metric Engineering of Static Levitation" (Hofseth, 2025)
+Paper: https://dx.doi.org/10.2139/ssrn.5381654
+"""
+
 import pytest
 import numpy as np
 import scipy.constants as const
@@ -29,17 +45,17 @@ MU_0 = const.mu_0
 
 @pytest.fixture
 def sample_metric():
-    """Sample 4x4 matrices for testing."""
+    """Sample 4x4 matrices for testing Gordon Optical Metric calculations."""
     h_mu_nu = np.eye(4)  # Identity for simplicity
     h_mu_nu_inv = np.eye(4)
     return h_mu_nu, h_mu_nu_inv
 
 
 class TestMagneticFields:
-    """Test magnetic field calculations."""
+    """Test magnetic field calculations for RVG Unified Field propulsion."""
     
     def test_surface_field(self):
-        """Test surface magnetic field calculation."""
+        """Test surface magnetic field calculation for MADA units."""
         B_r, L, R, d = 1.4, 0.3, 0.15, 0.05
         expected = (B_r / 2) * (
             L / np.sqrt(R**2 + L**2) + 
@@ -55,21 +71,21 @@ class TestMagneticFields:
         assert result > 0, "Surface field should be positive"
     
     def test_opposing_field(self):
-        """Test opposing magnetic field calculation."""
+        """Test opposing magnetic field calculation for supra-saturation zone."""
         m1, m2, d, k = 100.0, 100.0, 0.05, 1.0
         expected = (MU_0 * m1 * m2 / (2 * np.pi * d**2)) * k
         result = opposing_field(m1, m2, d, k)
         assert np.isclose(result, expected), f"Expected {expected}, got {result}"
     
     def test_opposing_field_with_scaling(self):
-        """Test opposing field with different scaling factors."""
+        """Test opposing field with MADA amplification factors (k=200-529)."""
         m1, m2, d = 100.0, 100.0, 0.05
         result_k1 = opposing_field(m1, m2, d, k=1.0)
         result_k2 = opposing_field(m1, m2, d, k=2.0)
         assert np.isclose(result_k2, 2 * result_k1), "Scaling should be linear"
     
     def test_pulsed_enhancement(self):
-        """Test pulsed magnetic field enhancement."""
+        """Test pulsed magnetic field enhancement for dynamic Θ_dilaton modulation."""
         n, I = 100, 15.0
         expected = MU_0 * n * I
         result = pulsed_enhancement(n, I)
@@ -83,10 +99,10 @@ class TestMagneticFields:
 
 
 class TestQuantumParameters:
-    """Test quantum and RG calculations."""
+    """Test RVG quantum and vacuum polarization calculations."""
     
     def test_lagrangian_disrupt(self, sample_metric):
-        """Test disruption Lagrangian calculation."""
+        """Test disruption Lagrangian calculation for disformal QED coupling."""
         chi, B = 1e-10, 50.0
         h_mu_nu, h_mu_nu_inv = sample_metric
         contraction = np.einsum('ij,ij->', h_mu_nu, h_mu_nu_inv)  # 4 for identity
@@ -95,7 +111,7 @@ class TestQuantumParameters:
         assert np.isclose(result, expected), f"Expected {expected}, got {result}"
     
     def test_lagrangian_disrupt_scaled_metric(self):
-        """Test Lagrangian with scaled metric."""
+        """Test Lagrangian with scaled Gordon Optical Metric."""
         chi, B = 1e-10, 50.0
         h_mu_nu = np.eye(4) * 2.0
         h_mu_nu_inv = np.eye(4) * 0.5
@@ -103,7 +119,7 @@ class TestQuantumParameters:
         assert result < 0, "Lagrangian should be negative"
     
     def test_rg_beta_chi(self):
-        """Test RG beta function for chi."""
+        """Test RG beta function for chi (dilaton enhancement factor precursor)."""
         chi, g, lambda_val = 1e-10, 1.0, 0.1
         expected = -4 * chi + (g / (2 * np.pi)) * (chi / (1 - 2 * lambda_val))
         result = rg_beta_chi(chi, g, lambda_val)
@@ -122,7 +138,7 @@ class TestQuantumParameters:
         assert np.isfinite(result), "Result should be finite for valid lambda"
     
     def test_source_term(self, sample_metric):
-        """Test source term calculation."""
+        """Test source term calculation for trace anomaly coupling."""
         chi, B = 1e-10, 50.0
         h_mu_nu, _ = sample_metric
         expected = chi * B**2 * h_mu_nu
@@ -130,7 +146,7 @@ class TestQuantumParameters:
         np.testing.assert_allclose(result, expected)
     
     def test_source_term_shape(self, sample_metric):
-        """Test that source term maintains correct shape."""
+        """Test that source term maintains correct shape for 4D metric."""
         chi, B = 1e-10, 50.0
         h_mu_nu, _ = sample_metric
         result = source_term(chi, B, h_mu_nu)
@@ -138,10 +154,10 @@ class TestQuantumParameters:
 
 
 class TestForceAndThrust:
-    """Test force and thrust calculations."""
+    """Test Master Equation of Levitation force and thrust calculations."""
     
     def test_force_vector(self):
-        """Test force vector calculation."""
+        """Test force vector calculation from ∇B² gradient."""
         chi, B = 1e-10, 50.0
         grad_h2 = np.array([1.0, 0.0, 0.0])
         A, rho = 1.0, 1000.0
@@ -150,7 +166,7 @@ class TestForceAndThrust:
         np.testing.assert_allclose(result, expected)
     
     def test_force_vector_3d(self):
-        """Test force vector in 3D."""
+        """Test force vector in 3D for Master Equation thrust."""
         chi, B = 1e-10, 50.0
         grad_h2 = np.array([1.0, 2.0, 3.0])
         A, rho = 1.0, 1000.0
@@ -159,7 +175,7 @@ class TestForceAndThrust:
         assert np.all(result != 0), "Force components should be non-zero"
     
     def test_force_vector_list_input(self):
-        """Test force vector with list input for gradient."""
+        """Test force vector with list input for ∇B² gradient."""
         chi, B = 1e-10, 50.0
         grad_h2 = [1.0, 0.0, 0.0]  # List instead of array
         A, rho = 1.0, 1000.0
@@ -167,14 +183,14 @@ class TestForceAndThrust:
         assert isinstance(result, np.ndarray), "Result should be numpy array"
     
     def test_total_thrust(self):
-        """Test total thrust calculation."""
+        """Test total thrust calculation with MADA unit summation."""
         N, F, eta, theta = 24, 1000.0, 0.95, 0.0
         expected = N * F * eta * np.cos(np.deg2rad(theta))
         result = total_thrust(N, F, eta, theta)
         assert np.isclose(result, expected), f"Expected {expected}, got {result}"
     
     def test_total_thrust_angle(self):
-        """Test total thrust with different angles."""
+        """Test total thrust with different vectoring angles."""
         N, F, eta = 24, 1000.0, 0.95
         result_0 = total_thrust(N, F, eta, 0.0)
         result_90 = total_thrust(N, F, eta, 90.0)
@@ -182,7 +198,7 @@ class TestForceAndThrust:
         assert np.isclose(result_90, 0.0, atol=1e-10), "Thrust at 90° should be ~0"
     
     def test_total_thrust_vector_force(self):
-        """Test total thrust with vector force input."""
+        """Test total thrust with vector force input from Master Equation."""
         N, eta, theta = 24, 0.95, 0.0
         F_vec = np.array([1000.0, 0.0, 0.0])
         result = total_thrust(N, F_vec, eta, theta)
@@ -190,7 +206,7 @@ class TestForceAndThrust:
         assert np.isclose(result, expected), "Should handle vector force"
     
     def test_acceleration(self):
-        """Test acceleration calculation."""
+        """Test acceleration calculation for RVG propulsion system."""
         T, m = 1000.0, 20000.0
         expected = T / m
         result = acceleration(T, m)
@@ -210,10 +226,10 @@ class TestForceAndThrust:
 
 
 class TestPowerAndEfficiency:
-    """Test power and efficiency calculations."""
+    """Test power and efficiency calculations for RVG propulsion."""
     
     def test_power_consumption(self):
-        """Test power consumption calculation."""
+        """Test power consumption with eddy current losses."""
         I, R, P_eddy = 15.0, 5.0, 100.0
         expected = I**2 * R + P_eddy
         result = power_consumption(I, R, P_eddy)
@@ -227,7 +243,7 @@ class TestPowerAndEfficiency:
         assert np.isclose(result, expected), "Power should be I²R only"
     
     def test_efficiency(self):
-        """Test efficiency calculation."""
+        """Test efficiency calculation (η = T·v/P × 100%)."""
         T, v, P = 1000.0, 1000.0, 5000.0
         expected = (T * v / P) * 100
         result = efficiency(T, v, P)
@@ -240,13 +256,13 @@ class TestPowerAndEfficiency:
             efficiency(T, v, P)
     
     def test_efficiency_high_performance(self):
-        """Test efficiency can exceed 100% in ideal cases."""
+        """Test efficiency can exceed 100% in ideal RVG conditions."""
         T, v, P = 1000.0, 1000.0, 500.0  # Very efficient
         result = efficiency(T, v, P)
         assert result > 100, "Efficiency can theoretically exceed 100%"
     
     def test_range_calc(self):
-        """Test range calculation."""
+        """Test range calculation for RVG propulsion."""
         v, E, P = 1000.0, 1.8e9, 5000.0  # Example: 500 kWh = 1.8e9 J
         expected = v * (E / P)
         result = range_calc(v, E, P)
@@ -259,7 +275,7 @@ class TestPowerAndEfficiency:
             range_calc(v, E, P)
     
     def test_range_calc_units(self):
-        """Test range calculation with realistic units."""
+        """Test range calculation with realistic RVG propulsion units."""
         v = 1000.0  # m/s
         E = 500000.0 * 3600  # 500 kWh in Joules
         P = 5000.0  # 5 kW
@@ -269,7 +285,7 @@ class TestPowerAndEfficiency:
 
 
 class TestSymbolic:
-    """Test symbolic calculations."""
+    """Test symbolic calculations for RVG analytical derivations."""
     
     def test_symbolic_surface_field(self):
         """Test symbolic surface field expression."""
@@ -297,18 +313,18 @@ class TestSymbolic:
 
 
 class TestIntegration:
-    """Integration tests combining multiple functions."""
+    """Integration tests combining multiple RVG equations."""
     
     def test_full_thrust_pipeline(self):
-        """Test complete thrust calculation pipeline."""
+        """Test complete Master Equation thrust calculation pipeline."""
         # Parameters
         chi, B = 1e-10, 50.0
-        grad_h2 = np.array([1.0, 0.0, 0.0])
+        grad_h2 = np.array([1.0, 0.0, 0.0])  # ∇B² gradient
         A, rho = 1.0, 1000.0
-        N, eta, theta = 24, 0.95, 0.0
+        N, eta, theta = 24, 0.95, 0.0  # MADA units
         mass = 20000.0
         
-        # Calculate
+        # Calculate via Master Equation components
         F_vec = force_vector(chi, B, grad_h2, A, rho)
         F_mag = np.linalg.norm(F_vec)
         T = total_thrust(N, F_mag, eta, theta)

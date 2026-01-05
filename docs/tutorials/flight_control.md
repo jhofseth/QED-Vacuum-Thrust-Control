@@ -2,21 +2,23 @@
 
 ## Introduction
 
-This comprehensive tutorial guides you through implementing real-time flight control systems for QED Vacuum Propulsion drones. Topics covered:
+This comprehensive tutorial guides you through implementing real-time flight control systems for RVG (Refractive Vacuum Gravity) Unified Field Propulsion drones. Topics covered:
 
 - **Real-time control loops**: Low-latency (1-10 ms) response systems
 - **PID controllers**: Basic stabilization for 6DOF
 - **Model Predictive Control (MPC)**: Advanced trajectory optimization
 - **Safety features**: Fail-safes, thermal management, redundancy
 - **Sensor fusion**: Kalman filtering for state estimation
+- **MADA convergence monitoring**: Essential for Master Equation thrust via Θ_dilaton
 
-**Integration**: This tutorial connects `ai/navigation.py` (control algorithms), `hardware/interfaces.py` (hardware I/O), and `simulations/thrust_model.py` (physics validation).
+**Integration**: This tutorial connects `ai/navigation.py` (control algorithms), `hardware/interfaces.py` (hardware I/O), and `simulations/thrust_model.py` (RVG physics validation).
 
 **Prerequisites**:
 - Assembled prototype with integrated sensors (see Hardware Setup Guide)
 - Python 3.12+ environment
 - ROS2 Humble or later (optional but recommended)
 - Basic control theory knowledge
+- Understanding of the Master Equation of Levitation: F = ∫(Θ_dilaton(B)·∇B²)dV
 
 ---
 

@@ -335,18 +335,25 @@ Then install Python 3.12 via
 
 The Python documentation linked (the development version at [https://docs.python.org/dev/using/windows.html#customizing-default-python-versions](https://docs.python.org/dev/using/windows.html#customizing-default-python-versions) describes the INI file (py.ini) as part of deprecated legacy support for the old Python launcher behavior.
 In newer Python installations using the Python Install Manager (pymanager), py.ini is no longer supported and will be ignored. Configuration now primarily uses pymanager.json (located at %AppData%\Python\pymanager.json, which expands to C:\Users\<your_username>\AppData\Roaming\Python\pymanager.json).
+
 Legacy INI File Locations
+
 For the deprecated launcher (still referenced for equivalence with PY_PYTHON), the launcher searches for py.ini in these locations (in order of precedence):
 
 User's application data directory: %LOCALAPPDATA%\py.ini
+
 (Typically expands to C:\Users\<your_username>\AppData\Local\py.ini)
+
 The directory containing the launcher executable (often C:\Windows\py.ini for system-wide installs)
 
 The user-specific file in %LOCALAPPDATA% takes precedence if both exist.
+
 Recommended Approach
+
 Since this is legacy and ignored in the new manager, use the modern methods instead:
 
 Environment variable PYTHON_MANAGER_DEFAULT.
+
 Or the pymanager.json file.
 
 

@@ -325,6 +325,24 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 Install Python 3.12.10, which is available at [https://www.python.org/downloads/release/python-31210/](https://www.python.org/downloads/release/python-31210/).
 
+If using Windows 11 and a newer version of Python is installed it will default to using that, so--after installing 3.12--temporarily remove the two aliases for 3.14 or whatever versions are higher than 3.12 (i.e., they are identical to the 3.12 entries except for containing 3.14, etc., so it is easy to copy and edit the 3.12 entries to revert later)
+
+Press the Windows Key.
+
+Type env.
+
+Press Enter (then select "Edit the system environment variables").
+
+Select the user varibles "Path" and select edit.
+
+You should see these
+C:\Users\jesse\AppData\Local\Programs\Python\Python312\Scripts\
+C:\Users\jesse\AppData\Local\Programs\Python\Python312\
+C:\Users\jesse\AppData\Local\Programs\Python\Python314\Scripts\
+C:\Users\jesse\AppData\Local\Programs\Python\Python314\
+
+Delete the two or more entries containing numbers higher than 3.12; it is easy to copy and edit the 3.12 entries to revert later. 
+
 1. Clone the repo
    ```sh
    git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
@@ -339,13 +357,8 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    ```sh
    py -3.12 -m venv venv  # Creates a new venv using Python 3.12
    ```
-   If you have a newer version of Python installed (e.g., 3.14 or higher), then your system will be defaulting to the higher version in Windows 11, and one troubleshooting step is to use the full path
-   ```sh
-   & "C:\Users\replace-this-with-your-username\AppData\Local\Programs\Python\Python312\python.exe" -m venv venv
-   ```
    
-
-5. Activate the virtual environment
+4. Activate the virtual environment
    ```sh
    .\venv\Scripts\activate  # Activates it
    ```
@@ -354,12 +367,12 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    .\venv\Scripts\activate.bat  # Activates it
 
 
-6. Upgrade pip and build tools
+5. Upgrade pip and build tools
    ```sh
    pip install --upgrade pip setuptools wheel
    ```
-
-7. Install the project dependencies
+   
+6. Install the project dependencies
    ```sh
    pip install -r requirements.txt
    ```

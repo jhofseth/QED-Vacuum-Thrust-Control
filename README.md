@@ -431,8 +431,6 @@ Also check:
    py --version  # Should now show your new default (likely 3.12)
    ```
 
-### ALTERNATIVELY
-
 
 **INSTALLATION**
 1. Clone the repo

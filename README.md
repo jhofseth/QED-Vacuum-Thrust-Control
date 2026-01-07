@@ -333,10 +333,10 @@ If using Windows 11, uninstall other versions of python if not already using Pyt
 
 Then install Python 3.12 via:
 
-```sh
-py install 3.12
+   ```sh
+   py install 3.12
 
-```
+   ```
 
 The Python documentation linked (the development version at [https://docs.python.org/dev/using/windows.html#customizing-default-python-versions](https://docs.python.org/dev/using/windows.html#customizing-default-python-versions)) describes the INI file (`py.ini`) as part of deprecated legacy support for the old Python launcher behavior.
 
@@ -371,52 +371,47 @@ The Python Install Manager (managed via the `py` launcher) allows easy removal o
 
 Open PowerShell and run:
 
-```sh
-py list
-
-```
+   ```sh
+   py list
+   ```
 
 This shows all installed Pythons, including tags (e.g., `3.14`, `3.14-64`, or similar).
 Note the exact tag for 3.14 (from your earlier `py -0p`, it's likely `3.14` or `3.14-64`).
 
 Alternative detailed view:
 
-```sh
-py -0p
-
-```
+   ```sh
+   py -0p
+   ```
 
 #### Step 2: Uninstall Python 3.14 (or whatever higher versions if not using the other strategies)
 
 Run this command (replace `<tag>` with the exact tag from Step 1, e.g., `3.14`):
 
-```sh
-py uninstall <tag>
-
-```
+   ```sh
+   py uninstall <tag>
+   ```
 
 Examples:
 
-```sh
-py uninstall 3.14
-
-```
+   ```sh
+   py uninstall 3.14
+   ```
 
 or
 
-```sh
-py uninstall 3.14-64
+   ```sh
+   py uninstall 3.14-64
 
-```
+   ```
 
 It will prompt for confirmation (Y/N). Type **Y** to proceed.
 
 To skip the prompt:
 
-```sh
-py uninstall --yes 3.14 # (or -y instead of --yes).
-
-```
+   ```sh
+   py uninstall --yes 3.14 # (or -y instead of --yes).
+   ```
 
 This removes only Python 3.14 and its associated files (from the shared runtime directory).
 
@@ -424,19 +419,18 @@ This removes only Python 3.14 and its associated files (from the shared runtime 
 
 Run:
 
-```sh
-py list
-
-```
+   ```sh
+   py list
+   ```
 
 Python 3.14 (or whatever higher version) should no longer appear.
 Your default will automatically switch to the remaining highest version (e.g., 3.12).
 
 Also check:
 
-```sh
-py --version  # Should now show your new default (likely 3.12)
-
+   ```sh
+   py --version  # Should now show your new default (likely 3.12)
+   ```sh
 
 ### ALTERNATIVELY
 

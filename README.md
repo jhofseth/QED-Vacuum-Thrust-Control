@@ -336,6 +336,7 @@ Press Enter (then select "Edit the system environment variables").
 Select the user varibles "Path" and select edit.
 
 You should see these
+
 C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\Scripts\
 C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\
 C:\Users\your-username-here\AppData\Local\Programs\Python\Python314\Scripts\

@@ -366,33 +366,58 @@ Step 1: List Installed Versions (Recommended – Verify Tags)
 
 Open PowerShell and run:
 
-PowerShellpy list
+PowerShell
+
+   ```sh
+   py list
+   ```
 
 This shows all installed Pythons, including tags (e.g., 3.14, 3.14-64, or similar).
 Note the exact tag for 3.14 (from your earlier py -0p, it's likely 3.14 or 3.14-64).
 
 Alternative detailed view:
 
-PowerShellpy -0p
+PowerShell
+
+   ```sh
+   py -0p
+   ```
 
 Step 2: Uninstall Python 3.14 (or whatever higher versions if not using the other strategies)
 
 Run this command (replace <tag> with the exact tag from Step 1, e.g., 3.14):
 
-PowerShellpy uninstall <tag>
+PowerShell
+
+   ```sh
+   py uninstall <tag>
+   ```
 
 Examples:
 
-PowerShellpy uninstall 3.14
+PowerShell
+
+   ```sh
+   py uninstall 3.14
+   ```
 
 or
 
 PowerShell
-py uninstall 3.14-64
+
+   ```sh
+   py uninstall 3.14-64
+   ```
 
 It will prompt for confirmation (Y/N). Type Y to proceed.
 
-To skip the prompt:PowerShellpy uninstall --yes 3.14(or -y instead of --yes).
+To skip the prompt:
+
+PowerShell
+
+   ```sh
+   py uninstall --yes 3.14(or -y instead of --yes).
+   ```
 
 This removes only Python 3.14 and its associated files (from the shared runtime directory).
 
@@ -400,7 +425,11 @@ Step 3: Verify Removal
 
 Run:
 
-PowerShellpy list
+PowerShell
+
+   ```sh
+   py list
+   ```
 
 Python 3.14 (or whatever higher version) should no longer appear.
 

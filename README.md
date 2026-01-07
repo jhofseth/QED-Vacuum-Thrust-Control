@@ -418,7 +418,7 @@ To skip the prompt:
 PowerShell
 
    ```sh
-   py uninstall --yes 3.14(or -y instead of --yes).
+   py uninstall --yes 3.14 # (or -y instead of --yes).
    ```
 
 This removes only Python 3.14 and its associated files (from the shared runtime directory).

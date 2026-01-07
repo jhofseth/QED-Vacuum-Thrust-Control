@@ -323,26 +323,33 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 ### Installation
 
-Install Python 3.12.10, which is available at [https://www.python.org/downloads/release/python-31210/](https://www.python.org/downloads/release/python-31210/).
+Uninstall other versions of python if not already using Python Manager
 
-If using Windows 11 and a newer version of Python is installed it will default to using that, so--after installing 3.12--temporarily remove the two aliases for 3.14 or whatever versions are higher than 3.12 (i.e., they are identical to the 3.12 entries except for containing 3.14, etc., so it is easy to copy and edit the 3.12 entries to revert later)
+Install Python Manager [https://www.python.org/downloads/](https://www.python.org/downloads/) 
 
-Press the Windows Key.
+Then install Python 3.12 via
 
-Type env.
+   ```sh
+   py install 3.12
+   ```
 
-Press Enter (then select "Edit the system environment variables").
+The Python documentation linked (the development version at [https://docs.python.org/dev/using/windows.html#customizing-default-python-versions](https://docs.python.org/dev/using/windows.html#customizing-default-python-versions) describes the INI file (py.ini) as part of deprecated legacy support for the old Python launcher behavior.
+In newer Python installations using the Python Install Manager (pymanager), py.ini is no longer supported and will be ignored. Configuration now primarily uses pymanager.json (located at %AppData%\Python\pymanager.json, which expands to C:\Users\<your_username>\AppData\Roaming\Python\pymanager.json).
+Legacy INI File Locations
+For the deprecated launcher (still referenced for equivalence with PY_PYTHON), the launcher searches for py.ini in these locations (in order of precedence):
 
-Select the user variables "Path" and select edit.
+User's application data directory: %LOCALAPPDATA%\py.ini
+(Typically expands to C:\Users\<your_username>\AppData\Local\py.ini)
+The directory containing the launcher executable (often C:\Windows\py.ini for system-wide installs)
 
-You should see these:
+The user-specific file in %LOCALAPPDATA% takes precedence if both exist.
+Recommended Approach
+Since this is legacy and ignored in the new manager, use the modern methods instead:
 
-C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\Scripts\
-C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\
-C:\Users\your-username-here\AppData\Local\Programs\Python\Python314\Scripts\
-C:\Users\your-username-here\AppData\Local\Programs\Python\Python314\
+Environment variable PYTHON_MANAGER_DEFAULT.
+Or the pymanager.json file.
 
-Delete the two or more entries containing numbers higher than 3.12; it is easy to copy and edit the 3.12 entries to revert later. 
+
 
 1. Clone the repo
    ```sh

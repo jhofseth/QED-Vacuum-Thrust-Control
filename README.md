@@ -430,7 +430,7 @@ Also check:
 
    ```sh
    py --version  # Should now show your new default (likely 3.12)
-   ```sh
+   ```
 
 ### ALTERNATIVELY
 

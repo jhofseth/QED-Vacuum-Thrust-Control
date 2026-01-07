@@ -344,6 +344,10 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    ```sh
    .\venv\Scripts\activate  # Activates it
    ```
+   or in Windows 11 Terminal
+   ```sh
+   .\venv\Scripts\activate.bat  # Activates it
+   ```
 
 5. Upgrade pip and build tools
    ```sh

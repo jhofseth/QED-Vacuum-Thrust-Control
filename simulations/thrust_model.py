@@ -160,7 +160,7 @@ E_CHARGE = 1.602176634e-19       # Elementary charge (C)
 ALPHA = 1/137.035999084          # Fine structure constant
 
 # Derived QED constants
-B_SCHWINGER = (M_E**2 * C**3) / (E_CHARGE * HBAR)  # Schwinger critical field ~4.414×10^9 T
+B_SCHWINGER = (M_E**2 * C**2) / (E_CHARGE * HBAR)  # Schwinger critical field ~4.414×10^9 T
 SPEED_OF_SOUND = 343.0           # Speed of sound in air (m/s)
 EPSILON = 1e-10                  # Numerical stability threshold
 

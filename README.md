@@ -333,7 +333,7 @@ Type env.
 
 Press Enter (then select "Edit the system environment variables").
 
-Select the user varibles "Path" and select edit.
+Select the user variables "Path" and select edit.
 
 You should see these:
 

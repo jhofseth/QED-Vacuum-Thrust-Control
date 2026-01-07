@@ -323,7 +323,7 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 ### Installation
 
-If using Windows 11, uninstall other versions of python if not already using Python Manager, then change the default version as below to 3.12.  I was using legacy installers and it refused to respect explicit commands to use 3.12 when creating a virtual environment, and using pip, etc., thereafter.  I even removed path entries for higher versions of python and this solved using the correct version of python, but pip was still using the higher version.  It is probably possible to do that plus edit the legacy INI, but I did it this way:  
+If using Windows 11, uninstall other versions of python if not already using Python Manager, then change the default version as below to 3.12.  I was using legacy installers and it refused to respect explicit commands to use 3.12 when creating a virtual environment, and using pip, etc., thereafter.  I even removed path entries for higher versions of python (via Windows key --> type env and hit enter --> select environmental variables and select edit) and this solved using the correct version of python, but *pip was still using the higher version*.  It is probably possible to do that plus edit the legacy INI, but I did it this way:  
 
 **Install Python Manager** [https://www.python.org/downloads/](https://www.python.org/downloads/) 
 
@@ -368,7 +368,7 @@ Step 1: List Installed Versions (Recommended – Verify Tags)
 
 Open PowerShell and run:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py list
@@ -379,7 +379,7 @@ Note the exact tag for 3.14 (from your earlier py -0p, it's likely 3.14 or 3.14-
 
 Alternative detailed view:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py -0p
@@ -389,7 +389,7 @@ Step 2: Uninstall Python 3.14 (or whatever higher versions if not using the othe
 
 Run this command (replace <tag> with the exact tag from Step 1, e.g., 3.14):
 
-PowerShell
+*PowerShell*
 
    ```sh
    py uninstall <tag>
@@ -397,7 +397,7 @@ PowerShell
 
 Examples:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py uninstall 3.14
@@ -405,7 +405,7 @@ PowerShell
 
 or
 
-PowerShell
+*PowerShell*
 
    ```sh
    py uninstall 3.14-64
@@ -415,7 +415,7 @@ It will prompt for confirmation (Y/N). Type Y to proceed.
 
 To skip the prompt:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py uninstall --yes 3.14 # (or -y instead of --yes).
@@ -427,7 +427,7 @@ Step 3: Verify Removal
 
 Run:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py list
@@ -439,7 +439,7 @@ Your default will automatically switch to the remaining highest version (e.g., 3
 
 Also check:
 
-PowerShell
+*PowerShell*
 
    ```sh
    py --version  # Should now show your new default (likely 3.12)

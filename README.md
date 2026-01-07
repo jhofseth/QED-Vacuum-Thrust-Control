@@ -336,10 +336,10 @@ Press Enter (then select "Edit the system environment variables").
 Select the user varibles "Path" and select edit.
 
 You should see these
-C:\Users\jesse\AppData\Local\Programs\Python\Python312\Scripts\
-C:\Users\jesse\AppData\Local\Programs\Python\Python312\
-C:\Users\jesse\AppData\Local\Programs\Python\Python314\Scripts\
-C:\Users\jesse\AppData\Local\Programs\Python\Python314\
+C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\Scripts\
+C:\Users\your-username-here\AppData\Local\Programs\Python\Python312\
+C:\Users\your-username-here\AppData\Local\Programs\Python\Python314\Scripts\
+C:\Users\your-username-here\AppData\Local\Programs\Python\Python314\
 
 Delete the two or more entries containing numbers higher than 3.12; it is easy to copy and edit the 3.12 entries to revert later. 
 

@@ -101,7 +101,7 @@ ALPHA = const.alpha  # Fine structure constant (~1/137)
 
 # Schwinger critical field (QED vacuum breakdown threshold)
 # B_crit = m_e^2 * c^2 / (e * hbar) ≈ 4.414 × 10^9 T
-B_CRIT_SCHWINGER = (M_E**2 * C**3) / (E_CHARGE * HBAR)
+B_CRIT_SCHWINGER = (M_E**2 * C**2) / (E_CHARGE * HBAR)
 
 # 95 GeV Dilaton/Radion resonance parameters
 # Based on CMS/ATLAS di-photon excess with 3.1σ combined significance

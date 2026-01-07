@@ -323,7 +323,7 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 ### Installation
 
-Uninstall other versions of python if not already using Python Manager
+If using Windows 11, ninstall other versions of python if not already using Python Manager
 
 Install Python Manager [https://www.python.org/downloads/](https://www.python.org/downloads/) 
 
@@ -355,7 +355,6 @@ Since this is legacy and ignored in the new manager, use the modern methods inst
 Environment variable PYTHON_MANAGER_DEFAULT.
 
 Or the pymanager.json file.
-
 
 
 1. Clone the repo

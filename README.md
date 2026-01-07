@@ -460,7 +460,7 @@ Also check:
 
 5. Upgrade pip and build tools
    ```sh
-   pip install --upgrade pip setuptools wheel
+   py -m pip install --upgrade pip setuptools wheel
    ```
    
 6. Install the project dependencies

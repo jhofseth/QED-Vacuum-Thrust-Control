@@ -321,7 +321,7 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 - Python 3.12+
 - pip
 
-### Installation
+### Prior to Installation if Running Windows (e.g., Windows 11)
 
 If using Windows 11, uninstall other versions of python if not already using Python Manager, then change the default version as below to 3.12. 
 
@@ -432,7 +432,8 @@ Also check:
    ```
 
 
-<mark><b>INSTALLATION</b></mark>
+### Installation
+
 1. Clone the repo
    ```sh
    git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git

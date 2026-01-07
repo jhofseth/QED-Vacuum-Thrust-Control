@@ -432,7 +432,7 @@ Also check:
    ```
 
 
-**INSTALLATION**
+<mark>INSTALLATION</mark>
 1. Clone the repo
    ```sh
    git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git

@@ -325,7 +325,7 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 If using Windows 11, uninstall other versions of python if not already using Python Manager, then change the default version as below to 3.12.  I was using legacy installers and it refused to respect explicit commands to use 3.12 when creating a virtual environment, and using pip, etc., thereafter.  I even removed path entries for higher versions of python and this solved using the correct version of python, but pip was still using the higher version.  It is probably possible to do that plus edit the legacy INI, but I did it this way:  
 
-Install Python Manager [https://www.python.org/downloads/](https://www.python.org/downloads/) 
+**Install Python Manager** [https://www.python.org/downloads/](https://www.python.org/downloads/) 
 
 Then install Python 3.12 via
 
@@ -336,7 +336,7 @@ Then install Python 3.12 via
 The Python documentation linked (the development version at [https://docs.python.org/dev/using/windows.html#customizing-default-python-versions](https://docs.python.org/dev/using/windows.html#customizing-default-python-versions) describes the INI file (py.ini) as part of deprecated legacy support for the old Python launcher behavior.
 In newer Python installations using the Python Install Manager (pymanager), py.ini is no longer supported and will be ignored. Configuration now primarily uses pymanager.json (located at %AppData%\Python\pymanager.json, which expands to C:\Users\<your_username>\AppData\Roaming\Python\pymanager.json).
 
-Legacy INI File Locations
+**Legacy INI File Locations**
 
 For the deprecated launcher (still referenced for equivalence with PY_PYTHON), the launcher searches for py.ini in these locations (in order of precedence):
 
@@ -348,7 +348,7 @@ The directory containing the launcher executable (often C:\Windows\py.ini for sy
 
 The user-specific file in %LOCALAPPDATA% takes precedence if both exist.
 
-Recommended Approach
+**Recommended Approach**
 
 Since this is legacy and ignored in the new manager, use the modern methods instead:
 
@@ -356,9 +356,11 @@ Environment variable PYTHON_MANAGER_DEFAULT.
 
 Or the pymanager.json file.
 
-ALTERNATIVELY
+**ALTERNATIVELY**
 
-How to Uninstall Python 3.14 Using the Python Install Manager on Windows
+How to Uninstall Python 3.14 (or whatever higher versions than 3.12) 
+
+Using the Python Install Manager on Windows
 
 The Python Install Manager (managed via the py launcher) allows easy removal of specific Python versions without affecting others. As of January 2026 (Python 3.14 era), use the py uninstall command. This removes the runtime while leaving your other versions (like 3.12) intact.
 
@@ -437,9 +439,13 @@ Your default will automatically switch to the remaining highest version (e.g., 3
 
 Also check:
 
-PowerShellpy --version  # Should now show your new default (likely 3.12)
+PowerShell
 
+   ```sh
+   py --version  # Should now show your new default (likely 3.12)
+   ```
 
+**INSTALLATION**
 1. Clone the repo
    ```sh
    git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git

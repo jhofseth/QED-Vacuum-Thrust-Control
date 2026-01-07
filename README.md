@@ -323,6 +323,8 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 ### Installation
 
+Install Python 3.12.10, which is available at [https://www.python.org/downloads/release/python-31210/](https://www.python.org/downloads/release/python-31210/).
+
 1. Clone the repo
    ```sh
    git clone https://github.com/jhofseth/QED-Vacuum-Thrust-Control.git
@@ -335,8 +337,23 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 3. Install dependencies
    ```sh
-   pip install -r requirements.txt
+   py -3.12 -m venv venv  # Creates a new venv using Python 3.12
    ```
+
+4. Install dependencies
+   ```sh
+   .\venv\Scripts\activate  # Activates it
+   ```
+
+5. Install dependencies
+   ```sh
+   pip install --upgrade pip setuptools wheel
+   ```
+
+ 6. Install dependencies
+   ```sh
+   pip install requirements.txt
+   ```  
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

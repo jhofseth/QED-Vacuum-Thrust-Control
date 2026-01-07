@@ -89,7 +89,7 @@ E_CHARGE = 1.602176634e-19  # Elementary charge (C)
 ALPHA = 1/137.035999084  # Fine structure constant
 
 # QED critical field (Schwinger limit)
-B_SCHWINGER = (M_E**2 * C**3) / (E_CHARGE * HBAR)  # ~4.414e9 T
+B_SCHWINGER = (M_E**2 * C**2) / (E_CHARGE * HBAR)  # ~4.414e9 T
 
 # RVG Framework parameters
 # Note: Θ_dilaton parameters are theoretical; experimental validation pending

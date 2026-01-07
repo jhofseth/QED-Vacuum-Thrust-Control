@@ -359,7 +359,6 @@ Since this is legacy and ignored in the new manager, use the modern methods inst
 * Environment variable `PYTHON_MANAGER_DEFAULT`.
 * Or the `pymanager.json` file.
 
-### ALTERNATIVELY
 
 **How to Uninstall Python 3.14 (or whatever higher versions than 3.12)**
 

@@ -465,7 +465,7 @@ Also check:
    
 6. Install the project dependencies
    ```sh
-   pip install -r requirements.txt
+   py -m pip install -r requirements.txt
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>

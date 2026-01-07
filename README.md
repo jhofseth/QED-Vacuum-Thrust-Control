@@ -353,7 +353,7 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
  6. Install dependencies
    ```sh
    pip install requirements.txt
-   ```  
+   ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

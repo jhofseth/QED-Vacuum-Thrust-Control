@@ -323,7 +323,7 @@ See [Aviano UAP Analysis](docs/Aviano-UAP-Analysis.md)
 
 ### Installation
 
-If using Windows 11, ninstall other versions of python if not already using Python Manager
+If using Windows 11, uninstall other versions of python if not already using Python Manager, then change the default version as below to 3.12.  I was using legacy installers and it refused to respect explicit commands to use 3.12 when creating a virtual environment, and using pip, etc., thereafter.  I even removed path entries for higher versions of python and this solved using the correct version of python, but pip was still using the higher version.  It is probably possible to do that plus edit the legacy INI, but I did it this way:  
 
 Install Python Manager [https://www.python.org/downloads/](https://www.python.org/downloads/) 
 

@@ -335,24 +335,24 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    cd QED-Vacuum-Thrust-Control
    ```
 
-3. Install dependencies
+3. Create a virtual environment
    ```sh
    py -3.12 -m venv venv  # Creates a new venv using Python 3.12
    ```
 
-4. Install dependencies
+4. Activate the virtual environment
    ```sh
    .\venv\Scripts\activate  # Activates it
    ```
 
-5. Install dependencies
+5. Upgrade pip and build tools
    ```sh
    pip install --upgrade pip setuptools wheel
    ```
 
- 6. Install dependencies
+6. Install the project dependencies
    ```sh
-   pip install requirements.txt
+   pip install -r requirements.txt
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>

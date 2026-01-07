@@ -341,7 +341,7 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    ```
    If you have a newer version of Python installed (e.g., 3.14 or higher), then your system will be defaulting to the higher version in Windows 11, and one troubleshooting step is to use the full path
    ```sh
-   "C:\Users\replace-this-with-your-username\AppData\Local\Programs\Python\Python312\python.exe" -m venv venv
+   & "C:\Users\replace-this-with-your-username\AppData\Local\Programs\Python\Python312\python.exe" -m venv venv
    ```
    
 

@@ -339,22 +339,27 @@ Install Python 3.12.10, which is available at [https://www.python.org/downloads/
    ```sh
    py -3.12 -m venv venv  # Creates a new venv using Python 3.12
    ```
+   If you have a newer version of Python installed (e.g., 3.14 or higher), then your system will be defaulting to the higher version in Windows 11, and one troubleshooting step is to use the full path
+   ```sh
+   "C:\Users\replace-this-with-your-username\AppData\Local\Programs\Python\Python312\python.exe" -m venv venv
+   ```
+   
 
-4. Activate the virtual environment
+5. Activate the virtual environment
    ```sh
    .\venv\Scripts\activate  # Activates it
    ```
    or in Windows 11 Terminal
    ```sh
    .\venv\Scripts\activate.bat  # Activates it
-   ```
 
-5. Upgrade pip and build tools
+
+6. Upgrade pip and build tools
    ```sh
    pip install --upgrade pip setuptools wheel
    ```
 
-6. Install the project dependencies
+7. Install the project dependencies
    ```sh
    pip install -r requirements.txt
    ```

@@ -1101,26 +1101,41 @@ if __name__ == "__main__":
     # Wrap in QATConfig for training
     qat_config = QATConfig(base_config)
     # Prepare model for QAT (inserts fake quantizers)
-    primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
-    example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
-    # Define a dynamic dimension for batch size so the model accepts any batch size (1 to 1024)
-batch_dim = Dim("batch", min=1, max=1024)
+    # Prepare model for QAT
+    primary_model = nn.Sequential(nn.Linear(10, 5))
+    
+    # FIX 1: Use batch size > 1 for example_input so export knows dim 0 is flexible
+    example_input = torch.randn(2, 10) 
+    
+    # Define dynamic batch dimension
+    batch_dim = Dim("batch", min=1)
 
-# Export with dynamic shapes
-# We map dimension 0 of the input to our dynamic 'batch_dim'
-exported_model = torch.export.export(model, (example_input,), dynamic_shapes=({0: batch_dim},))
-    # Create a quantizer for the PT2E flow
-quantizer = X86InductorQuantizer() 
-model = prepare_qat_pt2e(exported_model.module(), quantizer)
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-# Create a dummy dataset for the QAT step
-# (Assuming input size is 10 based on typical demo models; if you get a shape error, check your model's input size)
-dummy_inputs = torch.randn(100, 10) 
-dummy_targets = torch.randn(100, 1)
-mock_dataset = torch.utils.data.TensorDataset(dummy_inputs, dummy_targets)
-allow_exported_model_train_eval(model)
-train_on_dataset(model, mock_dataset, num_epochs=10)
-quantized_model = convert_pt2e(model)
+    # Export with dynamic shapes
+    exported_model = torch.export.export(
+        model, 
+        (example_input,), 
+        dynamic_shapes=({0: batch_dim},)
+    )
+    
+    # Quantization setup
+    quantizer = X86InductorQuantizer()
+    model = prepare_qat_pt2e(exported_model.module(), quantizer)
+    
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    # FIX 2: Use DataLoader to ensure model receives Batches (Rank 2) not single items (Rank 1)
+    dummy_inputs = torch.randn(100, 10)
+    dummy_targets = torch.randn(100, 1)
+    mock_dataset = torch.utils.data.TensorDataset(dummy_inputs, dummy_targets)
+    train_loader = torch.utils.data.DataLoader(mock_dataset, batch_size=10, shuffle=True)
+
+    # Allow training on exported model
+    allow_exported_model_train_eval(model)
+    
+    # Train using the loader
+    train_on_dataset(model, train_loader, num_epochs=10)
+    
+    quantized_model = convert_pt2e(model)
 
 
 # =============================================================================

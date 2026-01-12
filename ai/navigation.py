@@ -1198,7 +1198,8 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
     # Mock system matrices for observer
     A = np.eye(9)
-    B_mat = np.eye(9) * DT
+    B_mat = np.zeros((9, 6))
+    B_mat[3:6, 0:3] = np.eye(3) * DT # Map controls to velocity states
     C = np.eye(9)
     L = np.eye(9) * 0.1
     observer = StateObserver(A, B_mat, C, L)
@@ -1239,7 +1240,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     logger.info("=" * 70)
     logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")
     logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
-    logger.info(f"Θ_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
+    logger.info(f"Theta_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
     logger.info(f"Geometry factor: {geometry_factor:.2e}")
     logger.info("=" * 70)
     

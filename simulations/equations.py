@@ -2031,9 +2031,14 @@ def test_refractive_index() -> None:
     K_zero = refractive_index(0.0)
     assert np.isclose(K_zero, 1.0), f"Expected 1.0, got {K_zero}"
     
-    # At any B > 0, K should be > 1
+    # At any B > 0, susceptibility should be > 0
+    # (K - 1 may be below float64 precision, so test chi directly)
+    chi_nonzero = vacuum_susceptibility(100.0)
+    assert chi_nonzero > 0, f"Expected χ > 0, got {chi_nonzero}"
+    
+    # Verify K = 1 + chi relationship holds
     K_nonzero = refractive_index(100.0)
-    assert K_nonzero > 1.0, f"Expected K > 1, got {K_nonzero}"
+    assert np.isclose(K_nonzero, 1.0 + chi_nonzero), f"K should equal 1 + χ"
     
     print("✓ test_refractive_index PASSED")
 

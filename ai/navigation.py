@@ -1062,9 +1062,8 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
     import torch.nn as nn  # For Linear
-import torch.nn.quantized as nnq  # For quantized modules
 
-# First demo
+# First demo (mirror for second)
 logger.info("Training demo model...")
 for epoch in range(50):
     loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
@@ -1072,7 +1071,7 @@ for epoch in range(50):
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
 model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
 model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear: nnq.Linear}, dtype=torch.qint8  # Correct mapping
+    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec as set
 )
 logger.info("Model quantization successful")
 
@@ -1084,7 +1083,7 @@ for epoch in range(50):
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
 model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
 model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear: nnq.Linear}, dtype=torch.qint8  # Correct mapping
+    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec as set
 )
 logger.info("Model quantization successful")
 

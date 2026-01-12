@@ -1239,12 +1239,12 @@ swarm_pos = [pos.copy()]
 pulse_phase = 0.0
 pulse_period = 1.0 / pulsing_freq
     
-    logger.info("=" * 70)
-    logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")
-    logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
-    logger.info(f"Theta_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
-    logger.info(f"Geometry factor: {geometry_factor:.2e}")
-    logger.info("=" * 70)
+logger.info("=" * 70)
+logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")
+logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
+logger.info(f"Theta_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
+logger.info(f"Geometry factor: {geometry_factor:.2e}")
+logger.info("=" * 70)
     
     for step in range(NUM_STEPS):
         # Simulate sensor readings including visual

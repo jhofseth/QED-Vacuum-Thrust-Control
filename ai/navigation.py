@@ -1096,6 +1096,7 @@ base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
 # Wrap in QATConfig for training
 qat_config = QATConfig(base_config)
 # Prepare model for QAT (inserts fake quantizers)
+primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
 model = prepare_qat_pt2e(primary_model, qat_config)  # From torchao
 # Train with optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)

@@ -1062,52 +1062,34 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
     logger.info("Training demo model...")
-    model = HybridMIMONetwork()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    
-    model.train()
-    
-    for epoch in range(num_epochs):
-        inputs = torch.randn(batch_size, 12)  # Extended input
-        targets = torch.randn(batch_size, 6)
-        
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        
-        # Mock RL loss
-        states = inputs
-        actions, values = model.ac(states)
-        rewards = torch.randn(batch_size, 1)  # Mock
-        advantages = rewards - values
-        
-        # Fixed: Proper policy gradient computation
-        action_log_prob = -((actions - targets)**2).sum(dim=1, keepdim=True)  # Mock log prob
-        actor_loss = -(action_log_prob * advantages.detach()).mean()
-        critic_loss = advantages.pow(2).mean()
-        rl_loss = actor_loss + critic_loss
-        
-        total_loss = loss + 0.5 * rl_loss
-        
-        optimizer.zero_grad()
-        total_loss.backward()
-        optimizer.step()
-        
-        if (epoch + 1) % 20 == 0:
-            logger.info(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_loss.item():.4f}")
-    
-    model.eval()
-    
-    # Quantize for edge deployment
-    try:
-        model_quantized = torch.quantization.quantize_dynamic(
-            model, {nn.Linear}, dtype=torch.qint8
-        )
-        logger.info("Model quantization successful")
-        return model_quantized
-    except Exception as e:
-        logger.warning(f"Quantization failed: {e}. Returning unquantized model.")
-        return model
+# Training loop for second demo
+for epoch in range(50):
+    # (Mock loss calculation and optimization)
+    if epoch % 10 == 0:
+        logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
+model_quantized = torch.quantization.quantize_dynamic(
+    model, {nn.Linear: nnq.LinearPackedParams}, dtype=torch.qint8
+)
+logger.info("Model quantization successful")
+
+import torch.optim as optim
+from torchao.quantization.qat import QATConfig, Int8DynamicActivationInt4WeightConfig
+# Define base config
+base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
+# Wrap in QATConfig for training
+qat_config = QATConfig(base_config)
+# Prepare model for QAT (inserts fake quantizers)
+model = prepare_qat_pt2e(primary_model, qat_config)  # From torchao
+# Train with optimizer
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
+# Convert to quantized after training
+quantized_model = convert_pt2e(model)
+
+# (Optional: Model evaluation or save)
+if __name__ == "__main__":
+    # End of script
+    pass
 
 
 # =============================================================================

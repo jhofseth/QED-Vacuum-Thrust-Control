@@ -809,6 +809,28 @@ def radar_evasion_probability(trajectory: np.ndarray, radar_pos: np.ndarray,
         p_evade = 0.5 * (min_distance / detection_range)**2
     
     return np.clip(p_evade, 0.0, 1.0)
+                                   
+
+def calculate_mada_B(magnet_Bs: list[float], multiple_per_position: bool = False) -> float:
+    """
+    Calculate effective B for a MADA unit.
+    
+    Args:
+        magnet_Bs: List of B values for 5 magnets (T).
+        multiple_per_position: If True, apply 90% factor for >1 magnet per position.
+    
+    Returns:
+        Effective B value (T).
+    """
+    if len(magnet_Bs) != 5:
+        raise ValueError("Exactly 5 magnet B values required.")
+    
+    total_B = sum(magnet_Bs)
+    
+    if multiple_per_position:
+        return 0.9 * total_B  # 90% sum if multiple per position
+    else:
+        return total_B  # Simple sum otherwise
 
 
 # =============================================================================

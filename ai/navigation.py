@@ -32,6 +32,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import csv
 from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer import X86InductorQuantizer
 from torchao.quantization.pt2e import allow_exported_model_train_eval
 from torch.export import Dim
@@ -1522,51 +1523,121 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
 # Visualization
 # =============================================================================
 
+def save_simulation_data(trajectory, velocities, telemetry, filename="rvg_flight_data.csv"):
+    """Save simulation results to CSV for analysis."""
+    try:
+        keys = list(telemetry.keys())
+        rows = len(telemetry['thrust'])
+        
+        with open(filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+            # Header
+            header = ['step', 'pos_x', 'pos_y', 'pos_z', 'vel_x', 'vel_y', 'vel_z'] + keys
+            writer.writerow(header)
+            
+            # Data
+            for i in range(rows):
+                # Safe indexing for trajectory/velocity (they might be 1 longer than telemetry)
+                pos = trajectory[i] if i < len(trajectory) else trajectory[-1]
+                vel = velocities[i] if i < len(velocities) else velocities[-1]
+                
+                row = [i, pos[0], pos[1], pos[2], vel[0], vel[1], vel[2]]
+                for k in keys:
+                    row.append(telemetry[k][i])
+                writer.writerow(row)
+                
+        logger.info(f"Successfully saved flight data to {filename}")
+    except Exception as e:
+        logger.error(f"Failed to save CSV data: {e}")
+        
+
 def plot_trajectory(trajectory: List[np.ndarray], velocities: Optional[List[np.ndarray]] = None,
                    obstacles: Optional[List[np.ndarray]] = None, 
                    target_pos: Optional[np.ndarray] = None):
-    """Plot 3D trajectory with optional elements."""
+    """Plot 3D trajectory and save to PNG."""
     traj = np.array(trajectory)
     
     fig = plt.figure(figsize=(12, 8))
     ax = fig.add_subplot(111, projection='3d')
     
     ax.plot(traj[:, 0], traj[:, 1], traj[:, 2], 'b-', linewidth=2, label='Trajectory')
-    ax.scatter(traj[0, 0], traj[0, 1], traj[0, 2], c='g', s=100, marker='o',
-              label='Start', edgecolors='k')
-    ax.scatter(traj[-1, 0], traj[-1, 1], traj[-1, 2], c='r', s=100, marker='o',
-              label='End', edgecolors='k')
+    ax.scatter(traj[0, 0], traj[0, 1], traj[0, 2], c='g', s=100, marker='o', label='Start')
+    ax.scatter(traj[-1, 0], traj[-1, 1], traj[-1, 2], c='r', s=100, marker='o', label='End')
     
     if target_pos is not None:
         target = np.asarray(target_pos)
-        ax.scatter(target[0], target[1], target[2], c='gold', s=200, marker='*',
-                  label='Target', edgecolors='k')
+        ax.scatter(target[0], target[1], target[2], c='gold', s=200, marker='*', label='Target')
     
     if obstacles:
         for i, obs in enumerate(obstacles):
             obs = np.asarray(obs)
-            ax.scatter(obs[0], obs[1], obs[2], c='orange', s=150, marker='X',
-                      label='Obstacle' if i == 0 else '', edgecolors='k', alpha=0.7)
+            ax.scatter(obs[0], obs[1], obs[2], c='orange', s=150, marker='X', 
+                      label='Obstacle' if i == 0 else '')
     
-    if velocities:
-        vels = np.array(velocities)
-        step = max(1, len(traj) // 10)
-        for i in range(0, len(traj), step):
-            if i < len(vels):
-                ax.quiver(traj[i, 0], traj[i, 1], traj[i, 2],
-                         vels[i, 0], vels[i, 1], vels[i, 2],
-                         length=2.0, alpha=0.3, color='purple')
-    
-    ax.set_xlabel('X (m)', fontsize=12)
-    ax.set_ylabel('Y (m)', fontsize=12)
-    ax.set_zlabel('Z (m)', fontsize=12)
+    ax.set_xlabel('X (m)')
+    ax.set_ylabel('Y (m)')
+    ax.set_zlabel('Z (m)')
     ax.legend()
-    ax.set_title('RVG Unified Field Navigation (6DOF + MADA + Sensor Fusion) - CALIBRATED', 
-                fontsize=14, fontweight='bold')
-    ax.grid(True, alpha=0.3)
+    ax.set_title('RVG Unified Field Navigation - Flight Path')
+    
+    # SAVE instead of show
+    plt.savefig('rvg_trajectory.png', dpi=300)
+    plt.close()
+    logger.info("Saved trajectory plot to 'rvg_trajectory.png'")
+
+def plot_telemetry(telemetry: dict):
+    """Plot telemetry data and save to PNG."""
+    fig, axes = plt.subplots(4, 2, figsize=(14, 12))
+    
+    # Temperature
+    axes[0, 0].plot(telemetry['temp'], 'r-')
+    axes[0, 0].axhline(y=MAX_TEMP, color='k', linestyle='--')
+    axes[0, 0].set_title('System Temperature')
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    # B-field
+    axes[0, 1].plot(telemetry['b_field'], 'b-')
+    axes[0, 1].set_title('Effective Magnetic Field (MADA)')
+    axes[0, 1].grid(True, alpha=0.3)
+    
+    # Dilaton
+    axes[1, 0].plot(telemetry['dilaton_theta'], 'g-')
+    axes[1, 0].set_yscale('log')
+    axes[1, 0].set_title('Dilaton Enhancement Factor')
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    # Vacuum K
+    axes[1, 1].plot(telemetry['vacuum_K'], 'm-')
+    axes[1, 1].set_title('Vacuum Refractive Index')
+    axes[1, 1].grid(True, alpha=0.3)
+    
+    # Saturation
+    axes[2, 0].plot(telemetry['supra_sat_ratio'], 'c-')
+    axes[2, 0].axhline(y=1.0, color='k', linestyle='--')
+    axes[2, 0].set_title('Supra-Saturation Ratio')
+    axes[2, 0].grid(True, alpha=0.3)
+    
+    # Thrust
+    axes[2, 1].plot(telemetry['thrust'], 'navy')
+    axes[2, 1].set_title('Thrust Force (N)')
+    axes[2, 1].grid(True, alpha=0.3)
+    
+    # Degradation
+    axes[3, 0].plot(telemetry['degradation'], 'orange')
+    axes[3, 0].axhline(y=0.5, color='r', linestyle='--')
+    axes[3, 0].set_title('Degradation Probability')
+    axes[3, 0].grid(True, alpha=0.3)
+    
+    # Info Box
+    axes[3, 1].axis('off')
+    axes[3, 1].text(0.5, 0.5, f'RVG PARAMETERS\nTheta_base={THETA_95_BASE:.1e}\nB_crit={B_CRIT_EFFECTIVE}T', 
+                   ha='center', va='center', bbox=dict(boxstyle='round', facecolor='lightblue'))
     
     plt.tight_layout()
-    plt.show()
+    # SAVE instead of show
+    plt.savefig('rvg_telemetry.png', dpi=300)
+    plt.close()
+    logger.info("Saved telemetry plot to 'rvg_telemetry.png'")
 
 
 def plot_telemetry(telemetry: dict):

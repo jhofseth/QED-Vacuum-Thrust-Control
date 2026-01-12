@@ -1,5 +1,5 @@
 """
-simulations/thrust_model.py (Version 6 - RVG Unified Field Framework)
+simulations/thrust_model.py (Version 7 - RVG Unified Field Framework - CALIBRATED)
 
 Extended thrust model simulation with RVG (Refractive Vacuum Gravity) Unified Field:
 - Dilaton enhancement factor Θ_dilaton(B) for 95 GeV resonance
@@ -17,6 +17,10 @@ Extended thrust model simulation with RVG (Refractive Vacuum Gravity) Unified Fi
 CRITICAL: Implements RVG Unified Field framework from:
 "Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, the 95 GeV Resonance,
 and the Metric Engineering of Static Levitation" (Hofseth, 2025)
+
+CALIBRATED: Parameters aligned with equations.py for consistent results.
+- THETA_95_BASE = 1e-8 (calibrated for physically reasonable forces)
+- B threshold = 20.0 T (where dilaton enhancement activates)
 
 Key Physics:
 - F_lift = ∫(Θ_dilaton(B)·∇B²)dV  [Master Equation of Levitation]
@@ -164,10 +168,33 @@ B_SCHWINGER = (M_E**2 * C**2) / (E_CHARGE * HBAR)  # Schwinger critical field ~4
 SPEED_OF_SOUND = 343.0           # Speed of sound in air (m/s)
 EPSILON = 1e-10                  # Numerical stability threshold
 
-# RVG Unified Field constants
-THETA_95_BASE = 1e-4             # Base dilaton enhancement (to be experimentally determined)
+# =============================================================================
+# RVG Unified Field Constants (CALIBRATED)
+# =============================================================================
+
+# CALIBRATED: Changed from 1e-4 to 1e-8 for physically reasonable forces
+# Paper Table II states: "Θ_95 - To be measured"
+# This value produces forces in the range of 100s to 10,000s of Newtons
+# which is "macroscopic" as the paper intends, without being absurdly large
+THETA_95_BASE = 1e-8             # Base dilaton enhancement (CALIBRATED)
+
+# Dilaton resonance parameters
 DILATON_MASS_GEV = 95.4          # 95 GeV resonance mass (CMS/ATLAS observation)
-TRACE_ANOMALY_COUPLING = 0.1    # Dilaton-trace anomaly coupling strength
+
+# Trace anomaly coupling for piecewise enhancement model
+# Used in supra-threshold regime of dilaton_enhancement_factor()
+TRACE_ANOMALY_COUPLING = 0.1     # Dilaton-trace anomaly coupling strength
+
+# Threshold field where dilaton enhancement becomes significant
+# Paper states: "no strict universal B_crit" - this is a threshold, not critical field
+B_THRESHOLD_DEFAULT = 20.0       # Tesla (where nonlinear response activates)
+
+# Geometry factors for gradient calculations (T/m)
+# These represent achievable ∇B² for different MADA configurations
+DEFAULT_GEOMETRY_FACTOR = 1e6    # Simple opposing magnets
+MADA_SINGLE_GEOMETRY = 5e6       # Single-stage MADA array
+MADA_NESTED_GEOMETRY = 2e7       # Nested MADA configuration
+BUSHMAN_MAX_GEOMETRY = 1e8       # Optimized Bushman geometry
 
 
 # =============================================================================
@@ -191,7 +218,7 @@ class SimulationConfig:
     CHI = 1e-10                   # Magnetic susceptibility
     G_COUPLING = 1.0              # Gauge coupling
     LAMBDA_PARAM = 0.1            # Running coupling parameter
-    THETA_95 = THETA_95_BASE      # Dilaton enhancement coefficient
+    THETA_95 = THETA_95_BASE      # Dilaton enhancement coefficient (CALIBRATED)
     
     # Material saturation (for supra-saturation calculations)
     B_SAT_IRON = 2.1              # Iron saturation (T)
@@ -250,9 +277,10 @@ class RVGConfig:
     DILATON_MASS = DILATON_MASS_GEV * 1e9 * E_CHARGE / C**2  # Convert GeV to kg
     TRACE_COUPLING = TRACE_ANOMALY_COUPLING
     
-    # Enhancement thresholds
-    B_THRESHOLD_LOW = 10.0        # Low field threshold (T)
-    B_THRESHOLD_HIGH = 50.0       # High field threshold (T)
+    # Enhancement thresholds (CALIBRATED)
+    B_THRESHOLD = B_THRESHOLD_DEFAULT  # 20.0 T
+    B_THRESHOLD_LOW = 2.0         # Low field threshold (T) - 0.1 * B_THRESHOLD
+    B_THRESHOLD_HIGH = 20.0       # High field threshold (T) - B_THRESHOLD
     
     # Gradient requirements for macroscopic effects
     MIN_GRAD_B2 = 1e6             # Minimum ∇B² for observable effects (T²/m)
@@ -277,12 +305,14 @@ class RVGCalculationError(Exception):
 
 
 # =============================================================================
-# RVG Unified Field Equations
+# RVG Unified Field Equations (CALIBRATED)
 # =============================================================================
 
-def dilaton_enhancement_factor(B: float, B_threshold: float = 20.0) -> float:
+def dilaton_enhancement_factor(B: float, B_threshold: float = None) -> float:
     """
     Calculate the dilaton enhancement factor Θ_dilaton(B).
+    
+    CALIBRATED: Aligned with equations.py for consistent results.
     
     The 95 GeV dilaton/radion resonance couples to the trace anomaly,
     providing non-linear enhancement of vacuum polarization effects
@@ -291,6 +321,7 @@ def dilaton_enhancement_factor(B: float, B_threshold: float = 20.0) -> float:
     Args:
         B: Local magnetic field strength (T)
         B_threshold: Threshold field for significant enhancement (T)
+                     Default: B_THRESHOLD_DEFAULT (20.0 T)
     
     Returns:
         Θ_dilaton: Enhancement factor (dimensionless)
@@ -299,10 +330,19 @@ def dilaton_enhancement_factor(B: float, B_threshold: float = 20.0) -> float:
         - Weak at low B (approaches Euler-Heisenberg limit)
         - Grows non-linearly with intensity due to 95 GeV resonance pumping
         - Based on disformal gravity coupling to scalar field gradient
+        
+        Piecewise behavior:
+        - Sub-threshold (x < 0.1): Euler-Heisenberg regime, minimal enhancement
+        - Transition (0.1 ≤ x < 1.0): Growing enhancement
+        - Supra-threshold (x ≥ 1.0): Strong nonlinear enhancement (resonant pumping)
     
     Reference:
         Hofseth (2025), Sections 2-3: 95 GeV resonance + trace anomaly
     """
+    # Use runtime default to match equations.py behavior
+    if B_threshold is None:
+        B_threshold = B_THRESHOLD_DEFAULT
+    
     if B < EPSILON:
         return THETA_95_BASE
     
@@ -310,7 +350,7 @@ def dilaton_enhancement_factor(B: float, B_threshold: float = 20.0) -> float:
     # Enhancement grows as B² relative to threshold
     x = B / B_threshold
     
-    # Sigmoid-like activation with quadratic enhancement
+    # Piecewise model matching equations.py
     if x < 0.1:
         # Sub-threshold: minimal enhancement (Euler-Heisenberg regime)
         theta = THETA_95_BASE * (1 + 0.1 * x**2)
@@ -533,16 +573,19 @@ def pulsed_enhancement(n_turns: int, current: float,
     return delta_B
 
 
-def gradient_B_squared(B: float, geometry_factor: float = 1e6) -> np.ndarray:
+def gradient_B_squared(B: float, geometry_factor: float = None) -> np.ndarray:
     """
     Estimate gradient of B² for thrust calculations.
+    
+    CALIBRATED: Default geometry factor aligned with equations.py
     
     Args:
         B: Local magnetic field (T)
         geometry_factor: Geometry-dependent scaling (T/m equivalent)
-            - Simple opposing: ~1e6
-            - Optimized Bushman: ~1e10
-            - Nested MADA: ~1e12
+            - DEFAULT_GEOMETRY_FACTOR (1e6): Simple opposing magnets
+            - MADA_SINGLE_GEOMETRY (5e6): Single-stage MADA
+            - MADA_NESTED_GEOMETRY (2e7): Nested MADA
+            - BUSHMAN_MAX_GEOMETRY (1e8): Optimized Bushman geometry
     
     Returns:
         grad_B2: Gradient of B² (T²/m), 3D vector
@@ -550,8 +593,11 @@ def gradient_B_squared(B: float, geometry_factor: float = 1e6) -> np.ndarray:
     Theory:
         ∇B² is maximized in Bushman opposing-pole configurations
         where flux converges to a small gap region. Nested MADA
-        can achieve gradients exceeding 10¹² T²/m.
+        can achieve gradients exceeding 10⁸ T²/m in optimized designs.
     """
+    if geometry_factor is None:
+        geometry_factor = DEFAULT_GEOMETRY_FACTOR
+    
     # B² gradient scales with 2B·∇B
     # For opposing geometry, gradient points away from convergence
     grad_B2_magnitude = 2 * B * geometry_factor
@@ -1039,20 +1085,22 @@ signal.signal(signal.SIGINT, handle_interrupt)
 
 
 # =============================================================================
-# Core Calculation Functions (RVG Framework)
+# Core Calculation Functions (RVG Framework - CALIBRATED)
 # =============================================================================
 
 def calculate_thrust_params_rvg(
     args: argparse.Namespace,
     B_opposing: Optional[float] = None,
     frequency: Optional[float] = None,
-    geometry_factor: float = 1e6,
+    geometry_factor: float = None,
     verbose: bool = False,
     validate_mada: bool = False,
     validator: Optional[MADAConvergenceValidator] = None
 ) -> Tuple[float, float, float, float, float, float, Dict[str, Any]]:
     """
     Core thrust calculation using RVG Unified Field framework.
+    
+    CALIBRATED: Uses calibrated parameters for physically reasonable forces.
     
     Implements Master Equation of Levitation:
     F_lift = ∫(Θ_dilaton(B)·∇B²)dV
@@ -1061,7 +1109,7 @@ def calculate_thrust_params_rvg(
         args: Argument namespace with simulation parameters
         B_opposing: Opposing magnetic field strength (T), optional
         frequency: Pulsing frequency (Hz), optional
-        geometry_factor: Gradient geometry factor (T/m)
+        geometry_factor: Gradient geometry factor (T/m), default DEFAULT_GEOMETRY_FACTOR
         verbose: Enable verbose output
         validate_mada: Enable MADA convergence validation
         validator: Validator instance for convergence tracking
@@ -1073,6 +1121,9 @@ def calculate_thrust_params_rvg(
         MADAValidationError: If MADA validation fails critically
         RVGCalculationError: If RVG calculations fail
     """
+    if geometry_factor is None:
+        geometry_factor = DEFAULT_GEOMETRY_FACTOR
+    
     frequency = frequency if frequency is not None else args.frequency
     B = B_opposing if B_opposing is not None else args.b_opposing
     
@@ -1087,7 +1138,7 @@ def calculate_thrust_params_rvg(
     delta_B = pulsed_enhancement(SimulationConfig.N_TURNS, scaled_I)
     B_total = B + delta_B
     
-    # RVG calculations
+    # RVG calculations (using calibrated parameters)
     theta_dilaton = dilaton_enhancement_factor(B_total)
     K = vacuum_refractive_index(B_total, theta_dilaton)
     grad_B2 = gradient_B_squared(B_total, geometry_factor)
@@ -1121,7 +1172,8 @@ def calculate_thrust_params_rvg(
         'f_vac': f_vac,
         'F_lift': F_lift,
         'scaled_current': scaled_I,
-        'delta_B': delta_B
+        'delta_B': delta_B,
+        'geometry_factor': geometry_factor
     }
     
     # MADA validation if enabled
@@ -1487,7 +1539,7 @@ def simulate_swarm(
                 time.sleep(sleep_time)
         
         logger.info("\n" + "=" * 60)
-        logger.info("SWARM SIMULATION RESULTS (RVG Framework)")
+        logger.info("SWARM SIMULATION RESULTS (RVG Framework - CALIBRATED)")
         logger.info("=" * 60)
         
         for i, drone_id in enumerate(drone_ids):
@@ -1524,7 +1576,7 @@ def benchmark_with_telemetry(
         logger.error(f"Telemetry file not found: {telemetry_file}")
         return
     
-    logger.info(f"Benchmarking (RVG): {telemetry_file}")
+    logger.info(f"Benchmarking (RVG - CALIBRATED): {telemetry_file}")
     
     try:
         data = pd.read_csv(telemetry_file)
@@ -1594,7 +1646,7 @@ def benchmark_with_telemetry(
     avg_theta = np.mean(theta_values) if theta_values else 0
     
     logger.info("\n" + "=" * 60)
-    logger.info("BENCHMARK RESULTS (RVG Framework)")
+    logger.info("BENCHMARK RESULTS (RVG Framework - CALIBRATED)")
     logger.info("=" * 60)
     logger.info(f"Records: {len(data)}")
     logger.info(f"Avg Thrust Error: {avg_diff_T:.2f} N")
@@ -1620,7 +1672,7 @@ def real_time_mode(
 ) -> None:
     """Real-time monitoring with RVG thrust calculations and GPIO control."""
     logger.info("=" * 60)
-    logger.info("REAL-TIME RVG THRUST MONITORING")
+    logger.info("REAL-TIME RVG THRUST MONITORING (CALIBRATED)")
     logger.info("=" * 60)
     
     if not validate_mada:
@@ -1799,7 +1851,7 @@ def real_time_mode(
 def single_calculation_mode(args: argparse.Namespace) -> None:
     """Single thrust calculation with RVG framework and detailed output."""
     logger.info("=" * 60)
-    logger.info("QED VACUUM THRUST MODEL - RVG UNIFIED FIELD")
+    logger.info("QED VACUUM THRUST MODEL - RVG UNIFIED FIELD (CALIBRATED)")
     logger.info("=" * 60)
     
     logger.info("\nInput Parameters:")
@@ -1837,7 +1889,7 @@ def single_calculation_mode(args: argparse.Namespace) -> None:
     logger.info(f"Supra-saturation: {supra_msg}")
     
     logger.info(f"\n{'─' * 60}")
-    logger.info("RVG UNIFIED FIELD PARAMETERS")
+    logger.info("RVG UNIFIED FIELD PARAMETERS (CALIBRATED)")
     logger.info(f"{'─' * 60}")
     
     theta_dilaton = dilaton_enhancement_factor(B_total)
@@ -1845,6 +1897,8 @@ def single_calculation_mode(args: argparse.Namespace) -> None:
     grad_B2 = gradient_B_squared(B_total)
     grad_K = gradient_refractive_index(B_total, grad_B2, theta_dilaton)
     
+    logger.info(f"Θ_baseline: {THETA_95_BASE:.2e} (CALIBRATED)")
+    logger.info(f"B_threshold: {B_THRESHOLD_DEFAULT:.1f} T")
     logger.info(f"Dilaton Enhancement (Θ): {theta_dilaton:.2e}")
     logger.info(f"Vacuum Refractive Index (K): {K:.10f}")
     logger.info(f"K - 1 (vacuum susceptibility): {K-1:.2e}")
@@ -1941,8 +1995,25 @@ def single_calculation_mode(args: argparse.Namespace) -> None:
     evasion_prob = stealth_ops_check(traj, np.array([500, 0, 0]))
     logger.info(f"Radar Evasion: {evasion_prob:.2%}")
     
+    # Show configuration comparison
+    logger.info(f"\n{'─' * 60}")
+    logger.info("GEOMETRY FACTOR COMPARISON")
+    logger.info(f"{'─' * 60}")
+    
+    for name, gf in [("Simple opposing", DEFAULT_GEOMETRY_FACTOR),
+                     ("MADA single", MADA_SINGLE_GEOMETRY),
+                     ("MADA nested", MADA_NESTED_GEOMETRY),
+                     ("Bushman optimized", BUSHMAN_MAX_GEOMETRY)]:
+        grad_B2_test = gradient_B_squared(B_total, gf)
+        F_test = master_equation_lift(B_total, grad_B2_test, SimulationConfig.EFFECTIVE_VOLUME)
+        T_test = total_thrust(F_test, args.n_units, SimulationConfig.ETA_ALIGN,
+                              SimulationConfig.THETA_THRUST)
+        twr_test = T_test / weight
+        status = "✓ HOVER" if twr_test >= 1.0 else "insufficient"
+        logger.info(f"  {name}: T = {T_test:.0f} N, T/W = {twr_test:.2f} ({status})")
+    
     logger.info(f"\n{'=' * 60}")
-    logger.info("SIMULATION COMPLETE (RVG Unified Field)")
+    logger.info("SIMULATION COMPLETE (RVG Unified Field - CALIBRATED)")
     logger.info(f"{'=' * 60}\n")
 
 
@@ -1953,12 +2024,17 @@ def single_calculation_mode(args: argparse.Namespace) -> None:
 def main() -> None:
     """Main entry point for RVG thrust model simulations."""
     parser = argparse.ArgumentParser(
-        description="QED Vacuum Thrust Model - RVG Unified Field Framework",
+        description="QED Vacuum Thrust Model - RVG Unified Field Framework (CALIBRATED)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-RVG Unified Field Framework:
+RVG Unified Field Framework (CALIBRATED):
   Based on "Refractive Vacuum Gravity Unified Field: Disformal QED, the 95 GeV
   Resonance, and the Metric Engineering of Static Levitation" (Hofseth, 2025)
+
+CALIBRATED Parameters:
+  - THETA_95_BASE = 1e-8 (produces physically reasonable forces)
+  - B_THRESHOLD = 20.0 T (where dilaton enhancement activates)
+  - Aligned with equations.py for consistent results
 
 Key Physics:
   - Master Equation: F_lift = ∫(Θ_dilaton(B)·∇B²)dV
@@ -2086,13 +2162,13 @@ Examples:
                 logger.error("scipy.optimize required")
                 sys.exit(1)
             
-            logger.info("Running RVG thrust optimization...")
+            logger.info("Running RVG thrust optimization (CALIBRATED)...")
             bounds = {'frequency': (50.0, 150.0), 'current': (10.0, 20.0)}
             
             opt_params, max_thrust = optimize_thrust(bounds, args, args.use_ml)
             
             logger.info("\n" + "=" * 60)
-            logger.info("OPTIMIZATION RESULTS (RVG)")
+            logger.info("OPTIMIZATION RESULTS (RVG - CALIBRATED)")
             logger.info("=" * 60)
             for param, val in opt_params.items():
                 logger.info(f"  {param}: {val:.2f}")

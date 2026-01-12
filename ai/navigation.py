@@ -1061,56 +1061,51 @@ def fine_tune_yolo(yolo_model: YOLOModel, dataset: List[torch.Tensor], num_epoch
 def train_demo_model(num_epochs: int = 100, batch_size: int = 32, 
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
-   import torch.nn as nn  # For Linear
-import torch.export  # For export_for_training
+   import torch.nn as nn  # For Linear (moved to top for global scope)
 
-# First demo
-logger.info("Training demo model...")
-for epoch in range(50):
-    loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
-    if epoch % 10 == 0:
-        logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
-model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
-)
-logger.info("Model quantization successful")
+# ... (rest of the file's code above __main__)
 
-# Second demo
-logger.info("Training demo model...")
-for epoch in range(50):
-    loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
-    if epoch % 10 == 0:
-        logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
-model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
-)
-logger.info("Model quantization successful")
-
-import torch.optim as optim
-from torchao.quantization.qat import QATConfig
-from torchao.quantization import Int8DynamicActivationInt4WeightConfig
-from torchao.quantization.pt2e.quantize_pt2e import prepare_qat_pt2e, convert_pt2e
-# Define base config
-base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
-# Wrap in QATConfig for training
-qat_config = QATConfig(base_config)
-# Prepare model for QAT (inserts fake quantizers)
-primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
-example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
-exported_model = torch.export.export_for_training(primary_model, (example_input,))
-model = prepare_qat_pt2e(exported_model.module(), qat_config)  # Use .module() for QAT
-# Train with optimizer
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
-# Convert to quantized after training
-quantized_model = convert_pt2e(model)
-
-# (Optional: Model evaluation or save)
 if __name__ == "__main__":
-    # End of script
-    pass
+    logger.info("Training demo model...")
+    for epoch in range(50):
+        loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
+        if epoch % 10 == 0:
+            logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
+    model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
+    model_quantized = torch.quantization.quantize_dynamic(
+        model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
+    )
+    logger.info("Model quantization successful")
+
+    logger.info("Training demo model...")
+    for epoch in range(50):
+        loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
+        if epoch % 10 == 0:
+            logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
+    model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
+    model_quantized = torch.quantization.quantize_dynamic(
+        model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
+    )
+    logger.info("Model quantization successful")
+
+    import torch.optim as optim
+    from torchao.quantization.qat import QATConfig
+    from torchao.quantization import Int8DynamicActivationInt4WeightConfig
+    from torchao.quantization.pt2e.quantize_pt2e import prepare_qat_pt2e, convert_pt2e
+    # Define base config
+    base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
+    # Wrap in QATConfig for training
+    qat_config = QATConfig(base_config)
+    # Prepare model for QAT (inserts fake quantizers)
+    primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
+    example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
+    exported_model = torch.export.export(primary_model, (example_input,))
+    model = prepare_qat_pt2e(exported_model, qat_config)  # From torchao
+    # Train with optimizer
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
+    # Convert to quantized after training
+    quantized_model = convert_pt2e(model)
 
 
 # =============================================================================

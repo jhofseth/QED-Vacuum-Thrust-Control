@@ -1134,33 +1134,13 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
 # =============================================================================
 
 def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: HybridMIMONetwork,
-                       start_pos: np.ndarray, start_vel: np.ndarray, 
-                       target_pos: np.ndarray, obstacles: Optional[List[np.ndarray]] = None,
-                       mada_k: float = MADA_K_DEFAULT,
-                       pulsing_freq: float = 50.0,
-                       geometry_factor: float = None) -> Tuple:
+                        start_pos: np.ndarray, start_vel: np.ndarray, 
+                        target_pos: np.ndarray, obstacles: Optional[List[np.ndarray]] = None,
+                        mada_k: float = MADA_K_DEFAULT,
+                        pulsing_freq: float = 50.0,
+                        geometry_factor: float = None) -> Tuple:
     """
     Advanced navigation simulation with RVG Unified Field propulsion.
-    
-    CALIBRATED: Uses calibrated dilaton enhancement parameters for consistent
-    results with equations.py and thrust_model.py
-    
-    Implements the Master Equation of Levitation with dilaton enhancement,
-    MADA amplification, and supra-saturation field engineering.
-    
-    Parameters:
-    primary_model (HybridMIMONetwork): Primary navigation model
-    secondary_model (HybridMIMONetwork): Backup model for redundancy
-    start_pos (np.ndarray): Starting position
-    start_vel (np.ndarray): Starting velocity
-    target_pos (np.ndarray): Target position
-    obstacles (List[np.ndarray], optional): Obstacle positions
-    mada_k (float): MADA amplification factor (200-529)
-    pulsing_freq (float): MADA pulsing frequency Hz (50-1000)
-    geometry_factor (float): Gradient geometry factor (default: DEFAULT_GEOMETRY_FACTOR)
-    
-    Returns:
-    tuple: (trajectory, velocities, controls, telemetry)
     """
     if geometry_factor is None:
         geometry_factor = DEFAULT_GEOMETRY_FACTOR
@@ -1194,98 +1174,98 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Initialize sliding mode controllers
     smcs = [SlidingModeController(lambda_param=1.5, eta=2.0) for _ in range(6)]
     
-# Mock system matrices for observer
-A = np.eye(9)
-# FIX: Rename B to B_mat so we don't overwrite the global magnetic field 'B' constant
-B_mat = np.zeros((9, 6))
-B_mat[3:6, 0:3] = np.eye(3) * DT  
-
-C = np.eye(9)
-L = np.eye(9) * 0.1
-
-# Update the observer call to use the new name
-observer = StateObserver(A, B_mat, C, L)
+    # Mock system matrices for observer
+    A = np.eye(9)
+    # FIX: Rename B to B_mat so we don't overwrite the global magnetic field 'B' constant
+    B_mat = np.zeros((9, 6))
+    B_mat[3:6, 0:3] = np.eye(3) * DT  
+    
+    C = np.eye(9)
+    L = np.eye(9) * 0.1
+    
+    # Pass 'B_mat' instead of 'B'
+    observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
-maintenance_model = MaintenanceNN()
-maintenance_model.eval()
+    maintenance_model = MaintenanceNN()
+    maintenance_model.eval()
     
-# Hardware state simulation
-current_temp = 25.0
-current_B = B  # Initial opposing B-field
-current_eta = ETA
-cycles = 0
-threat_level = 0.0
+    # Hardware state simulation
+    current_temp = 25.0
+    current_B = B  # Initial opposing B-field
+    current_eta = ETA
+    cycles = 0
+    threat_level = 0.0
     
-# Check initial supra-saturation status
-supra_status = check_supra_saturation(current_B)
-logger.info(f"Initial field status: {supra_status['message']}")
+    # Check initial supra-saturation status
+    supra_status = check_supra_saturation(current_B)
+    logger.info(f"Initial field status: {supra_status['message']}")
     
-# Model selection
-use_primary = True
-model = primary_model
-model.eval()
-    
-# YOLO model for detection
-yolo = YOLOModel()
-    
-# Mock visual features
-visual_features = np.zeros(3)
-    
-# Swarm coordination (mock: assume single drone)
-swarm_pos = [pos.copy()]
-    
-# MADA pulsing state
-pulse_phase = 0.0
-pulse_period = 1.0 / pulsing_freq
-    
-logger.info("=" * 70)
-logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")
-logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
-logger.info(f"Theta_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
-logger.info(f"Geometry factor: {geometry_factor:.2e}")
-logger.info("=" * 70)
-    
-for step in range(NUM_STEPS):
-    # Simulate sensor readings including visual
-    imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos = \
-    simulate_sensors(pos, vel, attitude)
-        
-    # Kalman filter: predict and update
-    kf.predict(imu_accel, imu_gyro)
-    measurements = np.concatenate([gps_pos, gps_vel, mag_attitude, [alt_z], visual_pos])
-    kf.update(measurements)
-        
-    # Get fused state estimate
-    fused_pos = kf.x[0:3]
-    fused_vel = kf.x[3:6]
-    fused_att = kf.x[6:9]
-        
-    # Visual pose estimation
-    visual_pose = visual_pose_estimation(visual_pos)
-        
-    # Decoy detection
-    is_decoy = decoy_detection(visual_pos, threat_level)
-if is_decoy:
-    logger.warning("Decoy detected! Activating stealth mode.")
-    # Adjust path
-    fused_pos = fused_pos + np.random.normal(0, 5, 3)  # Mock evasion
-        
-    # Prepare neural network input with visual
-    input_state = np.concatenate([fused_pos, fused_vel, target, visual_pose])
-    input_tensor = torch.tensor(input_state, dtype=torch.float32).unsqueeze(0)
-        
-    # Get control from neural network (with failover)
-try:
-    with torch.no_grad():
-        control = model(input_tensor).squeeze(0).numpy()
-except Exception as e:
-    logger.error(f"Primary model failed: {e}. Switching to secondary.")
-    use_primary = False
-    model = secondary_model
+    # Model selection
+    use_primary = True
+    model = primary_model
     model.eval()
-    with torch.no_grad():
-        control = model(input_tensor).squeeze(0).numpy()
+    
+    # YOLO model for detection
+    yolo = YOLOModel()
+    
+    # Mock visual features
+    visual_features = np.zeros(3)
+    
+    # Swarm coordination (mock: assume single drone)
+    swarm_pos = [pos.copy()]
+    
+    # MADA pulsing state
+    pulse_phase = 0.0
+    pulse_period = 1.0 / pulsing_freq
+    
+    logger.info("=" * 70)
+    logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")
+    logger.info(f"MADA amplification: {mada_k}x, Pulsing: {pulsing_freq} Hz")
+    logger.info(f"Theta_baseline: {THETA_95_BASE:.2e}, B_threshold: {B_CRIT_EFFECTIVE} T")
+    logger.info(f"Geometry factor: {geometry_factor:.2e}")
+    logger.info("=" * 70)
+    
+    for step in range(NUM_STEPS):
+        # Simulate sensor readings including visual
+        imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos = \
+            simulate_sensors(pos, vel, attitude)
+        
+        # Kalman filter: predict and update
+        kf.predict(imu_accel, imu_gyro)
+        measurements = np.concatenate([gps_pos, gps_vel, mag_attitude, [alt_z], visual_pos])
+        kf.update(measurements)
+        
+        # Get fused state estimate
+        fused_pos = kf.x[0:3]
+        fused_vel = kf.x[3:6]
+        fused_att = kf.x[6:9]
+        
+        # Visual pose estimation
+        visual_pose = visual_pose_estimation(visual_pos)
+        
+        # Decoy detection
+        is_decoy = decoy_detection(visual_pos, threat_level)
+        if is_decoy:
+            logger.warning("Decoy detected! Activating stealth mode.")
+            # Adjust path
+            fused_pos = fused_pos + np.random.normal(0, 5, 3)  # Mock evasion
+        
+        # Prepare neural network input with visual
+        input_state = np.concatenate([fused_pos, fused_vel, target, visual_pose])
+        input_tensor = torch.tensor(input_state, dtype=torch.float32).unsqueeze(0)
+        
+        # Get control from neural network (with failover)
+        try:
+            with torch.no_grad():
+                control = model(input_tensor).squeeze(0).numpy()
+        except Exception as e:
+            logger.error(f"Primary model failed: {e}. Switching to secondary.")
+            use_primary = False
+            model = secondary_model
+            model.eval()
+            with torch.no_grad():
+                control = model(input_tensor).squeeze(0).numpy()
         
         controls_history.append(control.copy())
         
@@ -1457,7 +1437,7 @@ except Exception as e:
         # Adaptive pulsing based on degradation and threat
         if degradation_prob > 0.5:
             logger.warning(f"High degradation probability: {degradation_prob:.2f}. "
-                         f"Adapting frequency to {adapted_freq:.1f} Hz")
+                           f"Adapting frequency to {adapted_freq:.1f} Hz")
             current_eta = max(0.5, current_eta - 0.05)
             # Reduce pulsing frequency to extend operational life
             pulsing_freq = max(50.0, pulsing_freq * 0.9)
@@ -1492,14 +1472,14 @@ except Exception as e:
         # Check target reached
         dist_to_target = np.linalg.norm(pos - target)
         if dist_to_target < 1.0:
-            logger.info(f"✓ Target reached at step {step} (distance: {dist_to_target:.3f}m)")
+            logger.info(f"Target reached at step {step} (distance: {dist_to_target:.3f}m)")
             break
         
         # Progress updates
         if step % 20 == 0:
             logger.info(f"Step {step}: dist={dist_to_target:.1f}m, "
-                       f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
-                       f"Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
+                        f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
+                        f"Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
     
     else:
         final_dist = np.linalg.norm(pos - target)

@@ -1277,14 +1277,14 @@ if is_decoy:
         
     # Get control from neural network (with failover)
 try:
-with torch.no_grad():
+    with torch.no_grad():
     control = model(input_tensor).squeeze(0).numpy()
 except Exception as e:
     logger.error(f"Primary model failed: {e}. Switching to secondary.")
     use_primary = False
     model = secondary_model
     model.eval()
-with torch.no_grad():
+    with torch.no_grad():
     control = model(input_tensor).squeeze(0).numpy()
         
         controls_history.append(control.copy())

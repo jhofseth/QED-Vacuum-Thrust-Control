@@ -139,7 +139,7 @@ DT = 0.1  # Time step (s)
 NUM_STEPS = 100  # Simulation steps
 
 # MADA Amplification parameters (per U.S. Patent 5,929,732)
-MADA_K_DEFAULT = 200.0  # Default amplification factor (~200x vs single magnet)
+MADA_K_DEFAULT = 1.0  # Default amplification factor (~200x vs single magnet)
 MADA_K_MAX = 529.0  # Maximum theoretical amplification (force scaling at 6x distance)
 
 # Material saturation limits
@@ -508,6 +508,28 @@ def calculate_thrust_force(B_total: float, volume: float = 0.001,
     }
     
     return total_thrust_value, rvg_data
+
+
+def calculate_mada_B(magnet_Bs: list[float], multiple_per_position: bool = False) -> float:
+    """
+    Calculate effective B for a MADA unit.
+    
+    Args:
+        magnet_Bs: List of B values for 5 magnets (T).
+        multiple_per_position: If True, apply 90% factor for >1 magnet per position.
+    
+    Returns:
+        Effective B value (T).
+    """
+    if len(magnet_Bs) != 5:
+        raise ValueError("Exactly 5 magnet B values required.")
+    
+    total_B = sum(magnet_Bs)
+    
+    if multiple_per_position:
+        return 0.9 * total_B  # 90% sum if multiple per position
+    else:
+        return total_B  # Simple sum otherwise
 
 
 # =============================================================================

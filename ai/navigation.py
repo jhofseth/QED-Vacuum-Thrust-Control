@@ -1106,7 +1106,12 @@ if __name__ == "__main__":
 quantizer = X86InductorQuantizer() 
 model = prepare_qat_pt2e(exported_model.module(), quantizer)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
+# Create a dummy dataset for the QAT step
+# (Assuming input size is 10 based on typical demo models; if you get a shape error, check your model's input size)
+dummy_inputs = torch.randn(100, 10) 
+dummy_targets = torch.randn(100, 1)
+mock_dataset = torch.utils.data.TensorDataset(dummy_inputs, dummy_targets)
+train_on_dataset(model, mock_dataset, num_epochs=10)
 quantized_model = convert_pt2e(model)
 
 

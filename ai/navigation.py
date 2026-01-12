@@ -1204,7 +1204,7 @@ C = np.eye(9)
 L = np.eye(9) * 0.1
 
 # Update the observer call to use the new name
-observer = StateObserver(A, B_mat, C, L))
+observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
     maintenance_model = MaintenanceNN()

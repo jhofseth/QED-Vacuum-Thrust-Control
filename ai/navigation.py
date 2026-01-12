@@ -1270,6 +1270,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         
         # PID corrections
         pos_error = target - fused_pos
+        att_error = np.zeros(3) - fused_att  # Target attitude is 0 (level flight)
         pid_corrections = np.array([
             pids[i].compute(target[i], fused_pos[i]) for i in range(3)
         ] + [

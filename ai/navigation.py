@@ -1197,14 +1197,14 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
 # Mock system matrices for observer
     A = np.eye(9)
     
-    # FIX: Rename to B_mat to avoid destroying the magnetic field variable 'B'
+    # FIX: Rename the control matrix to 'B_mat' so we don't overwrite the magnetic field 'B'
     B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT 
+    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls (acceleration) to velocity states
     
     C = np.eye(9)
     L = np.eye(9) * 0.1
     
-    # Update the call to pass B_mat
+    # Pass 'B_mat' instead of 'B'
     observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model

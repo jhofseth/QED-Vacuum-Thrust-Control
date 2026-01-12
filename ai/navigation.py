@@ -122,7 +122,7 @@ TRACE_ANOMALY_COUPLING = 0.1  # Dilaton-trace anomaly coupling strength
 
 # Geometry factors for gradient calculations (T/m)
 # These represent achievable ∇B² for different MADA configurations
-DEFAULT_GEOMETRY_FACTOR = 1e6    # Simple opposing magnets
+DEFAULT_GEOMETRY_FACTOR = 1e8    # Optimized Bushman geometry
 MADA_SINGLE_GEOMETRY = 5e6       # Single-stage MADA array
 MADA_NESTED_GEOMETRY = 2e7       # Nested MADA configuration
 BUSHMAN_MAX_GEOMETRY = 1e8       # Optimized Bushman geometry
@@ -1709,7 +1709,88 @@ def plot_telemetry(telemetry: dict):
     plt.tight_layout()
     plt.suptitle('RVG Unified Field Telemetry (CALIBRATED)', fontsize=14, fontweight='bold')
     plt.tight_layout()
+    
 
+def analyze_efficiency(telemetry):
+    """Calculate propulsion efficiency metrics."""
+    avg_thrust = np.mean(telemetry['thrust'])
+    max_thrust = np.max(telemetry['thrust'])
+    
+    # Estimate power consumption (P ~ B^2 * freq)
+    # This is a rough heuristic for MADA power draw
+    avg_b = np.mean(telemetry['b_field'])
+    estimated_power_kw = (avg_b**2 * 50.0) / 1000.0  # Mock power curve
+    
+    efficiency = avg_thrust / (estimated_power_kw + 1e-6) # N/kW
+    
+    logger.info("-" * 40)
+    logger.info("PERFORMANCE ANALYSIS")
+    logger.info("-" * 40)
+    logger.info(f"Average Thrust: {avg_thrust:.2f} N")
+    logger.info(f"Peak Thrust:    {max_thrust:.2f} N")
+    logger.info(f"Est. Power:     {estimated_power_kw:.2f} kW")
+    logger.info(f"Force Efficacy: {efficiency:.2f} N/kW")
+    logger.info("-" * 40)
+
+
+def save_interactive_plot(trajectory, obstacles, filename="rvg_mission_log.html"):
+    """Generate an interactive 3D flight path using simple HTML/JS (No external deps)."""
+    traj_data = ",\n".join([f"{{x:{p[0]:.2f}, y:{p[1]:.2f}, z:{p[2]:.2f}}}" for p in trajectory])
+    
+    obs_data = ""
+    if obstacles:
+        obs_data = ",\n".join([f"{{x:{o[0]:.2f}, y:{o[1]:.2f}, z:{o[2]:.2f}}}" for o in obstacles])
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+        <div id="graph" style="width:100%;height:100vh;"></div>
+        <script>
+            var dronePath = {{
+                type: 'scatter3d', mode: 'lines+markers',
+                x: [{','.join([str(p[0]) for p in trajectory])}],
+                y: [{','.join([str(p[1]) for p in trajectory])}],
+                z: [{','.join([str(p[2]) for p in trajectory])}],
+                marker: {{size: 4, color: 'blue'}},
+                line: {{width: 5}},
+                name: 'Drone Path'
+            }};
+            
+            var obstacles = {{
+                type: 'scatter3d', mode: 'markers',
+                x: [{','.join([str(o[0]) for o in obstacles])}],
+                y: [{','.join([str(o[1]) for o in obstacles])}],
+                z: [{','.join([str(o[2]) for o in obstacles])}],
+                marker: {{size: 10, color: 'red', symbol: 'diamond'}},
+                name: 'Threats'
+            }};
+
+            var layout = {{
+                title: 'RVG Flight Mission Log (Combat Mode)',
+                scene: {{
+                    xaxis: {{title: 'X (m)'}},
+                    yaxis: {{title: 'Y (m)'}},
+                    zaxis: {{title: 'Z (m)'}}
+                }}
+            }};
+            
+            Plotly.newPlot('graph', [dronePath, obstacles], layout);
+        </script>
+    </body>
+    </html>
+    """
+    
+    try:
+        with open(filename, 'w') as f:
+            f.write(html_content)
+        logger.info(f"Saved interactive mission log to '{filename}'")
+    except Exception as e:
+        logger.error(f"Failed to save HTML: {e}")
+        
 
 # =============================================================================
 # Main Entry Point
@@ -1773,7 +1854,7 @@ if __name__ == "__main__":
     # Run simulation
     trajectory, velocities, controls, telemetry = simulate_navigation(
         primary_model, secondary_model, start_pos, start_vel, target_pos, obstacles,
-        mada_k=MADA_K_DEFAULT, pulsing_freq=50.0
+        mada_k=MADA_K_DEFAULT, pulsing_freq=50.0, geometry_factor=DEFAULT_GEOMETRY_FACTOR
     )
     
     # Results
@@ -1799,9 +1880,20 @@ if __name__ == "__main__":
     logger.info(f"Max thrust: {max(telemetry['thrust']):.0f} N")
     logger.info(f"Max degradation: {max(telemetry['degradation']):.2f}")
     
-    # Plot
-    logger.info("\nGenerating visualizations...")
-    plot_trajectory(trajectory, velocities, obstacles, target_pos)
-    plot_telemetry(telemetry)
+
+
+    
+    
+    # 4. Results & Analysis (UPDATED)
+    logger.info("="*70)
+    analyze_efficiency(telem)  # <--- Call Analysis
+    
+    logger.info("\nSaving results...")
+    save_simulation_data(traj, vel, telem)
+    plot_trajectory(traj, vel, [np.array([50,25,10])], [100,50,20]) # Fixed arguments
+    plot_telemetry(telem)
+    
+    # Generate Interactive HTML
+    save_interactive_plot(traj, [np.array([50,25,10])]) # <--- Call HTML Generator
     
     logger.info("\nDemo complete.")

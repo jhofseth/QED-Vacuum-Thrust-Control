@@ -1885,11 +1885,11 @@ if __name__ == "__main__":
     analyze_efficiency(telemetry)  # <--- Call Analysis
     
     logger.info("\nSaving results...")
-    save_simulation_data(trajectory, velocity, telemetry)
-    plot_trajectory(trajectory, velocity, [np.array([50,25,10])], [100,50,20]) # Fixed arguments
+    save_simulation_data(trajectory, velocities, telemetry)
+    plot_trajectory(trajectory, velocities, [np.array([50,25,10])], [100,50,20]) # Fixed arguments
     plot_telemetry(telemetry)
     
     # Generate Interactive HTML
-    save_interactive_plot(traj, [np.array([50,25,10])]) # <--- Call HTML Generator
+    save_interactive_plot(trajectory, [np.array([50,25,10])]) # <--- Call HTML Generator
     
     logger.info("\nDemo complete.")

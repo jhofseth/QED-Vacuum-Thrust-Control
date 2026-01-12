@@ -208,7 +208,7 @@ class SimulationConfig:
     M1 = 100.0                    # Magnetic moment 1 (A·m²)
     M2 = 100.0                    # Magnetic moment 2 (A·m²)
     DISTANCE = 0.05               # Distance between magnets (m)
-    K_MADA = 200.0                # MADA amplification factor (200-529x)
+    K_MADA = 1.0                # MADA amplification factor (possibly up to 200-529x)
     
     # Coil parameters
     N_TURNS = 100                 # Number of coil turns

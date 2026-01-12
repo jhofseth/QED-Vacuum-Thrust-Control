@@ -2120,10 +2120,6 @@ if __name__ == "__main__":
     print(f"  Dilaton mass: {DILATON_MASS_GEV} GeV")
     print(f"  Baseline Θ_95: {THETA_95_BASELINE:.3e}")
     print(f"  MADA default k: {MADA_DEFAULT_K}")
-
-    print(f"DEBUG: THETA_95_BASELINE = {THETA_95_BASELINE}")
-    print(f"DEBUG: B_CRIT_RVG = {B_CRIT_RVG}")
-    print(f"DEBUG: dilaton_enhancement defaults = {dilaton_enhancement.__defaults__}")
     
     # Run unit tests
     run_all_tests()

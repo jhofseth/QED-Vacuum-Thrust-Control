@@ -1174,16 +1174,17 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Initialize sliding mode controllers
     smcs = [SlidingModeController(lambda_param=1.5, eta=2.0) for _ in range(6)]
     
-    # Mock system matrices for observer
+   # Mock system matrices for observer
     A = np.eye(9)
-    # FIX: Rename B to B_mat so we don't overwrite the global magnetic field 'B' constant
+    
+    # FIX: Rename the control matrix to 'B_mat' so we don't overwrite the global 'B' constant (50.0)
     B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT  
+    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls (acceleration) to velocity
     
     C = np.eye(9)
     L = np.eye(9) * 0.1
     
-    # Pass 'B_mat' instead of 'B'
+    # Pass the correctly named matrix
     observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model

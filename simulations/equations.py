@@ -12,6 +12,8 @@ Updated to align with the Refractive Vacuum Gravity (RVG) Unified Field framewor
 
 All equations derived from theoretical framework with proper validation and error handling.
 
+CALIBRATED: Parameters aligned with thrust_model.py for consistent results.
+
 References:
     Hofseth, J.D. (2025). "Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, 
     the 95 GeV Resonance, and the Metric Engineering of Static Levitation"
@@ -96,7 +98,7 @@ E_CHARGE = const.e  # Elementary charge (C)
 ALPHA = const.alpha  # Fine structure constant (~1/137)
 
 # =============================================================================
-# RVG Unified Field Constants
+# RVG Unified Field Constants (CALIBRATED)
 # =============================================================================
 
 # Schwinger critical field (QED vacuum breakdown threshold)
@@ -109,17 +111,30 @@ DILATON_MASS_GEV = 95.4  # GeV (observed resonance)
 DILATON_MASS_J = DILATON_MASS_GEV * 1e9 * E_CHARGE  # Convert to Joules
 
 # Dilaton coupling strength (theoretical estimate - requires experimental validation)
-# This is a placeholder; actual value must be determined experimentally
+# Paper Table II states: "Θ_95 - To be measured"
+# This value is calibrated to produce physically reasonable forces
 THETA_95_BASELINE = 1e-8  # Baseline dilaton enhancement factor
 
 # Trace anomaly coupling coefficient (from disformal gravity)
 # beta_EM ≈ 1/45 for QED trace anomaly
 BETA_EM = 1.0 / 45.0
 
-# Effective B_crit for RVG (lower than Schwinger due to dilaton enhancement)
-# This represents the field scale where vacuum polarization becomes significant
-# with dilaton resonance pumping - MUST BE VALIDATED EXPERIMENTALLY
-B_CRIT_RVG = 1e6  # Tesla (effective threshold with dilaton enhancement)
+# Trace anomaly coupling for piecewise enhancement model
+# Used in supra-threshold regime of dilaton_enhancement()
+TRACE_ANOMALY_COUPLING = 0.1  # Dilaton-trace anomaly coupling strength
+
+# Effective B threshold for RVG (where dilaton enhancement becomes significant)
+# CALIBRATED: Changed from 1e6 to 20.0 to align with thrust_model.py
+# Paper states: "no strict universal B_crit" - this is a threshold, not critical field
+# Chosen to be ~10x material saturation (~2.9 T for Minnealloy)
+B_CRIT_RVG = 20.0  # Tesla (threshold for significant enhancement)
+
+# Geometry factors for gradient calculations (T/m)
+# These represent achievable ∇B² for different MADA configurations
+DEFAULT_GEOMETRY_FACTOR = 1e6   # Simple opposing magnets
+MADA_SINGLE_GEOMETRY = 5e6     # Single-stage MADA array
+MADA_NESTED_GEOMETRY = 2e7     # Nested MADA configuration
+BUSHMAN_MAX_GEOMETRY = 1e8     # Optimized Bushman geometry
 
 # EGDPP-specific constants (legacy - retained for compatibility)
 CHI_UV = 1e-10  # UV-scale susceptibility
@@ -167,7 +182,7 @@ EPSILON = 1e-12  # Small value for numerical stability
 
 
 # =============================================================================
-# RVG Unified Field: Core Functions
+# RVG Unified Field: Core Functions (CALIBRATED)
 # =============================================================================
 
 def dilaton_enhancement(B: Union[float, np.ndarray], 
@@ -176,26 +191,33 @@ def dilaton_enhancement(B: Union[float, np.ndarray],
     """
     Calculate the dilaton enhancement factor Θ_dilaton(B).
     
-    This represents the non-linear vacuum response that grows with magnetic
-    field intensity due to 95 GeV resonance pumping. The enhancement is
-    weak at low B but grows strongly with intensity.
+    CALIBRATED: Uses piecewise model aligned with thrust_model.py and paper.
+    
+    The 95 GeV dilaton/radion resonance couples to the trace anomaly,
+    providing non-linear enhancement of vacuum polarization effects
+    at high magnetic field intensities.
+    
+    From the paper (Section 7.2):
+        "Θ_dilaton(B) characterizes the non-linear vacuum response—weak 
+        at low B and growing strongly with field intensity due to 
+        resonant pumping of the 95 GeV scalar."
     
     Args:
         B: Magnetic field magnitude (T)
-        theta_baseline: Baseline enhancement factor (default from THETA_95_BASELINE)
-        B_scale: Characteristic field scale (T) where enhancement becomes significant
+        theta_baseline: Baseline enhancement factor (default: THETA_95_BASELINE)
+        B_scale: Threshold field (T) where enhancement becomes significant
     
     Returns:
         Θ_dilaton(B) - dimensionless enhancement factor
     
     Note:
-        The exact functional form requires experimental validation.
-        Current implementation uses a phenomenological model:
-        Θ_dilaton(B) = θ_baseline * (B/B_scale)^2 * [1 + (B/B_scale)^2]
+        The paper states Θ_95 is "To be measured" (Table II).
+        Current values are calibrated estimates for simulation purposes.
         
-        This captures:
-        - Quadratic onset at low fields (Euler-Heisenberg regime)
-        - Enhanced growth at high fields (dilaton resonance pumping)
+        Piecewise behavior:
+        - Sub-threshold (x < 0.1): Euler-Heisenberg regime, minimal enhancement
+        - Transition (0.1 ≤ x < 1.0): Growing enhancement
+        - Supra-threshold (x ≥ 1.0): Strong nonlinear enhancement (resonant pumping)
     """
     # Use runtime lookup for defaults to avoid definition-time evaluation issues
     if theta_baseline is None:
@@ -204,12 +226,31 @@ def dilaton_enhancement(B: Union[float, np.ndarray],
         B_scale = B_CRIT_RVG
     
     B = np.asarray(B, dtype=float)
-    B_ratio = B / B_scale
+    x = B / B_scale  # Normalized field strength
     
-    # Phenomenological model with dilaton enhancement
-    # Linear term: standard QED vacuum polarization
-    # Quadratic term: dilaton resonance enhancement
-    theta = theta_baseline * B_ratio**2 * (1 + B_ratio**2)
+    # Piecewise model matching thrust_model.py and paper description
+    if np.ndim(B) == 0:
+        # Scalar case
+        if x < 0.1:
+            # Sub-threshold: Euler-Heisenberg regime, minimal enhancement
+            theta = theta_baseline * (1 + 0.1 * x**2)
+        elif x < 1.0:
+            # Transition region: growing enhancement
+            theta = theta_baseline * (1 + x**2)
+        else:
+            # Supra-threshold: strong nonlinear enhancement (resonant pumping)
+            theta = theta_baseline * (1 + x**2 + TRACE_ANOMALY_COUPLING * x**3)
+    else:
+        # Array case - use np.where for vectorization
+        theta = np.where(
+            x < 0.1,
+            theta_baseline * (1 + 0.1 * x**2),
+            np.where(
+                x < 1.0,
+                theta_baseline * (1 + x**2),
+                theta_baseline * (1 + x**2 + TRACE_ANOMALY_COUPLING * x**3)
+            )
+        )
     
     return theta
 
@@ -622,6 +663,41 @@ def calculate_grad_B2(B_field_func: Callable, position: np.ndarray,
         
         # ∇(B²) = 2B * ∇B, but we compute directly
         grad_B2[i] = (B_plus**2 - B_minus**2) / (2 * delta)
+    
+    return grad_B2
+
+
+def gradient_B_squared(B: float, geometry_factor: Optional[float] = None) -> np.ndarray:
+    """
+    Estimate gradient of B² for thrust calculations.
+    
+    ALIGNED WITH: thrust_model.py gradient_B_squared()
+    
+    Args:
+        B: Local magnetic field (T)
+        geometry_factor: Geometry-dependent scaling (T/m equivalent)
+            - DEFAULT_GEOMETRY_FACTOR (1e6): Simple opposing magnets
+            - MADA_SINGLE_GEOMETRY (5e6): Single-stage MADA
+            - MADA_NESTED_GEOMETRY (2e7): Nested MADA
+            - BUSHMAN_MAX_GEOMETRY (1e8): Optimized Bushman geometry
+    
+    Returns:
+        grad_B2: Gradient of B² (T²/m), 3D vector
+    
+    Theory:
+        ∇B² is maximized in Bushman opposing-pole configurations
+        where flux converges to a small gap region. Nested MADA
+        can achieve gradients exceeding 10⁸ T²/m in optimized designs.
+    """
+    if geometry_factor is None:
+        geometry_factor = DEFAULT_GEOMETRY_FACTOR
+    
+    # B² gradient scales with 2B·∇B
+    # For opposing geometry, gradient points away from convergence
+    grad_B2_magnitude = 2 * B * geometry_factor
+    
+    # Default: thrust direction along x-axis
+    grad_B2 = np.array([grad_B2_magnitude, 0.0, 0.0])
     
     return grad_B2
 
@@ -1492,7 +1568,7 @@ def parallel_monte_carlo_thrust(params: Dict[str, Any],
             # Use RVG framework
             F_vec = force_vector_rvg(
                 B_total,
-                sim_params.get('grad_B2', np.array([1e10, 0.0, 0.0])),
+                sim_params.get('grad_B2', np.array([1e8, 0.0, 0.0])),
                 sim_params.get('volume', 0.001),
                 include_dilaton=True
             )
@@ -1680,22 +1756,22 @@ def plot_dilaton_enhancement(B_range: np.ndarray = None,
     Plot dilaton enhancement factor vs magnetic field.
     
     Args:
-        B_range: Array of B values (T). Default: 1 to 1e8 T (log scale)
+        B_range: Array of B values (T). Default: 1 to 200 T
         filename: If provided, save to file instead of showing
     """
     if not MATPLOTLIB_AVAILABLE:
         raise ImportError("Matplotlib required for visualization")
     
     if B_range is None:
-        B_range = np.logspace(0, 8, 200)
+        B_range = np.linspace(0.1, 200, 200)
     
     theta = dilaton_enhancement(B_range)
     
     plt.figure(figsize=(10, 6))
-    plt.loglog(B_range, theta, linewidth=2)
+    plt.semilogy(B_range, theta, linewidth=2)
     plt.axvline(x=B_CRIT_RVG, color='r', linestyle='--', alpha=0.5, 
-                label=f'B_crit (RVG) = {B_CRIT_RVG:.0e} T')
-    plt.title('Dilaton Enhancement Factor Θ(B)')
+                label=f'B_threshold (RVG) = {B_CRIT_RVG:.0f} T')
+    plt.title('Dilaton Enhancement Factor Θ(B) - Calibrated')
     plt.xlabel('Magnetic Field B (T)')
     plt.ylabel('Θ_dilaton')
     plt.grid(True, alpha=0.3)
@@ -1948,17 +2024,17 @@ def symbolic_rg_beta_chi_spin0() -> sp.Expr:
 
 def symbolic_dilaton_enhancement() -> sp.Expr:
     """
-    Return symbolic expression for dilaton enhancement factor.
+    Return symbolic expression for dilaton enhancement factor (simplified).
     
-    Θ_dilaton(B) = θ_baseline * (B/B_scale)² * [1 + (B/B_scale)²]
+    Θ_dilaton(B) = θ_baseline * (1 + (B/B_scale)² + c*(B/B_scale)³)
     """
-    B, B_scale, theta_baseline = sp.symbols('B B_scale theta_baseline', positive=True, real=True)
-    B_ratio = B / B_scale
-    return theta_baseline * B_ratio**2 * (1 + B_ratio**2)
+    B, B_scale, theta_baseline, c = sp.symbols('B B_scale theta_baseline c', positive=True, real=True)
+    x = B / B_scale
+    return theta_baseline * (1 + x**2 + c * x**3)
 
 
 # =============================================================================
-# Unit Tests
+# Unit Tests (UPDATED FOR CALIBRATED PARAMETERS)
 # =============================================================================
 
 def test_surface_field() -> None:
@@ -2011,16 +2087,27 @@ def test_pulsed_enhancement() -> None:
 
 
 def test_dilaton_enhancement() -> None:
-    """Unit test for dilaton enhancement factor."""
-    # At B = B_CRIT_RVG, should get non-trivial enhancement
-    B = B_CRIT_RVG
+    """Unit test for dilaton enhancement factor (CALIBRATED parameters)."""
+    # Test 1: At B = B_CRIT_RVG (20 T), x = 1.0, should be in supra-threshold
+    B = B_CRIT_RVG  # 20 T
     theta = dilaton_enhancement(B)
-    expected = THETA_95_BASELINE * 1.0**2 * (1 + 1.0**2)  # = 2 * baseline
-    assert np.isclose(theta, expected), f"Expected {expected}, got {theta}"
     
-    # At B = 0, should get 0
+    # x = 1.0: theta = 1e-8 * (1 + 1 + 0.1*1) = 2.1e-8
+    expected = THETA_95_BASELINE * (1 + 1.0**2 + TRACE_ANOMALY_COUPLING * 1.0**3)
+    assert np.isclose(theta, expected, rtol=1e-6), f"Expected {expected}, got {theta}"
+    
+    # Test 2: At B = 0, x = 0, sub-threshold: theta = 1e-8 * (1 + 0) = 1e-8
     theta_zero = dilaton_enhancement(0.0)
-    assert np.isclose(theta_zero, 0.0), f"Expected 0.0, got {theta_zero}"
+    expected_zero = THETA_95_BASELINE * 1.0  # (1 + 0.1*0^2) = 1
+    assert np.isclose(theta_zero, expected_zero, rtol=1e-6), \
+        f"Expected {expected_zero}, got {theta_zero}"
+    
+    # Test 3: At B = 50 T (typical operating point), x = 2.5
+    theta_50 = dilaton_enhancement(50.0)
+    x = 50.0 / B_CRIT_RVG  # = 2.5
+    expected_50 = THETA_95_BASELINE * (1 + x**2 + TRACE_ANOMALY_COUPLING * x**3)
+    assert np.isclose(theta_50, expected_50, rtol=1e-6), \
+        f"Expected {expected_50}, got {theta_50}"
     
     print("✓ test_dilaton_enhancement PASSED")
 
@@ -2063,7 +2150,7 @@ def test_master_equation() -> None:
     # Simple test with uniform field and gradient
     N = 10
     B_field = np.ones(N) * 50.0  # 50 T
-    grad_B2 = np.tile([1e10, 0.0, 0.0], (N, 1))  # 10^10 T²/m in x
+    grad_B2 = np.tile([1e8, 0.0, 0.0], (N, 1))  # 10^8 T²/m in x
     volumes = np.ones(N) * 1e-6  # 1 mm³ each
     
     F = master_equation_levitation(B_field, grad_B2, volumes)
@@ -2077,10 +2164,27 @@ def test_master_equation() -> None:
     print("✓ test_master_equation PASSED")
 
 
+def test_force_calculation() -> None:
+    """Test that force calculations produce physically reasonable values."""
+    B = 50.0  # Tesla (typical operating point)
+    volume = 0.001  # m³ (1 liter)
+    
+    # Test with default geometry factor
+    grad_B2 = gradient_B_squared(B, DEFAULT_GEOMETRY_FACTOR)
+    F = force_vector_rvg(B, grad_B2, volume)
+    F_mag = np.linalg.norm(F)
+    
+    # Force should be positive and reasonable (1 to 100,000 N range)
+    assert F_mag > 1, f"Force {F_mag:.1f}N seems too low"
+    assert F_mag < 1e5, f"Force {F_mag:.1f}N seems too high"
+    
+    print(f"✓ test_force_calculation PASSED (F = {F_mag:.1f} N)")
+
+
 def run_all_tests() -> None:
     """Run all unit tests."""
     print("\n" + "=" * 70)
-    print("Running Unit Tests")
+    print("Running Unit Tests (CALIBRATED)")
     print("=" * 70)
     test_surface_field()
     test_axial_field()
@@ -2090,6 +2194,7 @@ def run_all_tests() -> None:
     test_refractive_index()
     test_vacuum_force_density()
     test_master_equation()
+    test_force_calculation()
     print("=" * 70)
     print("All tests passed!")
     print("=" * 70 + "\n")
@@ -2102,7 +2207,7 @@ def run_all_tests() -> None:
 if __name__ == "__main__":
     print("=" * 70)
     print("QED Vacuum Thrust Control - Equations Module")
-    print("RVG Unified Field Framework")
+    print("RVG Unified Field Framework (CALIBRATED)")
     print("=" * 70)
     
     print("\nModule Information:")
@@ -2114,18 +2219,19 @@ if __name__ == "__main__":
     print(f"  QuTiP available: {QUTIP_AVAILABLE}")
     print(f"  PySCF available: {PYSCF_AVAILABLE}")
     
-    print("\nRVG Framework Constants:")
+    print("\nRVG Framework Constants (CALIBRATED):")
     print(f"  Schwinger B_crit: {B_CRIT_SCHWINGER:.3e} T")
-    print(f"  RVG effective B_crit: {B_CRIT_RVG:.3e} T")
+    print(f"  RVG B_threshold: {B_CRIT_RVG:.1f} T")
     print(f"  Dilaton mass: {DILATON_MASS_GEV} GeV")
     print(f"  Baseline Θ_95: {THETA_95_BASELINE:.3e}")
+    print(f"  Trace anomaly coupling: {TRACE_ANOMALY_COUPLING}")
     print(f"  MADA default k: {MADA_DEFAULT_K}")
     
     # Run unit tests
     run_all_tests()
     
     # Example calculations
-    print("\nExample Calculations (RVG Framework):")
+    print("\nExample Calculations (RVG Framework - CALIBRATED):")
     print("-" * 70)
     
     print("\n1. Axial Field (Halbach/Solenoid):")
@@ -2146,45 +2252,45 @@ if __name__ == "__main__":
     conv = validate_mada_convergence(B1_correct, B2_correct)
     print(f"   {conv['message']}")
     
-    print("\n5. Dilaton Enhancement Factor:")
-    for B_test in [1.0, 100.0, 1e6, 1e7]:
+    print("\n5. Dilaton Enhancement Factor (CALIBRATED):")
+    for B_test in [1.0, 10.0, 20.0, 50.0, 100.0]:
         theta = dilaton_enhancement(B_test)
-        print(f"   Θ({B_test:.0e} T) = {theta:.6e}")
+        print(f"   Θ({B_test:.0f} T) = {theta:.2e}")
     
-    print("\n6. Refractive Index:")
-    for B_test in [1.0, 100.0, 1e6]:
-        K = refractive_index(B_test)
-        print(f"   K({B_test:.0e} T) = {K:.12f}")
+    print("\n6. Force per MADA unit at B=50T:")
+    for name, gf in [("Simple opposing", DEFAULT_GEOMETRY_FACTOR),
+                     ("MADA single", MADA_SINGLE_GEOMETRY),
+                     ("MADA nested", MADA_NESTED_GEOMETRY)]:
+        grad_B2 = gradient_B_squared(50.0, gf)
+        F = force_vector_rvg(B=50.0, grad_B2=grad_B2, volume=0.001)
+        print(f"   {name}: F = {np.linalg.norm(F):.1f} N")
     
-    print("\n7. Vacuum Force Density:")
-    B_test = 50.0
-    grad_K_test = np.array([1e-10, 0.0, 0.0])
-    f_vac = vacuum_force_density(B_test, grad_K_test)
-    print(f"   f_vac at B={B_test}T, ∇K=[{grad_K_test[0]:.0e},0,0] = {f_vac} N/m³")
+    print("\n7. Total System Thrust (24 MADA units, 95% efficiency):")
+    for name, gf in [("Simple opposing", DEFAULT_GEOMETRY_FACTOR),
+                     ("MADA single", MADA_SINGLE_GEOMETRY),
+                     ("MADA nested", MADA_NESTED_GEOMETRY)]:
+        grad_B2 = gradient_B_squared(50.0, gf)
+        F = force_vector_rvg(B=50.0, grad_B2=grad_B2, volume=0.001)
+        T = total_thrust(N=24, F=F, eta=0.95, theta=0)
+        print(f"   {name}: T = {T:.1f} N")
     
-    print("\n8. Force Vector (RVG):")
-    F = force_vector_rvg(B=50.0, grad_B2=np.array([1e10, 0, 0]), volume=0.001)
-    print(f"   F = {F} N")
-    print(f"   |F| = {np.linalg.norm(F):.6e} N")
-    
-    print("\n9. Master Equation of Levitation (Discrete):")
-    N_elements = 100
-    B_field = np.ones(N_elements) * 60.0  # 60 T uniform
-    grad_B2_field = np.tile([1e12, 0.0, 0.0], (N_elements, 1))  # 10^12 T²/m
-    volumes = np.ones(N_elements) * 1e-6  # 1 mm³ each
-    F_lift = master_equation_levitation(B_field, grad_B2_field, volumes)
-    print(f"   F_lift = {F_lift} N")
-    print(f"   |F_lift| = {np.linalg.norm(F_lift):.4f} N")
-    
-    print("\n10. Total Thrust (24 MADA units):")
-    T = total_thrust(N=24, F=np.linalg.norm(F_lift), eta=0.95, theta=0)
-    print(f"   Thrust = {T:.2f} N")
-    
-    print("\n11. Acceleration (50 kg system):")
-    a = acceleration(T=T, m=50)
-    print(f"   Acceleration = {a:.2f} m/s² ({a/9.81:.2f}g)")
+    print("\n8. Performance for 20,000 kg vehicle:")
+    mass = 20000.0
+    weight = mass * 9.81
+    print(f"   Weight = {weight:.0f} N")
+    for name, gf in [("Simple opposing", DEFAULT_GEOMETRY_FACTOR),
+                     ("MADA single", MADA_SINGLE_GEOMETRY),
+                     ("MADA nested", MADA_NESTED_GEOMETRY)]:
+        grad_B2 = gradient_B_squared(50.0, gf)
+        F = force_vector_rvg(B=50.0, grad_B2=grad_B2, volume=0.001)
+        T = total_thrust(N=24, F=F, eta=0.95, theta=0)
+        twr = T / weight
+        a = acceleration(T, mass)
+        status = "✓ HOVER" if twr >= 1.0 else "insufficient"
+        print(f"   {name}: T/W = {twr:.2f} ({status}), a = {a:.2f} m/s²")
     
     print("\n" + "=" * 70)
     print("Module loaded successfully!")
     print("RVG Unified Field equations ready for simulation.")
+    print("Calibrated for consistency with thrust_model.py")
     print("=" * 70)

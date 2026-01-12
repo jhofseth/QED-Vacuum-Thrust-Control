@@ -1063,7 +1063,7 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
     """Train demo model on random data with RL integration."""
     import torch.nn as nn  # For Linear
 
-# First demo (mirror for second)
+# First demo
 logger.info("Training demo model...")
 for epoch in range(50):
     loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
@@ -1071,7 +1071,7 @@ for epoch in range(50):
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
 model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
 model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec as set
+    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
 )
 logger.info("Model quantization successful")
 
@@ -1083,12 +1083,13 @@ for epoch in range(50):
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
 model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
 model_quantized = torch.quantization.quantize_dynamic(
-    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec as set
+    model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
 )
 logger.info("Model quantization successful")
 
 import torch.optim as optim
-from torchao.quantization.qat import QATConfig, Int8DynamicActivationInt4WeightConfig
+from torchao.quantization.qat import QATConfig
+from torchao.quantization import Int8DynamicActivationInt4WeightConfig  # Corrected import
 # Define base config
 base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
 # Wrap in QATConfig for training

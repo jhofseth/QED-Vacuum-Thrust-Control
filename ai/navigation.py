@@ -32,6 +32,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer 
+import X86InductorQuantizer
 import matplotlib.pyplot as plt
 from typing import List, Optional, Tuple
 import os
@@ -1101,7 +1103,12 @@ if __name__ == "__main__":
     primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
     example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
     exported_model = torch.export.export(primary_model, (example_input,))
-    model = prepare_qat_pt2e(exported_model.module(), qat_config)
+    # Create a quantizer for the PT2E flow
+quantizer = X86InductorQuantizer() 
+# You can optionally configure it: quantizer.set_global(...) if needed, 
+# but using the default is safest to fix the crash.
+
+model = prepare_qat_pt2e(exported_model.module(), quantizer)
     # Train with optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters

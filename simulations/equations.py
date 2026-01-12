@@ -171,8 +171,8 @@ EPSILON = 1e-12  # Small value for numerical stability
 # =============================================================================
 
 def dilaton_enhancement(B: Union[float, np.ndarray], 
-                        theta_baseline: float = THETA_95_BASELINE,
-                        B_scale: float = B_CRIT_RVG) -> Union[float, np.ndarray]:
+                        theta_baseline: Optional[float] = None,
+                        B_scale: Optional[float] = None) -> Union[float, np.ndarray]:
     """
     Calculate the dilaton enhancement factor Θ_dilaton(B).
     
@@ -197,6 +197,12 @@ def dilaton_enhancement(B: Union[float, np.ndarray],
         - Quadratic onset at low fields (Euler-Heisenberg regime)
         - Enhanced growth at high fields (dilaton resonance pumping)
     """
+    # Use runtime lookup for defaults to avoid definition-time evaluation issues
+    if theta_baseline is None:
+        theta_baseline = THETA_95_BASELINE
+    if B_scale is None:
+        B_scale = B_CRIT_RVG
+    
     B = np.asarray(B, dtype=float)
     B_ratio = B / B_scale
     
@@ -2109,6 +2115,10 @@ if __name__ == "__main__":
     print(f"  Dilaton mass: {DILATON_MASS_GEV} GeV")
     print(f"  Baseline Θ_95: {THETA_95_BASELINE:.3e}")
     print(f"  MADA default k: {MADA_DEFAULT_K}")
+
+    print(f"DEBUG: THETA_95_BASELINE = {THETA_95_BASELINE}")
+    print(f"DEBUG: B_CRIT_RVG = {B_CRIT_RVG}")
+    print(f"DEBUG: dilaton_enhancement defaults = {dilaton_enhancement.__defaults__}")
     
     # Run unit tests
     run_all_tests()

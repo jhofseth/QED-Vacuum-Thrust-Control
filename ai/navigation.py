@@ -1196,10 +1196,9 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
 # Mock system matrices for observer
     A = np.eye(9)
-    
-    # FIX: Rename B to B_mat to avoid overwriting the magnetic field constant 'B'
+    # FIX: Rename B to B_mat to preserve the magnetic field constant 'B' for physics
     B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT 
+    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls to velocity
     
     C = np.eye(9)
     L = np.eye(9) * 0.1

@@ -1089,7 +1089,8 @@ logger.info("Model quantization successful")
 
 import torch.optim as optim
 from torchao.quantization.qat import QATConfig
-from torchao.quantization import Int8DynamicActivationInt4WeightConfig  # Corrected import
+from torchao.quantization import Int8DynamicActivationInt4WeightConfig
+from torchao.quantization.pt2e.quantize_pt2e import prepare_qat_pt2e, convert_pt2e
 # Define base config
 base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
 # Wrap in QATConfig for training
@@ -1106,7 +1107,6 @@ quantized_model = convert_pt2e(model)
 if __name__ == "__main__":
     # End of script
     pass
-
 
 # =============================================================================
 # Main Simulation

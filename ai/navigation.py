@@ -1880,18 +1880,14 @@ if __name__ == "__main__":
     logger.info(f"Max thrust: {max(telemetry['thrust']):.0f} N")
     logger.info(f"Max degradation: {max(telemetry['degradation']):.2f}")
     
-
-
-    
-    
     # 4. Results & Analysis (UPDATED)
     logger.info("="*70)
-    analyze_efficiency(telem)  # <--- Call Analysis
+    analyze_efficiency(telemetry)  # <--- Call Analysis
     
     logger.info("\nSaving results...")
-    save_simulation_data(traj, vel, telem)
-    plot_trajectory(traj, vel, [np.array([50,25,10])], [100,50,20]) # Fixed arguments
-    plot_telemetry(telem)
+    save_simulation_data(trajectory, velocity, telemetry)
+    plot_trajectory(trajectory, velocity, [np.array([50,25,10])], [100,50,20]) # Fixed arguments
+    plot_telemetry(telemetry)
     
     # Generate Interactive HTML
     save_interactive_plot(traj, [np.array([50,25,10])]) # <--- Call HTML Generator

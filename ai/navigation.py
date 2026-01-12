@@ -1104,12 +1104,8 @@ if __name__ == "__main__":
     exported_model = torch.export.export(primary_model, (example_input,))
     # Create a quantizer for the PT2E flow
 quantizer = X86InductorQuantizer() 
-# You can optionally configure it: quantizer.set_global(...) if needed, 
-# but using the default is safest to fix the crash.
-
 model = prepare_qat_pt2e(exported_model.module(), quantizer)
-    # Train with optimizer
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
     train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
     # Convert to quantized after training
     quantized_model = convert_pt2e(model)

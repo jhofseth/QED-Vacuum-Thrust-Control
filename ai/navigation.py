@@ -1064,33 +1064,26 @@ def fine_tune_yolo(yolo_model: YOLOModel, dataset: List[torch.Tensor], num_epoch
 def train_demo_model(num_epochs: int = 100, batch_size: int = 32, 
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
-import torch.nn as nn  # For Linear
-
-if __name__ == "__main__":
-    # 4-space indented block
-    logger.info("Training demo model...")
-    for epoch in range(50):
-        # 8-space nested
-        loss = 2.5 - (epoch * 0.04)
-        if epoch % 10 == 0:
-            # 12-space nested
-            logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-    model = nn.Sequential(nn.Linear(10, 5))  # Uses nn from top import
-    model_quantized = torch.quantization.quantize_dynamic(
-        model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
-    )
-    logger.info("Model quantization successful")
-
-    logger.info("Training demo model...")
-    for epoch in range(50):
-        loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
-        if epoch % 10 == 0:
-            logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-    model = nn.Sequential(nn.Linear(10, 5))  # Mock model: sensors to controls
-    model_quantized = torch.quantization.quantize_dynamic(
-        model, {nn.Linear}, dtype=torch.qint8  # Correct qconfig_spec
-    )
-    logger.info("Model quantization successful")
+    logger.info(f"Initializing HybridMIMONetwork (epochs={num_epochs})...")
+    
+    # Initialize the complex model (inputs: 12, outputs: 6)
+    model = HybridMIMONetwork(input_size=12, output_size=6)
+    
+    # Create dummy dataset
+    # Inputs: 12 dims (Pos, Vel, Target, Visual)
+    # Outputs: 6 dims (Thrust Vector + Direction)
+    dummy_inputs = torch.randn(100, 12)
+    dummy_targets = torch.randn(100, 6)
+    
+    # Package into list for the existing train_on_dataset function
+    dataset = []
+    for i in range(100):
+        dataset.append((dummy_inputs[i], dummy_targets[i]))
+        
+    # Train
+    train_on_dataset(model, dataset, num_epochs=num_epochs, lr=lr)
+    
+    return model
 
     import torch.optim as optim
     from torchao.quantization.qat import QATConfig
@@ -1643,11 +1636,11 @@ if __name__ == "__main__":
     logger.info("=" * 70)
     logger.info("Framework: Refractive Vacuum Gravity (RVG) Unified Field")
     logger.info("  - Disformal QED with 95 GeV dilaton/radion resonance")
-    logger.info("  - Master Equation: F = ∫(Θ_dilaton(B)·∇B²)dV")
+    logger.info(" - Master Equation: F = integral(Theta_dilaton(B) * grad(B^2))dV")
     logger.info("  - MADA amplification per U.S. Patent 5,929,732")
     logger.info("-" * 70)
     logger.info("CALIBRATED PARAMETERS (aligned with equations.py/thrust_model.py):")
-    logger.info(f"  Θ_baseline: {THETA_95_BASE:.2e}")
+    llogger.info(f" Theta_baseline: {THETA_95_BASE:.2e}")
     logger.info(f"  B_threshold: {B_CRIT_EFFECTIVE} T")
     logger.info(f"  Trace anomaly coupling: {TRACE_ANOMALY_COUPLING}")
     logger.info("-" * 70)
@@ -1660,7 +1653,7 @@ if __name__ == "__main__":
     logger.info("Calibration verification at B=50T:")
     theta_test = dilaton_enhancement(50.0)
     thrust_test, rvg_test = calculate_thrust_force(50.0, volume=0.001)
-    logger.info(f"  Θ_dilaton(50T) = {theta_test:.2e}")
+    logger.info(f" Theta_dilaton(50T) = {theta_test:.2e}")
     logger.info(f"  Thrust (simple opposing) = {thrust_test:.0f} N")
     logger.info("")
     

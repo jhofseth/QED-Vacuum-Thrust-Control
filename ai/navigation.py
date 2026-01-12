@@ -1210,34 +1210,34 @@ observer = StateObserver(A, B_mat, C, L)
 maintenance_model = MaintenanceNN()
 maintenance_model.eval()
     
-    # Hardware state simulation
-    current_temp = 25.0
-    current_B = B  # Initial opposing B-field
-    current_eta = ETA
-    cycles = 0
-    threat_level = 0.0
+# Hardware state simulation
+current_temp = 25.0
+current_B = B  # Initial opposing B-field
+current_eta = ETA
+cycles = 0
+threat_level = 0.0
     
-    # Check initial supra-saturation status
-    supra_status = check_supra_saturation(current_B)
-    logger.info(f"Initial field status: {supra_status['message']}")
+# Check initial supra-saturation status
+supra_status = check_supra_saturation(current_B)
+logger.info(f"Initial field status: {supra_status['message']}")
     
-    # Model selection
-    use_primary = True
-    model = primary_model
-    model.eval()
+# Model selection
+use_primary = True
+model = primary_model
+model.eval()
     
-    # YOLO model for detection
-    yolo = YOLOModel()
+# YOLO model for detection
+yolo = YOLOModel()
     
-    # Mock visual features
-    visual_features = np.zeros(3)
+# Mock visual features
+visual_features = np.zeros(3)
     
-    # Swarm coordination (mock: assume single drone)
-    swarm_pos = [pos.copy()]
+# Swarm coordination (mock: assume single drone)
+swarm_pos = [pos.copy()]
     
-    # MADA pulsing state
-    pulse_phase = 0.0
-    pulse_period = 1.0 / pulsing_freq
+# MADA pulsing state
+pulse_phase = 0.0
+pulse_period = 1.0 / pulsing_freq
     
     logger.info("=" * 70)
     logger.info("Starting RVG Unified Field navigation simulation (CALIBRATED)")

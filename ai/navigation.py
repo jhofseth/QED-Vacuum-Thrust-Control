@@ -1062,6 +1062,7 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
     import torch.nn as nn  # For Linear
+import torch.export  # For model export
 
 # First demo
 logger.info("Training demo model...")
@@ -1097,7 +1098,9 @@ base_config = Int8DynamicActivationInt4WeightConfig(group_size=32)
 qat_config = QATConfig(base_config)
 # Prepare model for QAT (inserts fake quantizers)
 primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
-model = prepare_qat_pt2e(primary_model, qat_config)  # From torchao
+example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
+exported_model = torch.export.export(primary_model, (example_input,))
+model = prepare_qat_pt2e(exported_model, qat_config)  # From torchao
 # Train with optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters

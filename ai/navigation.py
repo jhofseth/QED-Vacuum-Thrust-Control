@@ -1064,7 +1064,7 @@ def train_demo_model(num_epochs: int = 100, batch_size: int = 32,
     logger.info("Training demo model...")
 # Training loop for second demo
 for epoch in range(50):
-    # (Mock loss calculation and optimization)
+    loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
     if epoch % 10 == 0:
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
 model_quantized = torch.quantization.quantize_dynamic(

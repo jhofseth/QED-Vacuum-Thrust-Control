@@ -1196,13 +1196,16 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Initialize sliding mode controllers
     smcs = [SlidingModeController(lambda_param=1.5, eta=2.0) for _ in range(6)]
     
-    # Mock system matrices for observer
+# Mock system matrices for observer
     A = np.eye(9)
+    
+    # MAKE SURE THIS IS NAMED B_mat, NOT B
     B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT # Map controls to velocity states
+    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls to velocity states
+    
     C = np.eye(9)
     L = np.eye(9) * 0.1
-    observer = StateObserver(A, B_mat, C, L)
+    observer = StateObserver(A, B_mat, C, L) # Pass B_mat here
     
     # Initialize maintenance model
     maintenance_model = MaintenanceNN()

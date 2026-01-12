@@ -1707,7 +1707,8 @@ def plot_telemetry(telemetry: dict):
     
     plt.suptitle('RVG Unified Field Telemetry (CALIBRATED)', fontsize=14, fontweight='bold')
     plt.tight_layout()
-    plt.show()
+    plt.suptitle('RVG Unified Field Telemetry (CALIBRATED)', fontsize=14, fontweight='bold')
+    plt.tight_layout()
 
 
 # =============================================================================

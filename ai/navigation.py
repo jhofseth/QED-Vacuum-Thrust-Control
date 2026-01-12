@@ -1196,11 +1196,11 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
 # Mock system matrices for observer
     A = np.eye(9)
-    B_mat = np.zeros((9, 6))      # Rename to B_mat
-    B_mat[3:6, 0:3] = np.eye(3) * DT 
+    B_mat = np.zeros((9, 6))
+    B_mat[3:6, 0:3] = np.eye(3) * DT
     C = np.eye(9)
     L = np.eye(9) * 0.1
-    observer = StateObserver(A, B_mat, C, L) # Pass B_mat here
+    observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
     maintenance_model = MaintenanceNN()
@@ -1495,11 +1495,11 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         if step % 20 == 0:
             logger.info(f"Step {step}: dist={dist_to_target:.1f}m, "
                        f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
-                       f"Θ={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
+                       Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
     
     else:
         final_dist = np.linalg.norm(pos - target)
-        logger.info(f"✗ Simulation ended. Final distance: {final_dist:.1f}m")
+        logger.info(f"X Simulation ended. Final distance: {final_dist:.1f}m")
     
     return trajectory, velocities, controls_history, telemetry
 
@@ -1707,7 +1707,7 @@ if __name__ == "__main__":
     logger.info(f"Final speed: {np.linalg.norm(velocities[-1]):.2f}m/s")
     logger.info(f"Max temperature: {max(telemetry['temp']):.1f}°C")
     logger.info(f"Max B-field (MADA): {max(telemetry['b_field']):.1f}T")
-    logger.info(f"Max Θ_dilaton: {max(telemetry['dilaton_theta']):.2e}")
+    logger.info(f"Max Theta_dilaton: {max(telemetry['dilaton_theta']):.2e}")
     logger.info(f"Max vacuum K: {max(telemetry['vacuum_K']):.6f}")
     logger.info(f"Max supra-sat ratio: {max(telemetry['supra_sat_ratio']):.2f}")
     logger.info(f"Max thrust: {max(telemetry['thrust']):.0f} N")

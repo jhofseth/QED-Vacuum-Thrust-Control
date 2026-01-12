@@ -33,6 +33,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer import X86InductorQuantizer
+from torchao.quantization.pt2e import allow_exported_model_train_eval
 import matplotlib.pyplot as plt
 from typing import List, Optional, Tuple
 import os
@@ -1111,6 +1112,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 dummy_inputs = torch.randn(100, 10) 
 dummy_targets = torch.randn(100, 1)
 mock_dataset = torch.utils.data.TensorDataset(dummy_inputs, dummy_targets)
+allow_exported_model_train_eval(model)
 train_on_dataset(model, mock_dataset, num_epochs=10)
 quantized_model = convert_pt2e(model)
 

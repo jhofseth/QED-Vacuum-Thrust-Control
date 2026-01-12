@@ -32,8 +32,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer 
-import X86InductorQuantizer
+from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer import X86InductorQuantizer
 import matplotlib.pyplot as plt
 from typing import List, Optional, Tuple
 import os

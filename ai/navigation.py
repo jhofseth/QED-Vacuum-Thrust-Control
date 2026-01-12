@@ -34,6 +34,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchao.quantization.pt2e.quantizer.x86_inductor_quantizer import X86InductorQuantizer
 from torchao.quantization.pt2e import allow_exported_model_train_eval
+from torch.export import Dim
 import matplotlib.pyplot as plt
 from typing import List, Optional, Tuple
 import os
@@ -1102,7 +1103,12 @@ if __name__ == "__main__":
     # Prepare model for QAT (inserts fake quantizers)
     primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
     example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
-    exported_model = torch.export.export(primary_model, (example_input,))
+    # Define a dynamic dimension for batch size so the model accepts any batch size (1 to 1024)
+batch_dim = Dim("batch", min=1, max=1024)
+
+# Export with dynamic shapes
+# We map dimension 0 of the input to our dynamic 'batch_dim'
+exported_model = torch.export.export(model, (example_input,), dynamic_shapes=({0: batch_dim},))
     # Create a quantizer for the PT2E flow
 quantizer = X86InductorQuantizer() 
 model = prepare_qat_pt2e(exported_model.module(), quantizer)

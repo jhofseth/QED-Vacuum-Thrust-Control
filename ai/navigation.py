@@ -660,6 +660,47 @@ class KalmanFilter:
             except np.linalg.LinAlgError:
                 logger.warning("Singular matrix in visual update. Skipping.")
 
+class ObstacleTracker:
+    """
+    Dedicated Kalman Filter for tracking 3D obstacles/threats.
+    State: [x, y, z, vx, vy, vz] (6D)
+    Measurement: [x, y, z] (3D)
+    """
+    def __init__(self, dt=0.1):
+        self.dt = dt
+        # State vector [x, y, z, vx, vy, vz]
+        self.x = np.zeros(6)
+        
+        # State Transition Matrix (F)
+        # x = x + vx*dt
+        self.F = np.eye(6)
+        for i in range(3):
+            self.F[i, i+3] = dt
+            
+        # Measurement Matrix (H) - we only measure position
+        self.H = np.zeros((3, 6))
+        self.H[:, :3] = np.eye(3)
+        
+        # Covariance Matrices
+        self.P = np.eye(6) * 0.1   # Uncertainty
+        self.R = np.eye(3) * 0.05  # Measurement noise
+        self.Q = np.eye(6) * 0.01  # Process noise
+
+    def predict(self):
+        self.x = self.F @ self.x
+        self.P = self.F @ self.P @ self.F.T + self.Q
+        return self.x[:3]
+
+    def update(self, measurement):
+        z = np.array(measurement)
+        y = z - (self.H @ self.x) # Innovation
+        S = self.H @ self.P @ self.H.T + self.R
+        K = self.P @ self.H.T @ np.linalg.inv(S) # Kalman Gain
+        
+        self.x = self.x + K @ y
+        self.P = (np.eye(6) - K @ self.H) @ self.P
+        return self.x[:3]
+
 
 # =============================================================================
 # Controllers
@@ -965,17 +1006,34 @@ def simulate_sensors(true_pos: np.ndarray, true_vel: np.ndarray,
     return imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos
 
 
-def sort_tracking(objects: List[np.ndarray], kf: KalmanFilter) -> List[np.ndarray]:
+def sort_tracking(objects: List[np.ndarray], main_kf: KalmanFilter) -> List[np.ndarray]:
     """
-    Simple mock tracking for obstacles.
+    SORT-like tracking using dedicated ObstacleTrackers.
+    
+    This avoids the dimension mismatch crash by using a 6D filter 
+    (Pos+Vel) for obstacles, separate from the drone's 9D filter.
     """
-    tracked = []
+    tracked_positions = []
+    
     for obj in objects:
-        # Just return the object position with slight noise to simulate sensor tracking
-        # We do NOT use the main drone's KF here to avoid dimension mismatches
-        tracked_pos = obj + np.random.normal(0, 0.05, 3) 
-        tracked.append(tracked_pos)
-    return tracked
+        # 1. Create a dedicated tracker for this object
+        tracker = ObstacleTracker(dt=0.1)
+        
+        # 2. Initialize it with the current detection
+        # (In a full SORT implementation, we would match IDs here)
+        tracker.x[:3] = obj
+        
+        # 3. Run one Predict/Update cycle to smooth the data
+        tracker.predict()
+        
+        # Add simulated sensor noise to the 'measurement'
+        noisy_measurement = obj + np.random.normal(0, 0.05, 3)
+        
+        # Update the filter and get the smoothed position
+        smoothed_pos = tracker.update(noisy_measurement)
+        tracked_positions.append(smoothed_pos)
+        
+    return tracked_positions
 
 
 def visual_pose_estimation(visual_data: np.ndarray) -> np.ndarray:

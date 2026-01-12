@@ -1495,7 +1495,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         if step % 20 == 0:
             logger.info(f"Step {step}: dist={dist_to_target:.1f}m, "
                        f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
-                       Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
+                       f"Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
     
     else:
         final_dist = np.linalg.norm(pos - target)

@@ -1640,7 +1640,7 @@ if __name__ == "__main__":
     logger.info("  - MADA amplification per U.S. Patent 5,929,732")
     logger.info("-" * 70)
     logger.info("CALIBRATED PARAMETERS (aligned with equations.py/thrust_model.py):")
-    llogger.info(f" Theta_baseline: {THETA_95_BASE:.2e}")
+    logger.info(f" Theta_baseline: {THETA_95_BASE:.2e}")
     logger.info(f"  B_threshold: {B_CRIT_EFFECTIVE} T")
     logger.info(f"  Trace anomaly coupling: {TRACE_ANOMALY_COUPLING}")
     logger.info("-" * 70)

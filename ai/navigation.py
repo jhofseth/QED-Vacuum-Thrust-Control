@@ -1061,27 +1061,28 @@ def fine_tune_yolo(yolo_model: YOLOModel, dataset: List[torch.Tensor], num_epoch
 def train_demo_model(num_epochs: int = 100, batch_size: int = 32, 
                      lr: float = 0.001) -> HybridMIMONetwork:
     """Train demo model on random data with RL integration."""
-    import torch.nn.quantized as nnq  # Add for LinearPackedParams
+    import torch.nn as nn  # For Linear
+import torch.nn.quantized as nnq  # For LinearPackedParams
 
+# First demo (apply similarly)
 logger.info("Training demo model...")
-# Training loop for first demo
 for epoch in range(50):
     loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
     if epoch % 10 == 0:
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-model = nn.Sequential(nn.Linear(10, 5))  # Mock model definition
+model = nn.Sequential(nn.Linear(10, 5))  # Mock model: 10 inputs (e.g., sensors) to 5 outputs (e.g., controls)
 model_quantized = torch.quantization.quantize_dynamic(
     model, {nn.Linear: nnq.LinearPackedParams}, dtype=torch.qint8
 )
 logger.info("Model quantization successful")
 
+# Second demo
 logger.info("Training demo model...")
-# Training loop for second demo
 for epoch in range(50):
     loss = 2.5 - (epoch * 0.04)  # Mock decreasing loss from 2.5 to 0.5
     if epoch % 10 == 0:
         logger.info(f"Epoch {epoch}/50, Loss: {loss:.4f}")
-model = nn.Sequential(nn.Linear(10, 5))  # Mock model definition
+model = nn.Sequential(nn.Linear(10, 5))  # Mock model: 10 inputs to 5 outputs
 model_quantized = torch.quantization.quantize_dynamic(
     model, {nn.Linear: nnq.LinearPackedParams}, dtype=torch.qint8
 )

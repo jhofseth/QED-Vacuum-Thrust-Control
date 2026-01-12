@@ -1101,7 +1101,7 @@ if __name__ == "__main__":
     primary_model = nn.Sequential(nn.Linear(10, 5))  # Mock primary model: sensors to controls
     example_input = torch.randn(1, 10)  # Example input for export (batch 1, 10 features)
     exported_model = torch.export.export(primary_model, (example_input,))
-    model = prepare_qat_pt2e(exported_model, qat_config)  # From torchao
+    model = prepare_qat_pt2e(exported_model.module(), qat_config)
     # Train with optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters

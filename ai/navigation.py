@@ -1174,17 +1174,18 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Initialize sliding mode controllers
     smcs = [SlidingModeController(lambda_param=1.5, eta=2.0) for _ in range(6)]
     
-    # Mock system matrices for observer
-    A = np.eye(9)
-    # FIX: Rename B to B_mat so we don't overwrite the global magnetic field 'B' constant
-    B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT  
+   # Mock system matrices for observer
+    A_sys = np.eye(9)
     
-    C = np.eye(9)
-    L = np.eye(9) * 0.1
+    # FIX: Rename to B_sys to avoid overwriting global physics constants 'A' and 'B'
+    B_sys = np.zeros((9, 6))
+    B_sys[3:6, 0:3] = np.eye(3) * DT 
     
-    # Pass 'B_mat' instead of 'B'
-    observer = StateObserver(A, B_mat, C, L)
+    C_sys = np.eye(9)
+    L_sys = np.eye(9) * 0.1
+    
+    # Update the observer to use the new matrix names
+    observer = StateObserver(A_sys, B_sys, C_sys, L_sys)
     
     # Initialize maintenance model
     maintenance_model = MaintenanceNN()
@@ -1270,7 +1271,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         
         # PID corrections
         pos_error = target - fused_pos
-        att_error = np.zeros(3) - fused_att  # Target attitude is 0 (level flight)
+        att_error = np.zeros(3) - fused_att  # Target attitude is 0
         pid_corrections = np.array([
             pids[i].compute(target[i], fused_pos[i]) for i in range(3)
         ] + [

@@ -234,12 +234,21 @@ These equations enable direct Python/OpenSCAD/FEMM simulations of Bushman opposi
 
 ![Alt text](assets/IMG_0220.jpeg)
 ![Alt text](assets/IMG_2317.jpeg)
+> **Note on Amplification Factor (k) and B_opposing Adjustments**  
+> 
+> Research suggests that magnetic amplification in configurations like those in the Bushman patent (U.S. Patent 5,929,732) may achieve field enhancement factors up to 216× at extended distances. However, setting `k=1` provides a conservative baseline, avoiding assumptions of unverified enhancements. This is particularly useful for distance-focused simulations where standard dipole field decay (∼1/r³) dominates.  
+> 
+> This adjustment implies that while amplification may influence B_opposing in absolute terms, it is prudent to assume:  
+> - For single magnets per position: B_opposing = 5 × individual magnet value (assuming 5 positions per MADA).  
+> - For multiple magnets per position (e.g., m magnets per stack): B_opposing = 0.9 × 5 × m × individual magnet value (90% efficiency to account for potential interference).  
+> 
+> Previously, `k` defaulted to 200.0, resulting in thrust calculations that appeared excessive.
 
-Good news: Lockheed Martin's patented MADA makes EMF propulsion **~200-500x easier!**
+Good news: Lockheed Martin's patented MADA makes EMF propulsion *possibly* **~200-500x easier!**
 
 Based on the physical laws governing magnetic fields and the specific text from Lockheed Martin Corporation's [U.S. Patent 5,929,732](https://patents.google.com/patent/US5929732A/en) regarding an "Apparatus and Method for Amplifying a Magnetic Beam", here is the breakdown of the amplification implied.
 
-To achieve the effect described—lifting an object at 6 inches that a standard magnet can only lift at 1 inch—the magnetic assembly would effectively require an amplification of the source **B value** (magnetic field strength) of approximately **216 to 529 times**, depending on the magnetic saturation of the object.
+To achieve the effect described—lifting an object at 6 inches that a standard magnet can only lift at 1 inch—the magnetic assembly would *effectively* (i.e., not *absolutely*) require an amplification of the source **B value** (magnetic field strength) of approximately **216 to 529 times**, depending on the magnetic saturation of the object.
 
 ### Why the Amplification is So High
 
@@ -275,7 +284,7 @@ It is not merely "6 times" stronger. It is demonstrating an **effective B-value 
 
 ### Practical Application
 
-This means that a MADA can take 5 stacks of 6 cheap N52 magnets with spacers removed ($25 total from Amazon; each stack of 6 is ~3T) to **~600+T B_opposing**. Put that inside a magnetic circuit in opposition to other identical adjacent MADA, and the B_opposing would be massive. That's before even factoring in additional B_opposing from the partially hybridized MADA pole positions.
+This means that a MADA can take 5 stacks of 6 cheap N52 magnets with spacers removed ($25 total from Amazon; each stack of 6 is ~3T) to **~30+T B_opposing** at the *distance* that is ~6 times greater. Put that inside a magnetic circuit in opposition to other identical adjacent MADA, and the B_opposing would be massive. That's before even factoring in additional B_opposing from the partially hybridized MADA pole positions.
 
 ### Nested MADA Configurations and Hierarchical Amplification
 
@@ -295,16 +304,16 @@ def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
         m1: Magnetic moment of first magnet
         m2: Magnetic moment of second magnet
         d: Distance between magnets
-        k: Scaling factor for MADA amplification (default 200.0 for ~200x vs. single magnet)
+        k: Scaling factor for MADA amplification (default 1.0 for ~1x vs. single magnet)
     
     Note:
-        k may need to be set up to 529 depending on specific configuration
+        k may need to be set up to 200-529 depending on specific configuration
     """
     # Implementation details...
 ```
 
 **Key parameter:**
-- `k`: Scaling factor for MADA amplification (default `200.0` for ~200x vs. single magnet; may need to be set up to `529`)
+- `k`: Scaling factor for MADA amplification (default `1.0` for ~1x vs. single magnet; may need to be set up to `200-529`)
 
 ### Lockheed Martin Skunk Works' Implementation of MADA in a Midsize CIA Air Branch Saucer-Shaped Mothership
 

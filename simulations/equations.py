@@ -172,7 +172,7 @@ CONVERGENCE_CRITICAL = 0.80  # Critical threshold - emergency shutdown
 # - Force amplification (1/r⁷): ~529x
 MADA_FIELD_AMPLIFICATION = 216.0
 MADA_FORCE_AMPLIFICATION = 529.0
-MADA_DEFAULT_K = 200.0  # Conservative default
+MADA_DEFAULT_K = 1.0  # Conservative default
 
 # Simulation constants
 SPEED_OF_SOUND = 343.0  # m/s at sea level
@@ -354,6 +354,28 @@ def refractive_index_gradient(B: Union[float, np.ndarray],
         grad_K = dchi_dB2[..., np.newaxis] * grad_B2
     
     return grad_K
+
+
+def calculate_mada_B(magnet_Bs: list[float], multiple_per_position: bool = False) -> float:
+    """
+    Calculate effective B for a MADA unit.
+    
+    Args:
+        magnet_Bs: List of B values for 5 magnets (T).
+        multiple_per_position: If True, apply 90% factor for >1 magnet per position.
+    
+    Returns:
+        Effective B value (T).
+    """
+    if len(magnet_Bs) != 5:
+        raise ValueError("Exactly 5 magnet B values required.")
+    
+    total_B = sum(magnet_Bs)
+    
+    if multiple_per_position:
+        return 0.9 * total_B  # 90% sum if multiple per position
+    else:
+        return total_B  # Simple sum otherwise
 
 
 def vacuum_force_density(B: Union[float, np.ndarray],

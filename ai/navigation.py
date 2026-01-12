@@ -1106,9 +1106,8 @@ if __name__ == "__main__":
 quantizer = X86InductorQuantizer() 
 model = prepare_qat_pt2e(exported_model.module(), quantizer)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-    train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
-    # Convert to quantized after training
-    quantized_model = convert_pt2e(model)
+train_on_dataset(model, mock_dataset, num_epochs=10)  # Now has parameters
+quantized_model = convert_pt2e(model)
 
 
 # =============================================================================

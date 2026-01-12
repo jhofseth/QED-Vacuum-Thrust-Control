@@ -1247,45 +1247,45 @@ logger.info(f"Geometry factor: {geometry_factor:.2e}")
 logger.info("=" * 70)
     
 for step in range(NUM_STEPS):
-# Simulate sensor readings including visual
-imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos = \
-simulate_sensors(pos, vel, attitude)
+    # Simulate sensor readings including visual
+    imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos = \
+    simulate_sensors(pos, vel, attitude)
         
-# Kalman filter: predict and update
-kf.predict(imu_accel, imu_gyro)
-measurements = np.concatenate([gps_pos, gps_vel, mag_attitude, [alt_z], visual_pos])
-kf.update(measurements)
+    # Kalman filter: predict and update
+    kf.predict(imu_accel, imu_gyro)
+    measurements = np.concatenate([gps_pos, gps_vel, mag_attitude, [alt_z], visual_pos])
+    kf.update(measurements)
         
-# Get fused state estimate
-fused_pos = kf.x[0:3]
-fused_vel = kf.x[3:6]
-fused_att = kf.x[6:9]
+    # Get fused state estimate
+    fused_pos = kf.x[0:3]
+    fused_vel = kf.x[3:6]
+    fused_att = kf.x[6:9]
         
-# Visual pose estimation
-visual_pose = visual_pose_estimation(visual_pos)
+    # Visual pose estimation
+    visual_pose = visual_pose_estimation(visual_pos)
         
-# Decoy detection
-is_decoy = decoy_detection(visual_pos, threat_level)
+    # Decoy detection
+    is_decoy = decoy_detection(visual_pos, threat_level)
 if is_decoy:
-logger.warning("Decoy detected! Activating stealth mode.")
-# Adjust path
-fused_pos = fused_pos + np.random.normal(0, 5, 3)  # Mock evasion
+    logger.warning("Decoy detected! Activating stealth mode.")
+    # Adjust path
+    fused_pos = fused_pos + np.random.normal(0, 5, 3)  # Mock evasion
         
-# Prepare neural network input with visual
-input_state = np.concatenate([fused_pos, fused_vel, target, visual_pose])
-input_tensor = torch.tensor(input_state, dtype=torch.float32).unsqueeze(0)
+    # Prepare neural network input with visual
+    input_state = np.concatenate([fused_pos, fused_vel, target, visual_pose])
+    input_tensor = torch.tensor(input_state, dtype=torch.float32).unsqueeze(0)
         
-# Get control from neural network (with failover)
+    # Get control from neural network (with failover)
 try:
 with torch.no_grad():
-control = model(input_tensor).squeeze(0).numpy()
+    control = model(input_tensor).squeeze(0).numpy()
 except Exception as e:
-logger.error(f"Primary model failed: {e}. Switching to secondary.")
-use_primary = False
-model = secondary_model
-model.eval()
+    logger.error(f"Primary model failed: {e}. Switching to secondary.")
+    use_primary = False
+    model = secondary_model
+    model.eval()
 with torch.no_grad():
-control = model(input_tensor).squeeze(0).numpy()
+    control = model(input_tensor).squeeze(0).numpy()
         
         controls_history.append(control.copy())
         

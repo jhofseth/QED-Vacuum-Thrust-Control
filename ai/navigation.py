@@ -1167,24 +1167,23 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Initialize sensor fusion
     kf = KalmanFilter(dt=DT)
     
-    # Initialize PID controllers (3 position + 3 attitude)
+    # Initialize PID controllers
     pids = [PIDController(kp=2.0, ki=0.5, kd=1.0, dt=DT, output_limit=10.0) 
             for _ in range(6)]
     
     # Initialize sliding mode controllers
     smcs = [SlidingModeController(lambda_param=1.5, eta=2.0) for _ in range(6)]
     
-   # Mock system matrices for observer
+    # Mock system matrices for observer
     A = np.eye(9)
-    
-    # FIX: Rename the control matrix to 'B_mat' so we don't overwrite the global 'B' constant (50.0)
+    # FIX: Rename B to B_mat so we don't overwrite the global magnetic field 'B' constant
     B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls (acceleration) to velocity
+    B_mat[3:6, 0:3] = np.eye(3) * DT  
     
     C = np.eye(9)
     L = np.eye(9) * 0.1
     
-    # Pass the correctly named matrix
+    # Pass 'B_mat' instead of 'B'
     observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
@@ -1193,7 +1192,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
     # Hardware state simulation
     current_temp = 25.0
-    current_B = B  # Initial opposing B-field
+    current_B = B  # Initial opposing B-field (Scalar)
     current_eta = ETA
     cycles = 0
     threat_level = 0.0
@@ -1213,7 +1212,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     # Mock visual features
     visual_features = np.zeros(3)
     
-    # Swarm coordination (mock: assume single drone)
+    # Swarm coordination
     swarm_pos = [pos.copy()]
     
     # MADA pulsing state
@@ -1228,16 +1227,16 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     logger.info("=" * 70)
     
     for step in range(NUM_STEPS):
-        # Simulate sensor readings including visual
+        # Simulate sensor readings
         imu_accel, imu_gyro, gps_pos, gps_vel, alt_z, mag_attitude, visual_pos = \
             simulate_sensors(pos, vel, attitude)
         
-        # Kalman filter: predict and update
+        # Kalman filter prediction
         kf.predict(imu_accel, imu_gyro)
         measurements = np.concatenate([gps_pos, gps_vel, mag_attitude, [alt_z], visual_pos])
         kf.update(measurements)
         
-        # Get fused state estimate
+        # Get fused state
         fused_pos = kf.x[0:3]
         fused_vel = kf.x[3:6]
         fused_att = kf.x[6:9]
@@ -1249,14 +1248,13 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         is_decoy = decoy_detection(visual_pos, threat_level)
         if is_decoy:
             logger.warning("Decoy detected! Activating stealth mode.")
-            # Adjust path
-            fused_pos = fused_pos + np.random.normal(0, 5, 3)  # Mock evasion
+            fused_pos = fused_pos + np.random.normal(0, 5, 3)
         
-        # Prepare neural network input with visual
+        # Prepare NN input
         input_state = np.concatenate([fused_pos, fused_vel, target, visual_pose])
         input_tensor = torch.tensor(input_state, dtype=torch.float32).unsqueeze(0)
         
-        # Get control from neural network (with failover)
+        # Get control from neural network
         try:
             with torch.no_grad():
                 control = model(input_tensor).squeeze(0).numpy()
@@ -1270,20 +1268,18 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         
         controls_history.append(control.copy())
         
-        # Apply PID fine-tuning
+        # PID corrections
         pos_error = target - fused_pos
-        att_error = np.zeros(3)  # Target attitude = 0 for simplicity
-        
         pid_corrections = np.array([
             pids[i].compute(target[i], fused_pos[i]) for i in range(3)
         ] + [
             pids[i+3].compute(0.0, fused_att[i]) for i in range(3)
         ])
         
-        control = control + pid_corrections * 0.1  # Blend with NN output
+        control = control + pid_corrections * 0.1
         
-        # Apply sliding mode for robustness
-        error_dots = fused_vel  # Mock derivatives
+        # Sliding Mode Control
+        error_dots = fused_vel
         smc_corrections = np.array([
             smcs[i].compute(pos_error[i], error_dots[i]) for i in range(3)
         ] + [
@@ -1291,23 +1287,22 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         ])
         control = control + smc_corrections * 0.05
         
-        # State observer update
+        # Observer update
         u = control
         y = np.concatenate([fused_pos, fused_vel, fused_att])
         observed_state = observer.update(u, y)
         
-        # Optional MPC optimization (every 10 steps for efficiency)
+        # MPC optimization
         if step % 10 == 0 and SCIPY_AVAILABLE:
             current_state = np.concatenate([fused_pos, fused_att])
             target_state = np.concatenate([target, np.zeros(3)])
             mpc_output = mpc_control(current_state, target_state)
-            control = 0.7 * control + 0.3 * mpc_output  # Blend with MPC
+            control = 0.7 * control + 0.3 * mpc_output
         
         # Extract thrust components
-        grad_B = control[:3] * 10.0  # Control maps to B-field gradient direction
+        grad_B = control[:3] * 10.0
         thrust_direction = control[3:]
         
-        # Normalize thrust direction
         thrust_norm = np.linalg.norm(thrust_direction)
         if thrust_norm > 1e-6:
             thrust_direction = thrust_direction / thrust_norm
@@ -1315,39 +1310,27 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
             thrust_direction = np.array([1.0, 0.0, 0.0])
         
         # =================================================================
-        # RVG Unified Field Propulsion Calculation (CALIBRATED)
+        # RVG Unified Field Propulsion Calculation
         # =================================================================
         
-        # MADA pulsing modulation (50-1000 Hz with 20-80% duty cycle)
         pulse_phase += DT
-        duty_cycle = 0.5 + 0.3 * np.sin(2 * np.pi * step / 50)  # Variable duty
+        duty_cycle = 0.5 + 0.3 * np.sin(2 * np.pi * step / 50)
         pulse_active = (pulse_phase % pulse_period) < (pulse_period * duty_cycle)
         
-        # Apply MADA amplification to base B-field
         B_effective = mada_amplification(current_B, distance_ratio=6.0, k=mada_k)
         if not pulse_active:
-            B_effective *= 0.2  # Reduced field during pulse off phase
+            B_effective *= 0.2
         
-        # Calculate dilaton enhancement Θ_dilaton(B) using calibrated function
         theta_dilaton = dilaton_enhancement(B_effective)
-        
-        # Calculate vacuum refractive index K
         K = vacuum_refractive_index(B_effective)
-        
-        # Calculate gradient of B² using calibrated function
         grad_B2 = gradient_B_squared(B_effective, geometry_factor)
         
-        # Modulate gradient direction based on control input
         grad_direction = grad_B / (np.linalg.norm(grad_B) + 1e-10)
         grad_B2_directed = np.linalg.norm(grad_B2) * grad_direction
         
-        # Effective integration volume for thrust calculation
-        volume = A * 0.1  # Approximate active volume (m³)
-        
-        # Check supra-saturation status
+        volume = A * 0.1
         supra_status = check_supra_saturation(B_effective, B_SAT_MINNEALLOY)
         
-        # Calculate thrust via Master Equation of Levitation (CALIBRATED)
         try:
             F_lift = master_equation_levitation(
                 B_effective, grad_B2_directed, volume, 
@@ -1355,28 +1338,21 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
                 theta_thrust=THETA
             )
             
-            # Calculate total thrust using calibrated function
             total_thrust_value, rvg_data = calculate_thrust_force(
                 B_effective, volume, geometry_factor, N_UNITS, current_eta
             )
             
-            # Add legacy force calculation for comparison/blending
             F_vec_legacy = force_vector(CHI, B_effective, grad_B / 10, A, RHO)
-            F_mag_legacy = np.linalg.norm(F_vec_legacy)
-            T_legacy = total_thrust(N_UNITS, F_mag_legacy, current_eta, THETA)
             
-            # Blend RVG and legacy forces based on supra-saturation effectiveness
             blend_factor = supra_status['effectiveness']
             F_total = blend_factor * F_lift + (1 - blend_factor) * F_vec_legacy
             
             a_mag = np.linalg.norm(F_total) / MASS
             a = a_mag * thrust_direction
             
-            # Optimize for non-ballistic paths (add curvature for hover)
             cross_vec = np.cross(thrust_direction, np.array([0, 0, 1]))
-            a = a + cross_vec * 0.1  # Curvature for non-ballistic trajectory
+            a = a + cross_vec * 0.1
             
-            # Limit acceleration
             a_mag_total = np.linalg.norm(a)
             if a_mag_total > MAX_ACCEL:
                 a = a * (MAX_ACCEL / a_mag_total)
@@ -1387,7 +1363,7 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
             a = np.zeros(3)
             total_thrust_value = 0.0
         
-        # Obstacle avoidance with SORT tracking
+        # Obstacle avoidance
         if obstacles:
             tracked_obs = sort_tracking(obstacles, kf)
             for obs in tracked_obs:
@@ -1397,12 +1373,11 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
                     repulsion = (dist_vec / dist) * (10.0 / (dist + 0.1))**2
                     a = a + repulsion
         
-        # Swarm coordination (mock: average positions)
         if len(swarm_pos) > 1:
             avg_swarm = np.mean(swarm_pos, axis=0)
-            a = a + (avg_swarm - fused_pos) * 0.01  # Cohere
+            a = a + (avg_swarm - fused_pos) * 0.01
         
-        # Update dynamics
+        # Dynamics update
         vel = vel + a * DT
         pos = pos + vel * DT
         attitude = fused_att
@@ -1411,12 +1386,11 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         velocities.append(vel.copy())
         swarm_pos.append(pos.copy())
         
-        # Simulate hardware state
-        current_temp += 0.5  # Heating
+        # Hardware simulation
+        current_temp += 0.5
         cycles += 1
         threat_level = np.random.uniform(0, 1)
         
-        # Record telemetry
         telemetry['temp'].append(current_temp)
         telemetry['b_field'].append(B_effective)
         telemetry['dilaton_theta'].append(theta_dilaton)
@@ -1424,27 +1398,24 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
         telemetry['supra_sat_ratio'].append(supra_status['ratio'])
         telemetry['thrust'].append(total_thrust_value)
         
-        # Predictive maintenance with threat-adaptive pulsing
+        # Predictive maintenance
         maint_input = torch.tensor([cycles, current_temp, B_effective, threat_level],
                                    dtype=torch.float32).unsqueeze(0)
         with torch.no_grad():
             maint_output = maintenance_model(maint_input).squeeze(0).numpy()
         
         degradation_prob = maint_output[0]
-        adapted_freq = abs(maint_output[1])  # Ensure positive
+        adapted_freq = abs(maint_output[1])
         
         telemetry['degradation'].append(degradation_prob)
         
-        # Adaptive pulsing based on degradation and threat
         if degradation_prob > 0.5:
             logger.warning(f"High degradation probability: {degradation_prob:.2f}. "
                            f"Adapting frequency to {adapted_freq:.1f} Hz")
             current_eta = max(0.5, current_eta - 0.05)
-            # Reduce pulsing frequency to extend operational life
             pulsing_freq = max(50.0, pulsing_freq * 0.9)
             pulse_period = 1.0 / pulsing_freq
         elif threat_level > 0.8:
-            # Increase to burst mode for evasion
             pulsing_freq = min(1000.0, pulsing_freq * 1.5)
             pulse_period = 1.0 / pulsing_freq
         
@@ -1461,27 +1432,25 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
             logger.warning(f"High temperature: {current_temp:.1f}°C. Reducing power.")
             current_B *= 0.95
         
-        # Jammed environment replanning
-        if np.random.random() < 0.05:  # Simulate jam
+        # Jammed environment
+        if np.random.random() < 0.05:
             logger.warning("Signal jam detected! Switching to fallback mode.")
             pos = fallback_mode(kf)
-            # Opportunistic strike (mock)
             if threat_level > 0.7:
                 logger.info("Opportunistic strike initiated.")
-                a = a + np.random.normal(0, 10, 3)  # Mock strike adjustment
+                a = a + np.random.normal(0, 10, 3)
         
-        # Check target reached
+        # Target check
         dist_to_target = np.linalg.norm(pos - target)
         if dist_to_target < 1.0:
             logger.info(f"Target reached at step {step} (distance: {dist_to_target:.3f}m)")
             break
         
-        # Progress updates
+        # Progress log
         if step % 20 == 0:
             logger.info(f"Step {step}: dist={dist_to_target:.1f}m, "
                         f"speed={np.linalg.norm(vel):.1f}m/s, temp={current_temp:.1f}°C, "
                         f"Theta={theta_dilaton:.2e}, T={total_thrust_value:.0f}N")
-    
     else:
         final_dist = np.linalg.norm(pos - target)
         logger.info(f"X Simulation ended. Final distance: {final_dist:.1f}m")

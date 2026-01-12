@@ -1207,8 +1207,8 @@ L = np.eye(9) * 0.1
 observer = StateObserver(A, B_mat, C, L)
     
     # Initialize maintenance model
-    maintenance_model = MaintenanceNN()
-    maintenance_model.eval()
+maintenance_model = MaintenanceNN()
+maintenance_model.eval()
     
     # Hardware state simulation
     current_temp = 25.0

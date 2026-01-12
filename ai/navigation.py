@@ -967,16 +967,14 @@ def simulate_sensors(true_pos: np.ndarray, true_vel: np.ndarray,
 
 def sort_tracking(objects: List[np.ndarray], kf: KalmanFilter) -> List[np.ndarray]:
     """
-    SORT (Simple Online Realtime Tracking) using Kalman for multi-target tracking.
-    
-    Essential for asymmetric warfare scenarios with multiple threats.
+    Simple mock tracking for obstacles.
     """
     tracked = []
     for obj in objects:
-        # Use KF to predict and update track
-        kf.predict(np.zeros(3), np.zeros(3))  # Mock accel/gyro
-        kf.update(obj)
-        tracked.append(kf.x[:3])
+        # Just return the object position with slight noise to simulate sensor tracking
+        # We do NOT use the main drone's KF here to avoid dimension mismatches
+        tracked_pos = obj + np.random.normal(0, 0.05, 3) 
+        tracked.append(tracked_pos)
     return tracked
 
 
@@ -1198,11 +1196,8 @@ def simulate_navigation(primary_model: HybridMIMONetwork, secondary_model: Hybri
     
 # Mock system matrices for observer
     A = np.eye(9)
-    
-    # MAKE SURE THIS IS NAMED B_mat, NOT B
-    B_mat = np.zeros((9, 6))
-    B_mat[3:6, 0:3] = np.eye(3) * DT  # Map controls to velocity states
-    
+    B_mat = np.zeros((9, 6))      # Rename to B_mat
+    B_mat[3:6, 0:3] = np.eye(3) * DT 
     C = np.eye(9)
     L = np.eye(9) * 0.1
     observer = StateObserver(A, B_mat, C, L) # Pass B_mat here

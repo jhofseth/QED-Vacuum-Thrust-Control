@@ -228,7 +228,7 @@ class SimulationConfig:
     
     # Geometric parameters
     GRAD_H2 = np.array([1.0, 0.0, 0.0])  # Default field gradient direction
-    EFFECTIVE_VOLUME = 0.001      # Effective interaction volume (m³)
+    EFFECTIVE_VOLUME = 0.1      # Effective interaction volume (m³)
     RHO = 1000.0                  # Material density (kg/m³)
     
     # MADA parameters

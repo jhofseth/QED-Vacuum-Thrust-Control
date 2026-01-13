@@ -296,7 +296,7 @@ This recursive approach compounds frustration and focusing effects across levels
 
 `simulations/equations.py` was updated to reflect:
 ```python
-def opposing_field(m1: float, m2: float, d: float, k: float = 200.0) -> float:
+def opposing_field(m1: float, m2: float, d: float, k: float = 1.0) -> float:
     """
     Calculate opposing magnetic field with MADA amplification.
     

@@ -191,7 +191,7 @@ B_THRESHOLD_DEFAULT = 20.0       # Tesla (where nonlinear response activates)
 
 # Geometry factors for gradient calculations (T/m)
 # These represent achievable ∇B² for different MADA configurations
-DEFAULT_GEOMETRY_FACTOR = 1e6    # Simple opposing magnets
+DEFAULT_GEOMETRY_FACTOR = 1e8    # Optimized Bushman geometry
 MADA_SINGLE_GEOMETRY = 5e6       # Single-stage MADA array
 MADA_NESTED_GEOMETRY = 2e7       # Nested MADA configuration
 BUSHMAN_MAX_GEOMETRY = 1e8       # Optimized Bushman geometry

@@ -205,6 +205,7 @@ class SimulationConfig:
     """Configuration class for all simulation parameters."""
     
     # Magnetic field parameters
+    DEFAULT_GEOMETRY_FACTOR = 1e8   # Bushman geometry (Combat Mode)
     M1 = 100.0                    # Magnetic moment 1 (A·m²)
     M2 = 100.0                    # Magnetic moment 2 (A·m²)
     DISTANCE = 0.05               # Distance between magnets (m)

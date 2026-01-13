@@ -2082,8 +2082,9 @@ Examples:
                         help="Opposing magnetic field (T)")
     parser.add_argument("--frequency", type=float, default=SimulationConfig.DEFAULT_FREQUENCY,
                         help=f"Pulsing frequency (Hz), default: {SimulationConfig.DEFAULT_FREQUENCY}")
-    parser.add_argument("--geometry_factor", type=float, default=SimulationConfig.GEOMETRY_FACTOR,
-                        help=f"Gradient Geometry Factor (T/m), default: {SimulationConfig.GEOMETRY_FACTOR:.1e}")
+    parser.add_argument("--geometry_factor", type=float, 
+                        default=SimulationConfig.DEFAULT_GEOMETRY_FACTOR, # This will now be 1e8
+                        help=f"Gradient Geometry Factor (T/m)")
     parser.add_argument("--m1", type=float, default=SimulationConfig.M1,
                         help=f"Magnetic moment 1 (A·m²), default: {SimulationConfig.M1}")
     parser.add_argument("--m2", type=float, default=SimulationConfig.M2,

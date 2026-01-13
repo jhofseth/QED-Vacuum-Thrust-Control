@@ -284,7 +284,7 @@ It is not merely "6 times" stronger. It is demonstrating an **effective B-value 
 
 ### Practical Application
 
-This means that a MADA can take 5 stacks of 6 cheap N52 magnets with spacers removed ($25 total from Amazon; each stack of 6 is ~3T) to **~30+T B_opposing** at the *distance* that is ~6 times greater. Put that inside a magnetic circuit in opposition to other identical adjacent MADA, and the B_opposing would be massive. That's before even factoring in additional B_opposing from the partially hybridized MADA pole positions.
+This means that a MADA can take 5 stacks of 6 cheap N52 magnets with spacers removed ($25 total from Amazon; each stack of 6 is ~3T) to **~15+T B_opposing** at the *distance* that is ~6 times greater. Put that inside a magnetic circuit in opposition to other identical adjacent MADA, and the B_opposing would be massive. That's before even factoring in additional B_opposing from the partially hybridized MADA pole positions.
 
 ### Nested MADA Configurations and Hierarchical Amplification
 

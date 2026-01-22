@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-- [English](#english)
+- [*English*: (note)](#english)
 - [Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications](#technical-assessment-and-manufacturing-protocols-asymmetric-dilaton-pump-generator-adpg-for-defense-applications-1)
   - [I. Theoretical Physics Framework and Operational Principles](#i-theoretical-physics-framework-and-operational-principles)
     - [I.A The Dilaton Scalar Field and Vacuum Coupling Dynamics](#ia-the-dilaton-scalar-field-and-vacuum-coupling-dynamics)

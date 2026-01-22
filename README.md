@@ -165,7 +165,7 @@ $$\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilato
 
 **Universal Critical Requirement: Supra-Saturation Gap Fields**
 
-Effects manifest in **any ferromagnetic circuit material** (iron, silicon steel, Hiperco-50, etc.) via internal permeability amplification and bulk polarization. However, the opposing/convergence gap field ($B_{\text{opposing}}$) must **substantially exceed the material's saturation $B_s$** (≫ $B_s$, driving $\mu_{\text{eff}} \approx 1$ in the high-stress zone) to achieve the intense localized $B$ and steep $\nabla B^2$ required for macroscopic vacuum effects. Higher-saturation materials (e.g., experimental Minnealloy ~2.8–2.9 T) allow equivalent peak $B$ with lower required overdrive/input power; lower\-$B_s$ materials (e.g., iron ~2.1 T) simply need proportionally higher opposing drive/geometry compression.
+Effects manifest in **any ferromagnetic circuit material** (iron, silicon steel, Hiperco-50, etc.) via internal permeability amplification and bulk polarization. However, the opposing/convergence gap field ($B_{\text{opposing}}$) must **substantially exceed the material's saturation $B_s$** (≫ $B_s$, driving $\mu_{\text{eff}} \approx 1$ in the high-stress zone) to achieve the intense localized $B$ and steep $\nabla B^2$ required for macroscopic vacuum effects. Higher-saturation materials (e.g., experimental Minnealloy ~2.8–2.9 T) allow equivalent peak $B$ with lower required overdrive/input power; lower\\-\\$B_s$ materials (e.g., iron ~2.1 T) simply need proportionally higher opposing drive/geometry compression.
 
 **Non-Linear Insight:**
 

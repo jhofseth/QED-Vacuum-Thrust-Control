@@ -65,7 +65,7 @@ Inspired by U.S. Patent #5,929,732 (MADA) and the RVG Unified Field model (Hofse
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 **For more on energy production:**
-- [Energy Production Mechanisms](docs/dilaton-field-pumping.pdf) - Energy production methods
+- [Energy Production Mechanisms](docs/dilaton-field-pumping.md) - Energy production methods
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

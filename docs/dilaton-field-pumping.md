@@ -388,6 +388,6 @@ The pathway for \<redacted\> involves leveraging the advanced industrial capabil
 
 4. **Partner Identification:** Formalize relationships with \<redacted\> heat-treatment and laser-cutting vendors to establish the lamination supply line.
 
-5. ---
+---
 
 **[QED-Vacuum-Thrust-Control](README.md)** · [Documentation](docs/) · [License](LICENSE)

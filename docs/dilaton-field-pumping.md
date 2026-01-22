@@ -390,4 +390,4 @@ The pathway for \<redacted\> involves leveraging the advanced industrial capabil
 
 ---
 
-**[QED-Vacuum-Thrust-Control](README.md)** · [Documentation](docs/) · [License](LICENSE)
+**[QED-Vacuum-Thrust-Control](README.md)** · [Documentation](./) · [License](LICENSE)

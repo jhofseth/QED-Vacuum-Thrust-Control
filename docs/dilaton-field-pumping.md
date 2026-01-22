@@ -390,4 +390,4 @@ The pathway for \<redacted\> involves leveraging the advanced industrial capabil
 
 ---
 
-**[QED-Vacuum-Thrust-Control](../#qed-vacuum-thrust-control)** · [Documentation](./) · [License](../LICENSE) · [(back to top)](#technical-assessment-and-manufacturing-protocols-asymmetric-dilaton-pump-generator-adpg-for-defense-applications)
+**[QED-Vacuum-Thrust-Control](../#qed-vacuum-thrust-control)** · [Documentation](./) · [License](../LICENSE.md) · [(back to top)](#technical-assessment-and-manufacturing-protocols-asymmetric-dilaton-pump-generator-adpg-for-defense-applications)

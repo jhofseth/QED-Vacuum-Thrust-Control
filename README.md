@@ -118,7 +118,7 @@ $$B(z) = \frac{B_r}{2} \left[ \frac{L + z}{\sqrt{R^2 + (L + z)^2}} - \frac{z}{\s
 
 $$B_{\text{gap}} \approx \frac{\mu_0 m_1 m_2}{2\pi d^2} \cdot k$$
 
-($k$: geometry factor; boosted by high-$\mu_r$ cores.)
+($k$: geometry factor; boosted by high- $\mu_r$ cores.)
 
 **Pulsed Drive (asymmetric waveforms for net momentum):**
 

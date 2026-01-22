@@ -548,7 +548,7 @@ make html
 - **Gordon Optical Metric**: The effective metric describing photon propagation in a polarized vacuum; connects refractive index gradients to gravitational effects
 - **Heisenberg-Euler-Schwinger (HES) Action**: Effective field theory describing nonlinear QED effects in strong electromagnetic fields
 - **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing (U.S. Patent 5,929,732)
-- **Master Equation of Levitation**: The integrated thrust equation F = ∫(Θ_dilaton(B)·∇B²)dV that quantifies propulsive force from engineered vacuum gradients
+- **Master Equation of Levitation**: The integrated thrust equation $\mathbf{F}_{\text{lift}} = \int_V \left( \frac{1}{2\mu_0} \Theta_{\text{dilaton}}(B) \cdot \nabla (\mathbf{B} \cdot \mathbf{B}) \right) dV$ that quantifies propulsive force from engineered vacuum gradients
 - **Polarizable Vacuum (PV)**: Theoretical representation where gravity manifests as variations in the vacuum's dielectric properties
 - **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties and vacuum refractive index
 - **Refractive Vacuum Gravity (RVG)**: The unified field framework synthesizing Disformal QED, the 95 GeV resonance, and metric engineering for propulsion

@@ -552,7 +552,7 @@ make html
 - **Polarizable Vacuum (PV)**: Theoretical representation where gravity manifests as variations in the vacuum's dielectric properties
 - **QED Vacuum Polarization**: Quantum effect where virtual particle-antiparticle pairs modify electromagnetic field properties and vacuum refractive index
 - **Refractive Vacuum Gravity (RVG)**: The unified field framework synthesizing Disformal QED, the 95 GeV resonance, and metric engineering for propulsion
-- **Supra-Saturation**: Operating regime where opposing gap fields substantially exceed material saturation $B_s$, driving intense localized $B$ and steep ∇$B^2$ for macroscopic vacuum effects
+- **Supra-Saturation**: Operating regime where opposing gap fields substantially exceed material saturation $B_s$, driving intense localized $B$ and steep $∇B^2$ for macroscopic vacuum effects
 - **Trace Anomaly**: Quantum correction that breaks conformal symmetry, enabling the dilaton to couple directly to electromagnetic energy density
 
 Full glossary available in [docs/glossary.md](docs/glossary.md).

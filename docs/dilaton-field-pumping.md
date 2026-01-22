@@ -318,53 +318,53 @@ However, several deliberate design features and operational principles prevent t
 
 **VII.D.1 Symmetric Geometry and Force Cancellation**
 
-> • The ADPG's overall form factor is explicitly a **closed toroidal or figure-8 yoke** enclosing multiple nested MADA clusters.
->
-> • Convergence/frustration points (where opposing flux streams collide) are distributed symmetrically around the yoke (e.g., balanced clusters on opposite sides).
->
-> • Result: Vacuum repulsion forces push equally in opposite directions → **net thrust vectors internally cancel** to near-zero.
->
-> • This is analogous to how a closed magnetic circuit minimizes external leakage—here, it also minimizes net mechanical force on the device as a whole.
->
-> • Any minor residual imbalance (from manufacturing tolerances or asymmetric pulsing) produces only negligible vibration or creep, not runaway acceleration.
+  - The ADPG's overall form factor is explicitly a **closed toroidal or figure-8 yoke** enclosing multiple nested MADA clusters.
+
+  - Convergence/frustration points (where opposing flux streams collide) are distributed symmetrically around the yoke (e.g., balanced clusters on opposite sides).
+
+  - Result: Vacuum repulsion forces push equally in opposite directions → **net thrust vectors internally cancel** to near-zero.
+
+  - This is analogous to how a closed magnetic circuit minimizes external leakage—here, it also minimizes net mechanical force on the device as a whole.
+
+  - Any minor residual imbalance (from manufacturing tolerances or asymmetric pulsing) produces only negligible vibration or creep, not runaway acceleration.
 
 **VII.D.2 Stationary Mounting and Mass Inertia**
 
-> • The ADPG is designed as a **grounded power generation device**, not a free-flying vehicle.
->
-> • Prototypes/mid-scale units (10–30 cm to meter-scale yokes with Minnealloy or fallback cores) have substantial mass (tens to hundreds of kg from magnets, yoke, coils, and cooling systems).
->
-> • Intended to be bolted to a foundation or test stand—thousands of N would require enormous input energy scaling, and even then, the device's inertia + anchoring resists motion.
->
-> • Early prototypes (10–100 W projected) yield only modest byproduct forces (Newtons to tens of N), far below hypersonic potential—simply by design.
+  - The ADPG is designed as a **grounded power generation device**, not a free-flying vehicle.
+
+  - Prototypes/mid-scale units (10–30 cm to meter-scale yokes with Minnealloy or fallback cores) have substantial mass (tens to hundreds of kg from magnets, yoke, coils, and cooling systems).
+
+  - Intended to be bolted to a foundation or test stand—thousands of N would require enormous input energy scaling, and even then, the device's inertia + anchoring resists motion.
+
+  - Early prototypes (10–100 W projected) yield only modest byproduct forces (Newtons to tens of N), far below hypersonic potential—simply by design.
 
 **VII.D.3 Pulsed Asymmetric Operation Tuned for Energy, Not Thrust**
 
-> • Thrust arises primarily during the **relaxation phase** (amplified collapsing fields).
->
-> • The waveform is controlled (sharp pump rise, slow decay) via feedback loops monitoring *B*(*t*) in convergence zones—optimized for maximum energy delta, not sustained directional force.
->
-> • Multi-phase staggering of clusters further smooths and cancels transient forces.
->
-> • If any net thrust emerges, the microcontroller can dynamically adjust pulse asymmetry, phasing, or damping to null it out (same electronics that maximize output-minus-input).
+  - Thrust arises primarily during the **relaxation phase** (amplified collapsing fields).
+
+  - The waveform is controlled (sharp pump rise, slow decay) via feedback loops monitoring *B*(*t*) in convergence zones—optimized for maximum energy delta, not sustained directional force.
+
+  - Multi-phase staggering of clusters further smooths and cancels transient forces.
+
+  - If any net thrust emerges, the microcontroller can dynamically adjust pulse asymmetry, phasing, or damping to null it out (same electronics that maximize output-minus-input).
 
 **VII.D.4 Scale-Dependent Thresholds**
 
-> • Small-scale prototypes: Localized $B_{opposing} \sim 10 - 30\ T$ → modest vacuum force (sufficient for anomalous gain but low thrust byproduct).
->
-> • To reach "thousands of N": Requires deep nesting, high-saturation cores, and large volume → massive, heavy device where self-cancellation dominates.
->
-> • Ultimate limits (approaching QED critical fields) are theoretical; practical thermal/mechanical constraints cap uncontrolled effects.
+  - Small-scale prototypes: Localized $B_{opposing} \sim 10 - 30\ T$ → modest vacuum force (sufficient for anomalous gain but low thrust byproduct).
+
+  - To reach "thousands of N": Requires deep nesting, high-saturation cores, and large volume → massive, heavy device where self-cancellation dominates.
+
+  - Ultimate limits (approaching QED critical fields) are theoretical; practical thermal/mechanical constraints cap uncontrolled effects.
 
 **VII.D.5 Contrast with Propulsion Variants (e.g., Spherical Drones)**
 
 In deliberate thrust designs (like the spherical EMF drones we discussed):
 
-> • Convergence points are **asymmetrically activated/phased** → intentional unbalanced repulsion for vectorized thrust (opposite active frustration zones).
->
-> • Control systems (multi-cluster pulsing, bias coils) modulate direction/magnitude for stable flight.
->
-> • Even there, runaway hypersonic acceleration is prevented by feedback throttling—thrust scales with drive power, so it's pilotable, not explosive.
+  - Convergence points are **asymmetrically activated/phased** → intentional unbalanced repulsion for vectorized thrust (opposite active frustration zones).
+
+  - Control systems (multi-cluster pulsing, bias coils) modulate direction/magnitude for stable flight.
+
+  - Even there, runaway hypersonic acceleration is prevented by feedback throttling—thrust scales with drive power, so it's pilotable, not explosive.
 
 In summary, the generator avoids missile-like behavior through **symmetric closed-yoke architecture** (net force cancellation), **stationary intent/mounting**, and **precise electronic control** of pulsing. Unintended thrust is a tunable byproduct, not an inevitable catastrophe. If building prototypes, start with rigid fixturing and real-time force monitoring for safety—thousands of N would indeed be transformative, but manageable in this configuration.
 

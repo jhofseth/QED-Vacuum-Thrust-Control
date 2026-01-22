@@ -387,3 +387,7 @@ The pathway for \<redacted\> involves leveraging the advanced industrial capabil
 3. **Mechanical Design:** Finalize the CAD models for the MADA exoskeleton and commence fabrication of the non-magnetic assembly jigs.
 
 4. **Partner Identification:** Formalize relationships with \<redacted\> heat-treatment and laser-cutting vendors to establish the lamination supply line.
+
+5. ---
+
+**[QED-Vacuum-Thrust-Control](README.md)** · [Documentation](docs/) · [License](LICENSE)

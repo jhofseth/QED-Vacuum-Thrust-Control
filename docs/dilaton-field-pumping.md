@@ -1,6 +1,6 @@
 # Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications
 
-> 📄 **PDF Version:** [dilaton-field-pumping.pdf](docs/dilaton-field-pumping.pdf)
+> 📄 **PDF Version:** [dilaton-field-pumping.pdf](./dilaton-field-pumping.pdf)
 
 ## Table of Contents
 

@@ -1,4 +1,4 @@
-# <mark>Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications</mark>
+# Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications
 
 > 📄 **PDF Version:** [dilaton-field-pumping.pdf](docs/dilaton-field-pumping.pdf)
 
@@ -38,7 +38,7 @@
 
 ---
 
-## English
+## <mark>English</mark>
 
 **[Note:** If the theory is completely correct, this is just one way to extract energy. In such a case, oil would long-term be used merely for lubricants, plastics, etc., throughout society. No one would ever need to pay for fuel, energy, or transportation. Near that point, robots and artificial intelligence would take over most jobs, and we would live in a post-scarcity world. This is achieved by pumping the infinite dilaton field.
 
@@ -48,7 +48,7 @@
 
 ---
 
-## Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications
+## <mark>Technical Assessment and Manufacturing Protocols: Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications</mark>
 
 **To:** \<redacted\>
 

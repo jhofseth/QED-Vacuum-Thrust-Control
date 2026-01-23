@@ -544,7 +544,7 @@ make html
 
 - **95 GeV Resonance**: The dilaton/radion scalar boson observed at the LHC (CMS/ATLAS) with 3.1σ combined significance; couples to the trace anomaly and mediates vacuum refractive index modification
 - **Disformal Gravity**: Extension of scalar-tensor gravity where the physical metric couples to both the scalar field and its gradient, enabling directional metric distortion
-- **Dilaton Enhancement Factor (Θ_dilaton)**: The non-linear vacuum response function that grows with magnetic field intensity due to 95 GeV resonance pumping
+- **Dilaton Enhancement Factor ($\Theta_\text{dilaton}$)**: The non-linear vacuum response function that grows with magnetic field intensity due to 95 GeV resonance pumping
 - **Gordon Optical Metric**: The effective metric describing photon propagation in a polarized vacuum; connects refractive index gradients to gravitational effects
 - **Heisenberg-Euler-Schwinger (HES) Action**: Effective field theory describing nonlinear QED effects in strong electromagnetic fields
 - **MADA**: Magnetic Amplification and Direction Assembly – Patent-inspired setup for magnetic beam focusing (U.S. Patent 5,929,732)

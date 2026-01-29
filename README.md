@@ -100,7 +100,7 @@ Prioritizes cobalt-free options for low-cost scalability.  Note: Effects manifes
 
 ### Comprehensive Tactical Toolkit: Propulsion Equations in the Unified Field Framework
 
-These equations constitute the practical toolkit derived from **The Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation** (Hofseth, accessed January 1, 2026). The framework centers on vacuum refractive index gradients modulated by the 95 GeV dilaton/radion resonance, with non-linear enhancements via the trace anomaly coupling. All terms are derived from the Euler-Heisenberg effective action, disformal gravity coupling, and the dilaton-mediated vacuum polarizability; effects remain theoretical and gradient-dependent.
+These equations constitute the practical toolkit derived from **Refractive Vacuum Gravity (RVG) Unified Field: Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation** (Hofseth, accessed January 1, 2026). The framework centers on vacuum refractive index gradients modulated by the 95 GeV dilaton/radion resonance, with non-linear enhancements via the trace anomaly coupling. All terms are derived from the Euler-Heisenberg effective action, disformal gravity coupling, and the dilaton-mediated vacuum polarizability; effects remain theoretical and gradient-dependent.
 
 ---
 

@@ -239,6 +239,7 @@ These equations enable direct Python/OpenSCAD/FEMM simulations of Bushman opposi
 ![Alt text](assets/IMG_0220.jpeg)
 ![Alt text](assets/IMG_2317.jpeg)
 ![Alt text](assets/MADA_with_Axial_Stack_x12_per_Position.png)
+![Alt text](assets/5_MADA_Array_with_Axial_Stack_x12_per_Position.jpg)
 > **Note on Amplification Factor (k) and B_opposing Adjustments**  
 > 
 > Research suggests that magnetic amplification in configurations like those in the Bushman patent (U.S. Patent 5,929,732) may achieve field enhancement factors up to 216× at extended distances. However, setting `k=1` provides a conservative baseline, avoiding assumptions of unverified enhancements. This is particularly useful for distance-focused simulations where standard dipole field decay (∼1/r³) dominates.  

@@ -1,7 +1,7 @@
 # Table of Contents
 
-- [**English**](#english)
-- [**The Unified Field Scalar-Hydraulic Drive**](#the-unified-field-scalar-hydraulic-drive)
+- [**English**](##english)
+- [**The Unified Field Scalar-Hydraulic Drive**](##the-unified-field-scalar-hydraulic-drive)
   - [Introduction: The Architecture of Passive Scalar Propulsion](#introduction-the-architecture-of-passive-scalar-propulsion)
   - [System Architecture & Engineering Specification](#system-architecture--engineering-specification)
     - [1. Theoretical Foundation: The Vacuum as a Fluid & The Metric Envelope](#1-theoretical-foundation-the-vacuum-as-a-fluid--the-metric-envelope)
@@ -20,11 +20,11 @@
 
 ---
 
-# *English*:
+## *English*:
 
 [Note: The below text references this article: **Refractive Vacuum Gravity (RVG) Unified Field—Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation.pdf** [https://dx.doi.org/10.2139/ssrn.5381654](https://dx.doi.org/10.2139/ssrn.5381654), and this document, **Technical Assessment and Manufacturing Protocols—Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications.docx [Energy Production Mechanisms](docs/dilaton-field-pumping.md)**]
 
-# The Unified Field Scalar-Hydraulic Drive
+## The Unified Field Scalar-Hydraulic Drive
 
 **To:** \<redacted\>
 

@@ -70,13 +70,13 @@ The propulsion system operates on the principle of **Refractive Vacuum Gravity (
 
     - **Result:** 1.5 T × 270 ≈ 405 T (Median theoretical potential).
 
-![](assets/image1.jpg)
+![](../assets/image1.jpg)
 
-![](assets/image2.jpg)
+![](../assets/image2.jpg)
 
-![](assets/image3.jpg)
+![](../assets/image3.jpg)
 
-![](assets/image4.jpg)
+![](../assets/image4.jpg)
 
 - **Operational Threshold Scaling (Mass Dependent):**
 

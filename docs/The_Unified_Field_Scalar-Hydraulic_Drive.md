@@ -4,8 +4,8 @@
 
 # Table of Contents
 
-- [**English**](##english)
-- [**The Unified Field Scalar-Hydraulic Drive**](##the-unified-field-scalar-hydraulic-drive)
+- [**English**](#english)
+- [**The Unified Field Scalar-Hydraulic Drive**](#the-unified-field-scalar-hydraulic-drive)
   - [Introduction: The Architecture of Passive Scalar Propulsion](#introduction-the-architecture-of-passive-scalar-propulsion)
   - [System Architecture & Engineering Specification](#system-architecture--engineering-specification)
     - [1. Theoretical Foundation: The Vacuum as a Fluid & The Metric Envelope](#1-theoretical-foundation-the-vacuum-as-a-fluid--the-metric-envelope)

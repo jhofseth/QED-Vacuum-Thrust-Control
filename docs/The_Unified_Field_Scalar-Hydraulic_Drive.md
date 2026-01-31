@@ -1,6 +1,6 @@
 # The Unified Field Scalar-Hydraulic Drive
 
-> 📄 **PDF Version:** [The_Unified_Field_Scalar-Hydraulic_Drive.pdf](docs/The_Unified_Field_Scalar-Hydraulic_Drive.pdf)
+> 📄 **PDF Version:** [The_Unified_Field_Scalar-Hydraulic_Drive.pdf](./The_Unified_Field_Scalar-Hydraulic_Drive.pdf)
 
 # Table of Contents
 

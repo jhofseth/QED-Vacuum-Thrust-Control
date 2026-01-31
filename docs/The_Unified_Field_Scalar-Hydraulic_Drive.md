@@ -216,6 +216,7 @@ P<sub>cruise</sub> ≈ P<sub>avionics</sub> + P<sub>trim_sensors</sub> ≈ Minim
 ## Conclusion: Operational Resolution
 
 This Distributed Architecture definitively resolves the primary engineering paradoxes of propellant-less flight. By decoupling lift generation from active electrical power via the **passive MADA core**, it eliminates the prohibitive energy-weight penalty inherent in conventional electromagnetic drives. Furthermore, by operating on the background metric rather than carrying a conventional stress-energy current, the drive **evades the restrictions of the Weinberg-Witten theorem**, offering a unified pathway to cosmological-scale propulsion. The system provides two distinct operational modes: **Static Levitation** for hover and **Continuous Acceleration** for cruise, where the drive interacts directly with the **Running Vacuum Tension** (Dark Energy mechanism). While this interaction provides effectively limitless range, the coupling strength λ(H) is subject to slight cosmological variation (~3–5%), necessitating adaptive bias tuning for efficient long-duration interstellar travel. The transition to a **Distributed Multi-Array configuration** finally bridges the gap between theory and tactics, providing the instantaneous, multi-axis vectoring required for Mach 26 maneuvers while shielded by the system's own metric envelope.
+
 ---
 
 **[QED-Vacuum-Thrust-Control](../#qed-vacuum-thrust-control)** · [Documentation](./) · [License](../LICENSE.md) · [(back to top)](#the-unified-field-scalar-hydraulic-drive)

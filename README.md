@@ -67,7 +67,7 @@ Inspired by U.S. Patent #5,929,732 (MADA) and the RVG Unified Field model (Hofse
 
 
 **For system architecture and engineering specification:**
-- [The Unified Field Scalar-Hydraulic Drive](The_Unified_Field_Scalar-Hydraulic_Drive.md) - Distributed Mechanical Gimballing, Mass-Dependent Scaling Laws, and Variable Flux Shunting for tactical propulsion
+- [The Unified Field Scalar-Hydraulic Drive](docs/The_Unified_Field_Scalar-Hydraulic_Drive.md) - Distributed Mechanical Gimballing, Mass-Dependent Scaling Laws, and Variable Flux Shunting for tactical propulsion
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

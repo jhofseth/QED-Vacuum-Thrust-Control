@@ -26,7 +26,7 @@
 
 ## *English*:
 
-[Note: The below text references this article: **Refractive Vacuum Gravity (RVG) Unified Field—Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation.pdf** [https://dx.doi.org/10.2139/ssrn.5381654](https://dx.doi.org/10.2139/ssrn.5381654), and this document, **Technical Assessment and Manufacturing Protocols—Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications.docx [Energy Production Mechanisms](./dilaton-field-pumping.md)**]
+[Note: The below text references this article: **Refractive Vacuum Gravity (RVG) Unified Field—Disformal QED, the 95 GeV Resonance, and the Metric Engineering of Static Levitation.pdf** [https://dx.doi.org/10.2139/ssrn.5381654](https://dx.doi.org/10.2139/ssrn.5381654), and this document related to lamination, **Technical Assessment and Manufacturing Protocols—Asymmetric Dilaton Pump Generator (ADPG) for Defense Applications.docx [Energy Production Mechanisms](./dilaton-field-pumping.md)**]
 
 ## The Unified Field Scalar-Hydraulic Drive
 
